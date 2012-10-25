@@ -1,4 +1,4 @@
-package com.service.chataround.dto;
+package com.service.chataround.dto.chat;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ public class ChatAroundDto implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String id;
+	private String deviceId;
 	private String nickName;
 	private String longitude;
 	private String lattitude;
@@ -23,14 +23,6 @@ public class ChatAroundDto implements Serializable {
 
 	public void setChatsAround(List<ChatAroundDto> chatsAround) {
 		this.chatsAround = chatsAround;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getNickName() {
@@ -55,6 +47,14 @@ public class ChatAroundDto implements Serializable {
 
 	public void setLattitude(String lattitude) {
 		this.lattitude = lattitude;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 
 }
