@@ -1,0 +1,14 @@
+<resources>
+
+    <string name="app_name">ChatAround</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_chat_around">ChatAround!</string>
+    <string name="sendlocation">http://chataround.com/api/1.0/pinglocationandgetuser</string>
+    <string name="local_service_started">Location Service Started!</string>
+    <string name="local_service_stopped">Location Service Stopped!</string>
+    <string name="local_service_label">Location Service</string>
+    <string name="local_service_connected">Location Service connected</string>
+    <string name="local_service_disconnected">Location Service disconnected</string>
+    
+</resources>
