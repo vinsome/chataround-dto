@@ -72,7 +72,7 @@ public class MyLocationListener implements LocationListener {
 				this.running = true;
 				Log.d(TAG, "using gps");
 				this.locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 600000, 0, this);
+						LocationManager.GPS_PROVIDER, 100000, 10, this); ////1 * 60 * 1000 (1 minutes)  and X  metres
 			} else {
 				Log.d(TAG, "GPS provider is not available.");
 			}
@@ -84,7 +84,7 @@ public class MyLocationListener implements LocationListener {
 				this.running = true;
 				Log.d(TAG, "using network");
 				this.locationManager.requestLocationUpdates(
-						LocationManager.NETWORK_PROVIDER, 600000, 10, this);
+						LocationManager.NETWORK_PROVIDER, 100000, 10, this);//1 * 60 * 1000 (1 minutes)  and X  metres
 			} else {
 				Log.d(TAG, "Network provider is not available.");
 			}
