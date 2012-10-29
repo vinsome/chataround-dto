@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/linearLayoutId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/global_padding_left"
+        android:paddingRight="@dimen/global_padding_right"
+        android:paddingTop="@dimen/global_padding_top" >
+
+        <TextView
+            android:id="@+id/nicknameLabelId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/settings_nick_padding_right"
+            android:text="@string/nickname_label"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/nicknameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="15"
+            android:minEms="50"
+            android:minLines="4" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutNotificationsId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dip"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/global_padding_left"
+        android:paddingRight="@dimen/global_padding_right" >
+
+        <TextView
+            android:id="@+id/chatNotificationsId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:text="@string/chatNotifications"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/switchNotifId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:textOff="@string/switch_off"
+            android:textOn="@string/switch_on" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutNotificationsSoundId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dip"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/global_padding_left"
+        android:paddingRight="@dimen/global_padding_right" >
+
+        <TextView
+            android:id="@+id/chatNotificationsSoundId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:text="@string/stayonline"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/switchNotifSoundId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:textOff="@string/switch_off"
+            android:textOn="@string/switch_on" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/butonsLayoutId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="14dip"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/global_padding_top"
+        android:paddingLeft="@dimen/global_padding_left"
+        android:paddingRight="@dimen/global_padding_right" >
+
+        <Button
+            android:id="@+id/saveSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save" />
+
+        <Button
+            android:id="@+id/closeSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/close" />
+    </LinearLayout>
+
+</LinearLayout>

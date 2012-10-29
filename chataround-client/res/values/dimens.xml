@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="global_padding_left">10dp</dimen>
+    <dimen name="global_padding_right">10dp</dimen>
+    <dimen name="global_padding_top">10dp</dimen>
+    
+    <!-- Instructions Dialog -->
+    <dimen name="main_instructions_scroll_padding_top">20dp</dimen>
+    <dimen name="main_instructions_padding">10dp</dimen>
+    <dimen name="main_instructions_text1_margin_bottom">10dp</dimen>
+    <dimen name="main_instructions_check_margin_right">5dp</dimen>
+    <dimen name="main_instructions_check_layout_margin_top">10dp</dimen>
+    <dimen name="main_instructions_text_size">16sp</dimen>
+    <dimen name="main_instructions_scroll_height">200dp</dimen>
+    
+    <!-- Evangelio Tab -->
+    <dimen name="evangelio_tab_components_margin">20dp</dimen>
+    <dimen name="evangelio_tab_text1_margin_top">30dp</dimen>
+    <dimen name="evangelio_tab_spinner_margin_top">25dp</dimen>
+    <dimen name="evangelio_tab_button_ale_margin_bottom">20dp</dimen>
+    <dimen name="evangelio_tab_text_ale_padding_bottom">20dp</dimen>
+    
+    <!-- Tab 1 -->
+    <dimen name="tab1_button_padding">10dp</dimen>
+    <dimen name="tab1_button_text_size">16sp</dimen>
+    
+    <!-- Tab 2 -->
+    <dimen name="tab2_edit_text_padding_left">10dp</dimen>
+    <dimen name="tab2_send_button_text_size">14dp</dimen>
+    <!-- Settings -->
+    <dimen name="settings_nick_padding_right">10dp</dimen>
+    
+</resources>
