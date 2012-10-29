@@ -24,27 +24,6 @@ public class ChatAroundActivity extends Activity {
         ft.add(R.id.frameLayoutId, frg);
         ft.addToBackStack(null);
         ft.commit();
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        /*
-        LocationResult locationResult = new LocationResult(){
-            @Override
-            public void gotLocation(Location location){
-                //Got the location!
-            }
-        };
-        MyLocation myLocation = new MyLocation();
-        myLocation.getLocation(this, locationResult);
-        */
-        //LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        //LocationListener mlocListener = new MyLocationListener();
-        //mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-     // Create the list fragment and add it as our sole content.
-        
-       // if (getFragmentManager().findFragmentById(android.R.id.content) == null) {
-       //     ArrayListFragment list = new ArrayListFragment();
-        //    getFragmentManager().beginTransaction().add(android.R.id.content, list).commit();
-       // }
         
     }
     
