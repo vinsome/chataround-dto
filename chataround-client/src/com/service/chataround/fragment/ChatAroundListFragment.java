@@ -39,12 +39,6 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		onButtonBClicked();
 	}
 
-	private void fillData() {
-		setListAdapter(new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_list_item_1, Shakespeare.TITLES));
-
-	}
-
 	public void onButtonBClicked() {
 		Fragment anotherFragment = Fragment.instantiate(getActivity(),
 				ChatFragment.class.getName());
@@ -59,4 +53,10 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		super.onViewCreated(view, savedInstanceState);
 		fillData();
 	}
+	
+	private void fillData() {
+		setListAdapter(new ArrayAdapter<String>(getActivity(),
+				android.R.layout.simple_list_item_1, DummyData.PEOPLE));
+
+	}	
 }

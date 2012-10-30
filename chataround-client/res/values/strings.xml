@@ -17,4 +17,5 @@
     <string name="stayonline">Stay online:</string>
     <string name="save">Save</string>
     <string name="close">Cancel</string>
+    <string name="send_message">Send</string>
 </resources>
