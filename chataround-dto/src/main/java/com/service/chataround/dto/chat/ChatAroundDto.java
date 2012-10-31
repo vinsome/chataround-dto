@@ -12,6 +12,8 @@ public class ChatAroundDto implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	//Id in database to change messages status
+	private long id;
 	private String deviceId;
 	private String nickName;
 	private String longitude;
@@ -92,6 +94,14 @@ public class ChatAroundDto implements Serializable {
 
 	public void setSent(boolean sent) {
 		this.sent = sent;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 }
