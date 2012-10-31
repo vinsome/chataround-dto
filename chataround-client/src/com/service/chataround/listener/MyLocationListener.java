@@ -1,6 +1,10 @@
 package com.service.chataround.listener;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,6 +15,7 @@ import android.widget.Toast;
 import com.google.android.gcm.GCMRegistrar;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.task.ChatAroundTask;
+import com.service.chataround.util.Constants;
 
 public class MyLocationListener implements LocationListener {
 
@@ -22,6 +27,7 @@ public class MyLocationListener implements LocationListener {
 	protected LocationManager locationManager;
 	protected boolean running = false;
 	private Context ctx;
+	
 	public MyLocationListener(LocationManager locationManager,Context ctx) {
 		this.locationManager = locationManager;
 		this.ctx=ctx;
@@ -48,15 +54,18 @@ public class MyLocationListener implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
-		Log.d(TAG, "The location has been updated!");
-		Log.d(TAG, "latitude = " + location.getLatitude() + " altitude = "
-				+ location.getAltitude());
+		final SharedPreferences settings = ctx.getSharedPreferences(Constants.PREFS_NAME, 0);
+		String nickName=settings.getString(Constants.USER_NICKNAME, "");
+		
+		BigDecimal latitude = new BigDecimal(location.getLatitude()).setScale(2, RoundingMode.HALF_UP);
+		BigDecimal longitude = new BigDecimal(location.getLongitude()).setScale(2, RoundingMode.HALF_UP);
+		
 		ChatAroundDto dto = new ChatAroundDto();
 		final String regId = GCMRegistrar.getRegistrationId(ctx);
 			dto.setDeviceId(regId);
-			dto.setLattitude(Double.toString(location.getLatitude()));
-			dto.setLongitude(Double.toString(location.getLongitude()));
-			dto.setNickName("nickName");
+			dto.setLattitude(String.valueOf(latitude));
+			dto.setLongitude(String.valueOf(longitude));
+			dto.setNickName(nickName);
 		
 		new ChatAroundTask(ctx).execute(dto,SERVER_URL);
 		
