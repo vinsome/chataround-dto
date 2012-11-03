@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ChatAroundDto implements Serializable {
-
+	
 	/**
 	 * 
 	 */
@@ -22,6 +22,8 @@ public class ChatAroundDto implements Serializable {
 	private Date time;
 	private boolean mine;
 	private boolean sent;
+	private String response;
+	private String appId;
 	private List<ChatAroundDto> chatsAround = new ArrayList<ChatAroundDto>(0);
 
 	public List<ChatAroundDto> getChatsAround() {
@@ -102,6 +104,22 @@ public class ChatAroundDto implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public String getResponse() {
+		return response;
+	}
+
+	public void setResponse(String response) {
+		this.response = response;
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 
 }
