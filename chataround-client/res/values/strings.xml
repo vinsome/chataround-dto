@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">ChatAround</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -18,4 +17,5 @@
     <string name="save">Save</string>
     <string name="close">Cancel</string>
     <string name="send_message">Send</string>
+    <string name="error_config">Please set the %1$s constant and recompile the app.</string>
 </resources>
