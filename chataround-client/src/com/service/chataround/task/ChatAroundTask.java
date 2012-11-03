@@ -1,17 +1,24 @@
 package com.service.chataround.task;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.android.gcm.GCMRegistrar;
+import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.fragment.ChatFragment;
 import com.service.chataround.util.ChatAroundHttpClient;
 
 public class ChatAroundTask extends AsyncTask<Object, Integer, ChatAroundDto> {
 	protected final Context mContext;
+	protected final Fragment fragment;
 
-	public ChatAroundTask(Context ctx) {
+	public ChatAroundTask(Context ctx, Fragment fragment) {
 		this.mContext = ctx;
+		this.fragment = fragment;
+
 	}
 
 	@Override
@@ -40,17 +47,17 @@ public class ChatAroundTask extends AsyncTask<Object, Integer, ChatAroundDto> {
 
 	@Override
 	protected void onPostExecute(ChatAroundDto result) {
-		/*
-		if (mContext instanceof MessageActivity) {
-			MessageActivity activity = (MessageActivity) mContext;
+
+		if (mContext instanceof ChatAroundActivity && fragment == null) {
+			ChatAroundActivity activity = (ChatAroundActivity) mContext;
 			if (result != null) {
 				activity.finishTask(result);
 			}
-		} else if (mContext instanceof MessageActivity) {
-			EvangelioActivity activity = (EvangelioActivity) mContext;
-			if (result != null) {
-				activity.finishTask(result);
-			}
+		} else if (fragment instanceof ChatFragment) {
+			ChatFragment fg = (ChatFragment)fragment;
+				if(result!=null){
+					fg.finishTask(result);
+				}
 		} else {
 			// The registration progress ends saving the regId into the device
 			// preferences
@@ -64,7 +71,7 @@ public class ChatAroundTask extends AsyncTask<Object, Integer, ChatAroundDto> {
 				GCMRegistrar.unregister(mContext);
 			}
 		}
-		*/
+
 	}
 
 }

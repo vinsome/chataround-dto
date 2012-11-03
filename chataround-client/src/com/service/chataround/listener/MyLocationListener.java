@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.google.android.gcm.GCMRegistrar;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.task.ChatAroundTask;
-import com.service.chataround.util.Constants;
+import com.service.chataround.util.ChatConstants;
 
 public class MyLocationListener implements LocationListener {
 
@@ -23,7 +23,6 @@ public class MyLocationListener implements LocationListener {
 	public static int POSITION_UNAVAILABLE = 2;
 	public static int TIMEOUT = 3;
 	public static String TAG="TAG";
-	public static String SERVER_URL="http://chataround.com/api/1.0/pinglocationandgetuser";
 	protected LocationManager locationManager;
 	protected boolean running = false;
 	private Context ctx;
@@ -54,8 +53,8 @@ public class MyLocationListener implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
-		final SharedPreferences settings = ctx.getSharedPreferences(Constants.PREFS_NAME, 0);
-		String nickName=settings.getString(Constants.USER_NICKNAME, "");
+		final SharedPreferences settings = ctx.getSharedPreferences(ChatConstants.PREFS_NAME, 0);
+		String nickName=settings.getString(ChatConstants.USER_NICKNAME, "");
 		
 		BigDecimal latitude = new BigDecimal(location.getLatitude()).setScale(2, RoundingMode.HALF_UP);
 		BigDecimal longitude = new BigDecimal(location.getLongitude()).setScale(2, RoundingMode.HALF_UP);
@@ -67,7 +66,7 @@ public class MyLocationListener implements LocationListener {
 			dto.setLongitude(String.valueOf(longitude));
 			dto.setNickName(nickName);
 		
-		new ChatAroundTask(ctx).execute(dto,SERVER_URL);
+		new ChatAroundTask(ctx,null).execute(dto,ChatConstants.LOCATION_SERVER_URL);
 		
 		//new EvangelioTask(MessageActivity.this).execute(dto,SERVER_URL + "/mymSendMessage.do");
 		Toast.makeText(ctx, "Location changed latitude=["+location.getLatitude()+"] longitud=["+location.getLongitude()+"]", Toast.LENGTH_LONG).show();
