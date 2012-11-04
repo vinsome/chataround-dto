@@ -29,12 +29,14 @@
 			<artifactId>NextCore</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.next.ext.core</groupId>
 			<artifactId>NextExtCore</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
