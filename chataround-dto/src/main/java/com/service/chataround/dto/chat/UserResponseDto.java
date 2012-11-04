@@ -9,16 +9,17 @@ public class UserResponseDto implements UserWebEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Long id;
+	private String userId;
 	private String nickName;
 	private Double longitude;
 	private Double lattitude;
 	private String statusMessage;
-	public Long getId() {
-		return id;
+	
+	public String getUserId() {
+		return userId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	public String getNickName() {
 		return nickName;

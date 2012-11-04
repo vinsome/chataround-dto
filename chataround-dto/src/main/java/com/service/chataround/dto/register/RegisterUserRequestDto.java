@@ -4,7 +4,7 @@ import com.next.infotech.persistance.domain.UserDomain;
 
 public class RegisterUserRequestDto implements UserDomain {
 	private static final long serialVersionUID = 1L;
-	private Long id;
+	private String userId;
 	private String email;
 	private String password;
 	private String nickName;
@@ -14,11 +14,11 @@ public class RegisterUserRequestDto implements UserDomain {
 	private String deviceId;
 
 
-	public Long getId() {
-		return id;
+	public String getUserId() {
+		return userId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	public String getEmail() {
 		return email;

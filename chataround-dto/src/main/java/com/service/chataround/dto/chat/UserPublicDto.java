@@ -1,6 +1,5 @@
 package com.service.chataround.dto.chat;
 
-import com.next.infotech.persistance.domain.UserDomain;
 import com.next.infotech.persistance.domain.UserPublicDomain;
 
 public class UserPublicDto implements UserPublicDomain {
@@ -9,7 +8,7 @@ public class UserPublicDto implements UserPublicDomain {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Long id;
+	private String userId;
 	private String nickName;
 	private Double longitude;
 	private Double lattitude;
@@ -22,13 +21,13 @@ public class UserPublicDto implements UserPublicDomain {
 		this.longitude = user.getLongitude();
 		this.lattitude = user.getLattitude();
 		this.statusMessage = user.getStatusMessage();
-		this.id = user.getId();
+		this.userId = user.getUserId();
 	}
-	public Long getId() {
-		return id;
+	public String getUserId() {
+		return userId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	public String getNickName() {
 		return nickName;
@@ -57,8 +56,8 @@ public class UserPublicDto implements UserPublicDomain {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("UserPublicDto [id=");
-		builder.append(id);
+		builder.append("UserPublicDto [userId=");
+		builder.append(userId);
 		builder.append(", nickName=");
 		builder.append(nickName);
 		builder.append(", longitude=");
