@@ -10,14 +10,20 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.next.core.exception.AppException;
 import com.next.infotech.persistance.domain.UserCacheDomain;
+import com.next.infotech.persistance.domain.UserPublicDomain;
+import com.next.infotech.web.dto.UserCacheDto;
+import com.service.chataround.dto.chat.UserPublicDto;
 
 @Component
 public class UserLocationCache {
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private ConcurrentHashMap<String, Set<UserCacheDomain>> userCacheByLocation = new ConcurrentHashMap<String, Set<UserCacheDomain>>(10000);
 	private ConcurrentHashMap<Long, UserCacheDomain> allLoggedInUsers = new ConcurrentHashMap<Long, UserCacheDomain>(10000);
 	 // Number of degrees in each increment (box) in the grid
@@ -43,8 +49,11 @@ public class UserLocationCache {
     		}
     	}
     	userCacheDomain.setId(id.addAndGet(1));
-    	allLoggedInUsers.put(userCacheDomain.getId(), userCacheDomain);
-    	updateUserLocation(userCacheDomain.getId(), userCacheDomain.getLattitude(), userCacheDomain.getLongitude());
+    	UserCacheDomain cachedUSer = new UserCacheDto(userCacheDomain);
+    	cachedUSer.setLattitude(0.0);
+    	cachedUSer.setLongitude(0.0);
+    	allLoggedInUsers.put(cachedUSer.getId(), cachedUSer);
+    	updateUserLocation(cachedUSer.getId(), userCacheDomain.getLattitude(), userCacheDomain.getLongitude());
     }
     public void updateUserStatus(Long userId,String statusMessage) throws AppException{
 		UserCacheDomain user = allLoggedInUsers.get(userId);
@@ -79,28 +88,22 @@ public class UserLocationCache {
 		UserCacheDomain user = allLoggedInUsers.get(userId);
 		String previosuLocationGridKey = "";
 		if(user == null){
-			//If no user found then create new one or get from Database
-			/*
-			user = new User();
-			user.setId(userId);
-			user.setNickName(nickName);
-			user.setLattitude(lattitude);
-			user.setLongitude(longitude);
-			allLoggedInUsers.put(userId, user);
-			*/
 			throw new AppException("No user found [id="+ userId +"]");
 		}else{
 			previosuLocationGridKey = getGridKey(user.getLattitude(), user.getLongitude());
+			logger.info("previosuLocationGridKey={}",previosuLocationGridKey);
 			//also update user's current Location
 			user.setLattitude(lattitude);
 			user.setLongitude(longitude);
 		}
 		//Create Grid key
 		String currentLocationGridKey = getGridKey(lattitude, longitude);
+		logger.info("currentLocationGridKey={}",currentLocationGridKey);
 		
 		if(currentLocationGridKey.equals(previosuLocationGridKey)){
 			//User Location hasn't changed, so do nothing and return
 			//i.e. user is still in the same boundary
+			logger.info("");
 			return;
 		}
 		//find out the previous location set for this User
@@ -117,15 +120,29 @@ public class UserLocationCache {
 		currentUserSetByLocation.add(user);
 		
 	}
-	public List<UserCacheDomain> getUsersNearMe(Double latitude,Double longitude){
+	public List<UserPublicDomain> getUsersNearMe(Double latitude,Double longitude,long userId){
 		//Create Grid key
 		String gridKey = getGridKey(latitude, longitude);
+		logger.info("gridKey = {}",gridKey);
 		Set<UserCacheDomain> currentUserSetByLocation = userCacheByLocation.get(gridKey);
+		logger.info("currentUserSetByLocation = {}",currentUserSetByLocation);
+		logger.info("userCacheByLocation = {}",userCacheByLocation);
 		if(currentUserSetByLocation == null){
 			return Collections.EMPTY_LIST;
 		}
-		return new ArrayList<UserCacheDomain>(currentUserSetByLocation);
+		return convertUserList(currentUserSetByLocation,userId);
 	}
+	private List<UserPublicDomain> convertUserList(Collection<UserCacheDomain> userList,long userId){
+		List<UserPublicDomain> convertedList = new ArrayList<UserPublicDomain>();
+		for(UserCacheDomain oneUser:userList){
+			if(oneUser.getId() == userId){
+				continue;
+			}
+			convertedList.add(new UserPublicDto(oneUser));
+		}
+		return convertedList;
+	}
+
 	final Set<UserCacheDomain> getUserSetByLocation(String gridKey,boolean createNewIfNotFound){
 		Set<UserCacheDomain> currentUserSetByLocation = userCacheByLocation.get(gridKey);
 		if(createNewIfNotFound){
