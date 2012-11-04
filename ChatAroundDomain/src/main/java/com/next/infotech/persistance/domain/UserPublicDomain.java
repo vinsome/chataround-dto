@@ -20,4 +20,5 @@ public interface UserPublicDomain extends Serializable{
 	
 	Double getLattitude();
 	void setLattitude(Double lattitude);
+	
 }
