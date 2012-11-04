@@ -1,6 +1,6 @@
 package com.service.chataround.dto.chat;
 
-import com.next.infotech.web.dto.UserWebEntity;
+import com.service.chataround.dto.UserWebEntity;
 
 public class UserResponseDto implements UserWebEntity {
 
