@@ -3,6 +3,8 @@ package com.service.chataround.fragment;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.springframework.util.StringUtils;
+
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
 import com.service.chataround.adapter.IconListViewAdapter;
 import com.service.chataround.dto.chat.ChatAroundDto;
@@ -44,7 +47,13 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		regId = GCMRegistrar.getRegistrationId(getActivity());
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
 		mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+		
 		adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,
 				mFiles);
 		setListAdapter(adapter);
@@ -58,8 +67,13 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		final SharedPreferences settings = getActivity().getSharedPreferences(
 				ChatConstants.PREFS_NAME, 0);
 		nickName = settings.getString(ChatConstants.USER_NICKNAME, "");
+		
+		if(!StringUtils.hasText(nickName)) {
+			ChatAroundActivity chat = (ChatAroundActivity) getActivity();
+				chat.settingsDialog();
+		}		
 	}
-
+	
 	@Override
 	public void onClick(View v) {
 		if (isOnline()) {
@@ -73,17 +87,18 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 			dto.setTime(Calendar.getInstance().getTime());
 
 			dto = DatabaseUtils.addMessageToDb(getActivity(), dto);
-
+			textMessage.setText("");
 			// call to cloud to send message
 			mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+			
 			adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,
 					mFiles);
+			
 			setListAdapter(adapter);
-			textMessage.setText("");
 			
 			new ChatAroundTask(getActivity(),this).execute(dto,
 					ChatConstants.SERVER_URL + ChatConstants.SENDMESSAGE_URL);
-			
+						
 			
 		}
 
@@ -119,4 +134,6 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		}
 		return false;
 	}
+
+
 }

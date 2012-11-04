@@ -3,6 +3,8 @@ package com.service.chataround.listener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.springframework.util.StringUtils;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -10,10 +12,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.register.RegisterUserRequestDto;
 import com.service.chataround.task.ChatAroundTask;
 import com.service.chataround.util.ChatConstants;
 
@@ -53,14 +55,31 @@ public class MyLocationListener implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
+		final String regId = GCMRegistrar.getRegistrationId(ctx);
 		final SharedPreferences settings = ctx.getSharedPreferences(ChatConstants.PREFS_NAME, 0);
 		String nickName=settings.getString(ChatConstants.USER_NICKNAME, "");
+		boolean isRegisteredToServer=settings.getBoolean(ChatConstants.USER_REGISTERED_ONLINE,false);
 		
 		BigDecimal latitude = new BigDecimal(location.getLatitude()).setScale(2, RoundingMode.HALF_UP);
 		BigDecimal longitude = new BigDecimal(location.getLongitude()).setScale(2, RoundingMode.HALF_UP);
 		
+		
+		if(!isRegisteredToServer&& StringUtils.hasText(nickName)) {
+			//register to server!
+			RegisterUserRequestDto dto = new RegisterUserRequestDto();
+				dto.setDeviceId(regId);
+				dto.setEmail("email");
+				dto.setLattitude(latitude.doubleValue());
+				dto.setLongitude(longitude.doubleValue());
+				dto.setNickName(nickName);
+				dto.setPassword("");
+				dto.setStatusMessage("statusMessage");
+				
+			new ChatAroundTask(ctx,null).execute(dto,ChatConstants.REGISTER_SERVER_URL);
+				
+		}else{
+			
 		ChatAroundDto dto = new ChatAroundDto();
-		final String regId = GCMRegistrar.getRegistrationId(ctx);
 			dto.setDeviceId(regId);
 			dto.setLattitude(String.valueOf(latitude));
 			dto.setLongitude(String.valueOf(longitude));
@@ -68,8 +87,7 @@ public class MyLocationListener implements LocationListener {
 		
 		new ChatAroundTask(ctx,null).execute(dto,ChatConstants.LOCATION_SERVER_URL);
 		
-		//new EvangelioTask(MessageActivity.this).execute(dto,SERVER_URL + "/mymSendMessage.do");
-		Toast.makeText(ctx, "Location changed latitude=["+location.getLatitude()+"] longitud=["+location.getLongitude()+"]", Toast.LENGTH_LONG).show();
+		}
 		
 	}
 

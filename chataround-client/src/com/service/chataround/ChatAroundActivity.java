@@ -50,6 +50,15 @@ public class ChatAroundActivity extends Activity {
 		if (isOnline()) {
 			registerToCloud();
 		}
+		final SharedPreferences settings = getSharedPreferences(
+				ChatConstants.PREFS_NAME, 0);
+		
+		String nick = settings.getString(ChatConstants.USER_NICKNAME, "");
+		
+		if(!StringUtils.hasText(nick)) {
+				settingsDialog();
+		}		
+		
 	}
 
 	@Override
@@ -81,7 +90,7 @@ public class ChatAroundActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void settingsDialog() {
+	public void settingsDialog() {
 		final SharedPreferences settings = getSharedPreferences(
 				ChatConstants.PREFS_NAME, 0);
 
