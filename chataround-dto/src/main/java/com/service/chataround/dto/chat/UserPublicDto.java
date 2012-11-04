@@ -54,6 +54,22 @@ public class UserPublicDto implements UserPublicDomain {
 	public void setStatusMessage(String statusMessage) {
 		this.statusMessage = statusMessage;
 	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("UserPublicDto [id=");
+		builder.append(id);
+		builder.append(", nickName=");
+		builder.append(nickName);
+		builder.append(", longitude=");
+		builder.append(longitude);
+		builder.append(", lattitude=");
+		builder.append(lattitude);
+		builder.append(", statusMessage=");
+		builder.append(statusMessage);
+		builder.append("]");
+		return builder.toString();
+	}
 
 	
 }
