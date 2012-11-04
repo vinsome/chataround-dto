@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.next.core.exception.AppException;
 import com.next.infotech.cache.UserLocationCache;
 import com.next.infotech.persistance.domain.UserCacheDomain;
-import com.next.infotech.web.dto.impl.RegisterUserRequestDto;
-import com.next.infotech.web.dto.impl.UserPingRequestDto;
-import com.next.infotech.web.dto.impl.UserStatusUpdateDto;
+import com.next.infotech.persistance.domain.UserPublicDomain;
+import com.service.chataround.dto.chat.UserPingRequestDto;
+import com.service.chataround.dto.chat.UserPublicDto;
+import com.service.chataround.dto.chat.UserStatusUpdateDto;
+import com.service.chataround.dto.register.RegisterUserRequestDto;
 
 @Controller
 public class ChatController extends BaseController{
@@ -40,19 +42,17 @@ public class ChatController extends BaseController{
 		
 	}
 	
-	
 	@RequestMapping(value="/api/1.0/pinglocationandgetuserold", method = RequestMethod.GET)
     @ResponseBody
-	public List<UserCacheDomain> pingUserLocationAndGetUserList(@RequestParam("lat") Double lattitude,@RequestParam("long") Double longitude,@RequestParam("nn") String nickName,@RequestParam("uid") long userId) throws AppException{
+	public List<UserPublicDomain> pingUserLocationAndGetUserList(@RequestParam("lat") Double lattitude,@RequestParam("long") Double longitude,@RequestParam("nn") String nickName,@RequestParam("uid") long userId) throws AppException{
 		userLocationCache.updateUserLocation(userId, lattitude, longitude);
-		return userLocationCache.getUsersNearMe(lattitude, longitude);
+		return userLocationCache.getUsersNearMe(lattitude, longitude,userId);
 	}
-	
 	@RequestMapping(value="/api/1.0/pinglocationandgetuser", method = RequestMethod.POST)
     @ResponseBody
-	public List<UserCacheDomain> pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
+	public List<UserPublicDomain> pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
 		userLocationCache.updateUserLocation(userPingRequest.getId(), userPingRequest.getLattitude(), userPingRequest.getLongitude());
-		return userLocationCache.getUsersNearMe(userPingRequest.getLattitude(), userPingRequest.getLongitude());
+		return userLocationCache.getUsersNearMe(userPingRequest.getLattitude(), userPingRequest.getLongitude(),userPingRequest.getId());
 	}
 	
 	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST)
