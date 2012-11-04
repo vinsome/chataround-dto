@@ -12,11 +12,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.next.core.exception.AppException;
 import com.next.infotech.persistance.domain.UserCacheDomain;
 import com.next.infotech.persistance.domain.UserPublicDomain;
+import com.next.infotech.persistance.helper.jpa.impl.UserHelper;
 import com.next.infotech.web.dto.UserCacheDto;
 import com.service.chataround.dto.chat.UserPublicDto;
 
@@ -24,8 +26,10 @@ import com.service.chataround.dto.chat.UserPublicDto;
 public class UserLocationCache {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	
 	private ConcurrentHashMap<String, Set<UserCacheDomain>> userCacheByLocation = new ConcurrentHashMap<String, Set<UserCacheDomain>>(10000);
-	private ConcurrentHashMap<Long, UserCacheDomain> allLoggedInUsers = new ConcurrentHashMap<Long, UserCacheDomain>(10000);
+	private ConcurrentHashMap<String, UserCacheDomain> allLoggedInUsers = new ConcurrentHashMap<String, UserCacheDomain>(10000);
 	 // Number of degrees in each increment (box) in the grid
     static final double GRID_BOX_SIZE_IN_DEGREE = 0.5;
     
@@ -43,19 +47,13 @@ public class UserLocationCache {
     	return allLoggedInUsers.values();
     }
     public void registerUser(UserCacheDomain userCacheDomain) throws AppException{
-    	for(UserCacheDomain oneUserCacheDomain:allLoggedInUsers.values()){
-    		if(oneUserCacheDomain.getNickName().equalsIgnoreCase(userCacheDomain.getNickName())){
-    			throw new AppException("Nickname "+ userCacheDomain.getNickName() +" is alreadu used by some one else");
-    		}
-    	}
-    	userCacheDomain.setId(id.addAndGet(1));
     	UserCacheDomain cachedUSer = new UserCacheDto(userCacheDomain);
     	cachedUSer.setLattitude(0.0);
     	cachedUSer.setLongitude(0.0);
-    	allLoggedInUsers.put(cachedUSer.getId(), cachedUSer);
-    	updateUserLocation(cachedUSer.getId(), userCacheDomain.getLattitude(), userCacheDomain.getLongitude());
+    	allLoggedInUsers.put(cachedUSer.getUserId(), cachedUSer);
+    	updateUserLocation(cachedUSer.getUserId(), userCacheDomain.getLattitude(), userCacheDomain.getLongitude());
     }
-    public void updateUserStatus(Long userId,String statusMessage) throws AppException{
+    public void updateUserStatus(String userId,String statusMessage) throws AppException{
 		UserCacheDomain user = allLoggedInUsers.get(userId);
 		if(user == null){
 			throw new AppException("No user found [id="+ userId +"]");
@@ -84,7 +82,7 @@ public class UserLocationCache {
 		Set<UserCacheDomain> previousUserSet = getUserSetByLocation(previosuLocationGridKey,false);
 		previousUserSet.remove(user);
     }
-	public void updateUserLocation(Long userId,Double lattitude,Double longitude) throws AppException{
+	public void updateUserLocation(String userId,Double lattitude,Double longitude) throws AppException{
 		UserCacheDomain user = allLoggedInUsers.get(userId);
 		String previosuLocationGridKey = "";
 		if(user == null){
@@ -120,7 +118,7 @@ public class UserLocationCache {
 		currentUserSetByLocation.add(user);
 		
 	}
-	public List<UserPublicDomain> getUsersNearMe(Double latitude,Double longitude,long userId){
+	public List<UserPublicDomain> getUsersNearMe(Double latitude,Double longitude,String userId){
 		//Create Grid key
 		String gridKey = getGridKey(latitude, longitude);
 		logger.info("gridKey = {}",gridKey);
@@ -132,10 +130,10 @@ public class UserLocationCache {
 		}
 		return convertUserList(currentUserSetByLocation,userId);
 	}
-	private List<UserPublicDomain> convertUserList(Collection<UserCacheDomain> userList,long userId){
+	private List<UserPublicDomain> convertUserList(Collection<UserCacheDomain> userList,String userId){
 		List<UserPublicDomain> convertedList = new ArrayList<UserPublicDomain>();
 		for(UserCacheDomain oneUser:userList){
-			if(oneUser.getId() == userId){
+			if(oneUser.getUserId().equals(userId)){
 				continue;
 			}
 			convertedList.add(new UserPublicDto(oneUser));
