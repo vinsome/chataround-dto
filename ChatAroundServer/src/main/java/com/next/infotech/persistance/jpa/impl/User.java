@@ -60,6 +60,8 @@ public class User implements UserEntity{
 	private String statusMessage;
 	@Column(name="device_id")
 	private String deviceId;
+	@Column(name="user_id")
+	private String userId;
 	public Long getId() {
 		return id;
 	}
@@ -137,6 +139,46 @@ public class User implements UserEntity{
 	}
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("User [id=");
+		builder.append(id);
+		builder.append(", ver=");
+		builder.append(ver);
+		builder.append(", dateCreated=");
+		builder.append(dateCreated);
+		builder.append(", dateModified=");
+		builder.append(dateModified);
+		builder.append(", creatorId=");
+		builder.append(creatorId);
+		builder.append(", modifierId=");
+		builder.append(modifierId);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", password=");
+		builder.append(password);
+		builder.append(", nickName=");
+		builder.append(nickName);
+		builder.append(", longitude=");
+		builder.append(longitude);
+		builder.append(", lattitude=");
+		builder.append(lattitude);
+		builder.append(", statusMessage=");
+		builder.append(statusMessage);
+		builder.append(", deviceId=");
+		builder.append(deviceId);
+		builder.append(", userId=");
+		builder.append(userId);
+		builder.append("]");
+		return builder.toString();
 	}
 	
 		

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<bean id="DbSessionManager" class="com.next.ext.core.db.HibernateDbAnnotationSessionManager"
+		scope="singleton" init-method="init">
+		<property name="hibernateConfigFile" value="hibernate.cfg.xml"></property>
+		<property name="persistentClasses">
+			<list>
+				<!-- Indexer classes 
+				<value>com.next.ext.core.index.persistance.EntityDefinition</value>
+				<value>com.next.ext.core.index.persistance.EntityIndex</value>
+				<value>com.next.ext.core.index.persistance.IndexDefinition</value>
+				<value>com.next.ext.core.index.persistance.IndexValue</value>
+				-->
+			</list>
+		</property>
+		<!-- 
+		<property name="deleteEventListeners">
+			<list>
+				<ref bean="OrderSaveEventListener" />
+			</list>
+		</property>
+		 
+		<property name="saveOrUpdateEventListeners">
+			<list>
+				<ref bean="OrderSaveEventListener" />
+			</list>
+		</property>
+		
+		<property name="postUpdateEventListeners">
+			<list>
+				<ref bean="KitchenOrderPostUpdateEventListener" />
+				<ref bean="InvoicePostUpdateEventListener" />
+				<ref bean="RawItemPostUpdateEventListener" />
+				<ref bean="MrnPostUpdateEventListener" />
+				<ref bean="DayItemPricePostUpdateEventListener" />
+				
+			</list>
+		</property>
+		<property name="postInsertEventListeners">
+			<list>
+				<ref bean="PurchaseOrderPostInsertEventListener" />
+				<ref bean="MrnPostInsertEventListener" />
+			</list>
+		</property>
+		-->
+	</bean>
+	<!-- 
+	<bean id="KitchenOrderPostUpdateEventListener" class="com.next.alert.persistance.events.KitchenOrderPostUpdateEventListener" autowire-candidate="true">
+	</bean>
+	<bean id="PurchaseOrderPostInsertEventListener" class="com.next.alert.persistance.events.PurchaseOrderPostInsertEventListener" autowire-candidate="true">
+	</bean>
+	<bean id="InvoicePostUpdateEventListener" class="com.next.alert.persistance.events.InvoicePostUpdateEventListener" autowire-candidate="true">
+	</bean>
+	<bean id="MrnPostInsertEventListener" class="com.next.alert.persistance.events.MrnPostInsertEventListener" autowire-candidate="true">
+	</bean>
+	<bean id="RawItemPostUpdateEventListener" class="com.next.alert.persistance.events.RawItemPostUpdateEventListener" autowire-candidate="true">
+	</bean>
+	<bean id="MrnPostUpdateEventListener" class="com.next.alert.persistance.events.MrnPostUpdateEventListener" autowire-candidate="true">
+	</bean>
+	<bean id="DayItemPricePostUpdateEventListener" class="com.next.alert.persistance.events.DayItemPricePostUpdateEventListener" autowire-candidate="true">
+	</bean>
+	
+	 -->
+	 
+	<bean id="DbManager" class="com.next.ext.core.db.HibernateDbManager" autowire-candidate="true"
+		scope="singleton">
+		<property name="dbSessionManager" ref="DbSessionManager"></property>
+		<property name="dbIndexer" ref="DbIndexer"></property>
+	</bean>
+	
+	<bean id="DbIndexer" class="com.next.ext.core.index.HibernateDbIndexer"
+		scope="singleton">
+		<property name="indexedSettings">
+			<list>
+			    <!-- 
+			    <ref bean="CustomerData" />
+		
+			 
+				
+				<ref bean="TagName" />
+				-->
+			</list>
+		</property>
+	</bean>
+	<!-- 
+	<bean id="CustomerData" class="com.next.ext.core.index.config.IndexEntity">
+		<property name="className" value="com.next.restaurant.core.persistance.jpa.impl.RestaurantCustomer"></property>
+		<property name="indexingType" value="ALL"></property>
+		<property name="propertyNames">
+			<list>
+				<value>firstName</value>
+				<value>middleName</value>
+				<value>lastName</value>
+				<value>addressLine1</value>
+				<value>addressLine2</value>
+				<value>mobile1</value>
+				<value>mobile2</value>
+				<value>email</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="TagName" class="com.next.ext.core.index.config.IndexEntity">
+		<property name="className" value="com.next.account.persistance.jpa.impl.Tag"></property>
+		<property name="indexingType" value="ALL"></property>
+		<property name="propertyNames">
+			<list>
+				<value>name</value>
+			</list>
+		</property>
+	</bean>
+ -->
+</beans>
