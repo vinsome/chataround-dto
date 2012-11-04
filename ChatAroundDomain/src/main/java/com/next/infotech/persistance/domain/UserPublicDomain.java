@@ -6,9 +6,6 @@ import java.io.Serializable;
  */
 public interface UserPublicDomain extends Serializable{
 
-	Long getId();
-	void setId(Long id);
-	
 	String getNickName();
 	void setNickName(String nickName);
 
@@ -21,4 +18,6 @@ public interface UserPublicDomain extends Serializable{
 	Double getLattitude();
 	void setLattitude(Double lattitude);
 	
+	String getUserId();
+	void setUserId(String userId);
 }
