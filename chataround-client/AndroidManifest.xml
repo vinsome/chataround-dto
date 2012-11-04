@@ -40,7 +40,7 @@
         <activity
             android:name=".ChatAroundActivity"
             android:label="@string/title_chat_around"
-            android:noHistory="true"
+            android:noHistory="false"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
