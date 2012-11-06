@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 
 import org.springframework.util.StringUtils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -19,6 +20,7 @@ import com.service.chataround.dto.register.RegisterUserRequestDto;
 import com.service.chataround.task.ChatAroundTask;
 import com.service.chataround.util.ChatConstants;
 
+@SuppressLint("ParserError")
 public class MyLocationListener implements LocationListener {
 
 	public static int PERMISSION_DENIED = 1;
@@ -57,7 +59,8 @@ public class MyLocationListener implements LocationListener {
 	public void onLocationChanged(Location location) {
 		final String regId = GCMRegistrar.getRegistrationId(ctx);
 		final SharedPreferences settings = ctx.getSharedPreferences(ChatConstants.PREFS_NAME, 0);
-		String nickName=settings.getString(ChatConstants.USER_NICKNAME, "");
+		final String nickName=settings.getString(ChatConstants.USER_NICKNAME, "");
+		final String mood=settings.getString(ChatConstants.USER_MOOD, "");
 		boolean isRegisteredToServer=settings.getBoolean(ChatConstants.USER_REGISTERED_ONLINE,false);
 		
 		BigDecimal latitude = new BigDecimal(location.getLatitude()).setScale(2, RoundingMode.HALF_UP);
@@ -84,6 +87,7 @@ public class MyLocationListener implements LocationListener {
 			dto.setLattitude(String.valueOf(latitude));
 			dto.setLongitude(String.valueOf(longitude));
 			dto.setNickName(nickName);
+			dto.setMood(mood);
 		
 		new ChatAroundTask(ctx,null).execute(dto,ChatConstants.LOCATION_SERVER_URL);
 		
@@ -103,7 +107,7 @@ public class MyLocationListener implements LocationListener {
 				Log.d(TAG, "GPS provider is not available.");
 			}
 		}
-		//running=false;
+		running=false;
 		if (!this.running) {
 			if (this.locationManager
 					.getProvider(LocationManager.NETWORK_PROVIDER) != null) {
