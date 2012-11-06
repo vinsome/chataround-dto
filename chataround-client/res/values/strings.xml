@@ -10,6 +10,7 @@
     <string name="local_service_connected">Location Service connected</string>
     <string name="local_service_disconnected">Location Service disconnected</string>
     <string name="nickname_label">Nick:</string>
+    <string name="mood_label">Mood:</string>
     <string name="chatNotifications">Get notifications:</string>
     <string name="switch_off">Off</string>
     <string name="switch_on">On</string>

@@ -34,6 +34,7 @@ import com.service.chataround.util.PushUtils;
 public class ChatAroundActivity extends Activity {
 	private Dialog settingsDialog;
 	private EditText nickName;
+	private EditText moodText;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +102,13 @@ public class ChatAroundActivity extends Activity {
 
 		nickName = (EditText) settingsDialog
 				.findViewById(R.id.nicknameTextView);
+		moodText = (EditText) settingsDialog.findViewById(R.id.moodTextView);
+		
 		String nick = settings.getString(ChatConstants.USER_NICKNAME, "");
+		String mood = settings.getString(ChatConstants.USER_MOOD, "");
+		
 		nickName.setText(nick);
+		moodText.setText(mood);
 
 		Switch switchButton = (Switch) settingsDialog
 				.findViewById(R.id.switchNotifId);
@@ -142,10 +148,12 @@ public class ChatAroundActivity extends Activity {
 			public void onClick(View v) {
 				if (StringUtils.hasText(nickName.getText().toString().trim())) {
 					String nickname = nickName.getText().toString().trim();
+					String mood = moodText.getText().toString().trim();
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
 					editor.putString(ChatConstants.USER_NICKNAME, nickname);
+					editor.putString(ChatConstants.USER_MOOD, mood);
 					editor.commit();
 					settingsDialog.hide();
 				}
