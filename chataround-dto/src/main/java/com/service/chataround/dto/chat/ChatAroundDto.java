@@ -24,6 +24,7 @@ public class ChatAroundDto implements Serializable {
 	private boolean sent;
 	private String response;
 	private String appId;
+	private String mood;
 	private List<ChatAroundDto> chatsAround = new ArrayList<ChatAroundDto>(0);
 
 	public List<ChatAroundDto> getChatsAround() {
@@ -120,6 +121,14 @@ public class ChatAroundDto implements Serializable {
 
 	public void setAppId(String appId) {
 		this.appId = appId;
+	}
+
+	public String getMood() {
+		return mood;
+	}
+
+	public void setMood(String mood) {
+		this.mood = mood;
 	}
 
 }
