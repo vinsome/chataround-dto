@@ -76,7 +76,7 @@ public class MyLocationListener implements LocationListener {
 				dto.setLongitude(longitude.doubleValue());
 				dto.setNickName(nickName);
 				dto.setPassword("");
-				dto.setStatusMessage("statusMessage");
+				dto.setStatusMessage(mood);
 				
 			new ChatAroundTask(ctx,null).execute(dto,ChatConstants.REGISTER_SERVER_URL);
 				
@@ -88,8 +88,8 @@ public class MyLocationListener implements LocationListener {
 			dto.setLongitude(String.valueOf(longitude));
 			dto.setNickName(nickName);
 			dto.setMood(mood);
-		
-		new ChatAroundTask(ctx,null).execute(dto,ChatConstants.LOCATION_SERVER_URL);
+		//param based : ("lat") Double lattitude, "long") Double longitude,@RequestParam("nn") String nickName,@RequestParam("uid") 
+		new ChatAroundTask(ctx,null).execute(dto,ChatConstants.PING_LOCATION_SERVER_URL);
 		
 		}
 		

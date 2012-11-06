@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,6 +21,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import android.util.Log;
@@ -48,24 +51,26 @@ public class ChatAroundHttpClient {
 	
 	
 
-	@Deprecated
-	public static String postData(String url) {
+	public static String postData(String url,Map<String,String> values) {
 		// Create a new HttpClient and Post Header
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(url);
 		String res = "";
 		try {
 			// Add your data
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-			nameValuePairs.add(new BasicNameValuePair("clientId",
-					"Android Calling at date=["
-							+ Calendar.getInstance().getTime() + "]"));
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-			// Execute HTTP Post Request
-			HttpResponse response = httpclient.execute(httppost);
-			res = inputStreamToString(response.getEntity().getContent())
-					.toString();
+			if(!CollectionUtils.isEmpty(values)){
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(values.size());
+				Iterator<String> it = values.keySet().iterator();
+					while(it.hasNext()) {
+						String str = it.next();
+						nameValuePairs.add(new BasicNameValuePair(str,values.get(str)));
+					}
+					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+					// Execute HTTP Post Request
+					HttpResponse response = httpclient.execute(httppost);
+					res = inputStreamToString(response.getEntity().getContent())
+							.toString();					
+			}
 		} catch (ClientProtocolException e) {
 			Log.e("ChatAroundHttpClient", e.toString());
 		} catch (IOException e) {
