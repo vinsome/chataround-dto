@@ -12,13 +12,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.next.core.exception.AppException;
 import com.next.infotech.persistance.domain.UserCacheDomain;
 import com.next.infotech.persistance.domain.UserPublicDomain;
-import com.next.infotech.persistance.helper.jpa.impl.UserHelper;
 import com.next.infotech.web.dto.UserCacheDto;
 import com.service.chataround.dto.chat.UserPublicDto;
 
@@ -81,6 +79,9 @@ public class UserLocationCache {
 		
 		Set<UserCacheDomain> previousUserSet = getUserSetByLocation(previosuLocationGridKey,false);
 		previousUserSet.remove(user);
+    }
+    public UserCacheDomain getUserByExternalId(String userId){
+    	return allLoggedInUsers.get(userId);
     }
 	public void updateUserLocation(String userId,Double lattitude,Double longitude) throws AppException{
 		UserCacheDomain user = allLoggedInUsers.get(userId);
