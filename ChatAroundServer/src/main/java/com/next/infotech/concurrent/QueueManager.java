@@ -1,9 +1,8 @@
 package com.next.infotech.concurrent;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.backportconcurrent.ThreadPoolTaskExecutor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.service.chataround.dto.chat.ChatMessageInternalDto;
@@ -12,12 +11,9 @@ import com.service.chataround.dto.chat.ChatMessageInternalDto;
 public class QueueManager {
 
 	@Autowired
+	@Qualifier("sendChatMessageTaskExecutor")
 	ThreadPoolTaskExecutor sendChatMessageTaskExecutor;
-	@PostConstruct
-	public void initialize() {
-
-	}
-
+	
 	public void addChatMessageToQueue(
 			ChatMessageInternalDto chatMessageInternalDto) {
 		ChatMessageSender chatMessageSender = new ChatMessageSender(chatMessageInternalDto);

@@ -24,11 +24,15 @@ http://www.springframework.org/schema/security/spring-security-3.1.xsd
 http://www.springframework.org/schema/task
 http://www.springframework.org/schema/task/spring-task-3.1.xsd" >
 
-    <bean id="sendChatMessageTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <bean id="sendChatMessageTaskExecutor" name="sendChatMessageTaskExecutor" 
+        class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" autowire-candidate="true"  autowire="byName" >
 	  <property name="corePoolSize" value="100" />
 	  <property name="maxPoolSize" value="200" />
 	  <property name="queueCapacity" value="10000" />
 	  <property name="rejectedExecutionHandler" ref="chatMessageRejectedExecutionHandler"></property>
+	</bean>
+	
+    <bean id="chatMessageRejectedExecutionHandler" name="chatMessageRejectedExecutionHandler" class="com.next.infotech.concurrent.ChatMessageRejectedExecutionHandler">
 	</bean>
 
 </beans>
