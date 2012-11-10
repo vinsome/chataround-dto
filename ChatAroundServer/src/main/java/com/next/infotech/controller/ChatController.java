@@ -23,12 +23,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.next.core.exception.AppException;
 import com.next.core.exception.InternalAppException;
 import com.next.infotech.cache.UserLocationCache;
+import com.next.infotech.concurrent.QueueManager;
 import com.next.infotech.persistance.domain.UserCacheDomain;
 import com.next.infotech.persistance.domain.UserPublicDomain;
 import com.next.infotech.persistance.helper.jpa.impl.UserHelper;
 import com.next.infotech.persistance.jpa.impl.User;
+import com.service.chataround.dto.chat.ChatMessageDto;
+import com.service.chataround.dto.chat.ChatMessageInternalDto;
+import com.service.chataround.dto.chat.ChatMessageResponseDto;
 import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.chat.UserStatusUpdateDto;
+import com.service.chataround.dto.chat.ChatMessageResponseDto.MessageStatus;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
 
 @Controller
@@ -39,6 +44,8 @@ public class ChatController extends BaseController{
 	private UserLocationCache userLocationCache;
 	@Autowired
 	private UserHelper userHelper;
+	@Autowired
+	private QueueManager queueManager;
 
 	@RequestMapping(value="/api/1.0/pinglocation", method = RequestMethod.GET)
     @ResponseBody
@@ -115,6 +122,26 @@ public class ChatController extends BaseController{
 		model.addAttribute("AllRectangles", allRectangles);
 		return "showusermap";
 	}
+	
+	@RequestMapping(value="/api/1.0/sendchatmessage", method = RequestMethod.POST)
+    @ResponseBody
+	public ChatMessageResponseDto sendChatMessage(@RequestBody ChatMessageDto chatMessageDto) throws AppException{
+		ChatMessageResponseDto chatMessageResponseDto = new ChatMessageResponseDto();
+		UserCacheDomain receipientUser = userLocationCache.getUserByExternalId(chatMessageDto.getRecipientId());
+		if(receipientUser == null){
+			chatMessageResponseDto.setStatus(MessageStatus.Failed);
+			chatMessageResponseDto.setMessage("User is offline");
+		}else{
+			chatMessageResponseDto.setStatus(MessageStatus.Pending);
+			ChatMessageInternalDto chatMessageInternalDto = new ChatMessageInternalDto(chatMessageDto);
+			chatMessageInternalDto.setReceipientDeviceId(receipientUser.getDeviceId());
+			//and send this message to Luis's App Engine controller using thread pool in async way
+			queueManager.addChatMessageToQueue(chatMessageInternalDto);
+		}
+		return chatMessageResponseDto;
+	}
+	
+	
 	
 	public static class GridRectangle{
 		private double topLongitude;
