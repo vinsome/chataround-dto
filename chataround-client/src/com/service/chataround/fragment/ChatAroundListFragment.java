@@ -3,6 +3,7 @@ package com.service.chataround.fragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,9 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.service.chataround.R;
-import com.service.chataround.util.Callback;
 
-public class ChatAroundListFragment extends ListFragment implements Callback {
+public class ChatAroundListFragment extends ListFragment implements LocationListener {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

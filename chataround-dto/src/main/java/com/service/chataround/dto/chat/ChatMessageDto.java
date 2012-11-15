@@ -11,12 +11,16 @@ public class ChatMessageDto implements Serializable{
 	private String senderId;
 	private String recipientId;
 	private String message;
+	private String appId;
+	private String nickName;
 	
 	public ChatMessageDto(ChatMessageDto chatMessageDto) {
 		super();
 		this.senderId = chatMessageDto.senderId;
 		this.recipientId = chatMessageDto.recipientId;
 		this.message = chatMessageDto.message;
+		this.appId = chatMessageDto.appId;
+		this.nickName = chatMessageDto.nickName;
 	}
 	
 	public ChatMessageDto() {
@@ -38,6 +42,22 @@ public class ChatMessageDto implements Serializable{
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
 
 }
