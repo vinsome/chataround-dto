@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.google.common.eventbus.EventBus;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.fragment.ChatAroundListFragment;
 import com.service.chataround.listener.MyLocationListener;
@@ -35,7 +36,7 @@ public class ChatAroundActivity extends Activity {
 	private Dialog settingsDialog;
 	private EditText nickName;
 	private EditText moodText;
-
+	private EventBus eventBus = new EventBus();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -67,7 +68,7 @@ public class ChatAroundActivity extends Activity {
 		super.onResume();
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		MyLocationListener locationListener = new MyLocationListener(
-				locationManager, getApplicationContext());
+				locationManager, getApplicationContext(),eventBus);
 		locationListener.start();
 
 	}
@@ -245,5 +246,13 @@ public class ChatAroundActivity extends Activity {
 			return true;
 		}
 		return false;
+	}
+
+	public EventBus getEventBus() {
+		return eventBus;
+	}
+
+	public void setEventBus(EventBus eventBus) {
+		this.eventBus = eventBus;
 	}
 }

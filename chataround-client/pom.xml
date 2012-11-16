@@ -75,6 +75,11 @@
   			  <artifactId>chataround-dto</artifactId>
   				<version>0.0.1-SNAPSHOT</version>
   		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>13.0-rc1</version>
+		</dependency>
 	</dependencies>
 <!-- 
 mvn install:install-file -Dfile=EasyTracker.jar -DgroupId=com.google.android -DartifactId=easytracker -Dversion=1.0 -Dpackaging=jar

@@ -3,8 +3,6 @@ package com.service.chataround.listener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.springframework.util.StringUtils;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,14 +13,14 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gcm.GCMRegistrar;
-import com.service.chataround.dto.chat.ChatAroundDto;
-import com.service.chataround.dto.register.RegisterUserRequestDto;
-import com.service.chataround.task.ChatAroundTask;
+import com.google.common.eventbus.EventBus;
+import com.service.chataround.event.LocationChangeEvent;
 import com.service.chataround.util.ChatConstants;
 
 @SuppressLint("ParserError")
 public class MyLocationListener implements LocationListener {
-
+	private EventBus eventBus;
+	
 	public static int PERMISSION_DENIED = 1;
 	public static int POSITION_UNAVAILABLE = 2;
 	public static int TIMEOUT = 3;
@@ -31,9 +29,10 @@ public class MyLocationListener implements LocationListener {
 	protected boolean running = false;
 	private Context ctx;
 	
-	public MyLocationListener(LocationManager locationManager,Context ctx) {
+	public MyLocationListener(LocationManager locationManager,Context ctx,EventBus eventBus) {
 		this.locationManager = locationManager;
 		this.ctx=ctx;
+		this.eventBus=eventBus;
 	}
 	
 
@@ -65,8 +64,9 @@ public class MyLocationListener implements LocationListener {
 		
 		BigDecimal latitude = new BigDecimal(location.getLatitude()).setScale(2, RoundingMode.HALF_UP);
 		BigDecimal longitude = new BigDecimal(location.getLongitude()).setScale(2, RoundingMode.HALF_UP);
-		
-		
+		LocationChangeEvent event = new LocationChangeEvent(latitude,longitude);
+		eventBus.post(event);
+		/*
 		if(!isRegisteredToServer&& StringUtils.hasText(nickName)) {
 			//register to server!
 			RegisterUserRequestDto dto = new RegisterUserRequestDto();
@@ -92,6 +92,7 @@ public class MyLocationListener implements LocationListener {
 		new ChatAroundTask(ctx,null).execute(dto,ChatConstants.PING_LOCATION_SERVER_URL);
 		
 		}
+		*/
 		
 	}
 
