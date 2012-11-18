@@ -1,8 +1,5 @@
 package com.service.chataround.task;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -11,6 +8,7 @@ import android.util.Log;
 import com.google.android.gcm.GCMRegistrar;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
 import com.service.chataround.fragment.ChatFragment;
 import com.service.chataround.util.ChatAroundHttpClient;
@@ -36,21 +34,19 @@ public class ChatAroundTask extends AsyncTask<Object, Integer, ChatAroundDto> {
 		try {
 			if (params[0] instanceof RegisterUserRequestDto) {
 				RegisterUserRequestDto dto = (RegisterUserRequestDto) params[0];
-				String url2call = (String) params[1];
-				Map<String,String> values = new HashMap<String,String>(0);
-				
-				values.put("userId", dto.getUserId());
-				values.put("email", dto.getEmail());
-				values.put("password", dto.getPassword());
-				values.put("nickName", dto.getNickName());
-				values.put("longitude", dto.getLongitude().toString());
-				values.put("lattitude", dto.getLattitude().toString());
-				values.put("statusMessage", dto.getStatusMessage());
-				values.put("deviceId", dto.getDeviceId());
-				
-				String result = ChatAroundHttpClient.postData(url2call,values);
-				Log.i("server.response", result);
-
+					String url2call = (String) params[1];
+					RegisterUserRequestDto result = ChatAroundHttpClient.postSpringData(url2call, RegisterUserRequestDto.class, dto);
+					Log.i("RegisterUserRequestDto server.response", result.toString());
+			}else if (params[0] instanceof UserPingRequestDto){
+				UserPingRequestDto dto = (UserPingRequestDto)params[0];
+					String url2call = (String)params[1];
+					String result = ChatAroundHttpClient.postSpringData(url2call, String.class, dto);
+					Log.i("ChatAroundDto server.response", result);					
+			}else if (params[0] instanceof ChatAroundDto){
+				ChatAroundDto dto = (ChatAroundDto)params[0];
+					String url2call = (String)params[1];
+					response = ChatAroundHttpClient.postSpringData(url2call, ChatAroundDto.class, dto);
+					Log.i("ChatAroundDto server.response", response.toString());
 			}
 		} catch (Exception e) {
 			Log.e("validateUser error.loading.datafromserver",

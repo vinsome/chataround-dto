@@ -14,6 +14,7 @@ public class ChatConstants {
     //http://chataround.sravi.com/ChatAroundServer/api/1.0/viewusermap
     	
 	public static final String USER_NICKNAME = "nickname";
+	public static final String USER_ID = "userId";
 	public static final String USER_MOOD = "mood";
 	public static final String PREFS_NAME = "ChatAroundPreferences";
 	public static final String USER_NOTIFICATIONS = "UserNotifications";
