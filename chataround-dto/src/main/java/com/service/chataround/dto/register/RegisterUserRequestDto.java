@@ -12,7 +12,7 @@ public class RegisterUserRequestDto implements UserDomain {
 	private Double lattitude;
 	private String statusMessage;
 	private String deviceId;
-
+	private String serverMessage;
 
 	public String getUserId() {
 		return userId;
@@ -74,5 +74,11 @@ public class RegisterUserRequestDto implements UserDomain {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+	public String getServerMessage() {
+		return serverMessage;
+	}
+	public void setServerMessage(String serverMessage) {
+		this.serverMessage = serverMessage;
 	}
 }
