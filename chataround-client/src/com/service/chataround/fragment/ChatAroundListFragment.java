@@ -92,6 +92,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 				"");
 		final String mood = settings.getString(ChatConstants.USER_MOOD, "");
 		final String userId = settings.getString(ChatConstants.USER_ID, "");
+		final String email = settings.getString(ChatConstants.USER_EMAIL, "");
 		boolean isRegisteredToServer = settings.getBoolean(
 				ChatConstants.USER_REGISTERED_ONLINE, false);
 
@@ -99,10 +100,10 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 			// register to server!
 			RegisterUserRequestDto dto = new RegisterUserRequestDto();
 			dto.setDeviceId(regId);
-			dto.setEmail("email"+System.currentTimeMillis());//validating user
+			dto.setEmail(email);//validating user
 			dto.setLattitude(event.getLatitude().doubleValue());
 			dto.setLongitude(event.getLongitude().doubleValue());
-			dto.setNickName(nickName+System.currentTimeMillis());//validating nickname
+			dto.setNickName(nickName);//validating nickname
 			dto.setPassword("");
 			dto.setStatusMessage(mood);
 			// register to server

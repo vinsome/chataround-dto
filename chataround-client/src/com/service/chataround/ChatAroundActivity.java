@@ -35,6 +35,7 @@ import com.service.chataround.util.PushUtils;
 public class ChatAroundActivity extends Activity {
 	private Dialog settingsDialog;
 	private EditText nickName;
+	private EditText emailText;
 	private EditText moodText;
 	private EventBus eventBus = new EventBus();
 	@Override
@@ -103,14 +104,18 @@ public class ChatAroundActivity extends Activity {
 
 		nickName = (EditText) settingsDialog
 				.findViewById(R.id.nicknameTextView);
+		emailText = (EditText) settingsDialog
+		.findViewById(R.id.emailTextView);
 		moodText = (EditText) settingsDialog.findViewById(R.id.moodTextView);
 		
 		String nick = settings.getString(ChatConstants.USER_NICKNAME, "");
 		String mood = settings.getString(ChatConstants.USER_MOOD, "");
+		String email = settings.getString(ChatConstants.USER_EMAIL, "");
 		
 		nickName.setText(nick);
 		moodText.setText(mood);
-
+		emailText.setText(email);
+		
 		Switch switchButton = (Switch) settingsDialog
 				.findViewById(R.id.switchNotifId);
 		Boolean isNotifications = settings.getBoolean(
@@ -147,14 +152,19 @@ public class ChatAroundActivity extends Activity {
 		button.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				if (StringUtils.hasText(nickName.getText().toString().trim())) {
+				if (StringUtils.hasText(nickName.getText().toString().trim())&&
+					StringUtils.hasText(moodText.getText().toString().trim())&&
+					StringUtils.hasText(emailText.getText().toString().trim()) ) {
+					
 					String nickname = nickName.getText().toString().trim();
 					String mood = moodText.getText().toString().trim();
+					String email = emailText.getText().toString().trim();
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
 					editor.putString(ChatConstants.USER_NICKNAME, nickname);
 					editor.putString(ChatConstants.USER_MOOD, mood);
+					editor.putString(ChatConstants.USER_EMAIL, email);
 					editor.commit();
 					settingsDialog.hide();
 				}
