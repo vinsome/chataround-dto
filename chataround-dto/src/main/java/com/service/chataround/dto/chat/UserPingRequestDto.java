@@ -15,7 +15,7 @@ public class UserPingRequestDto implements Serializable {
 	private String userId;
 	private Double longitude;
 	private Double lattitude;
-	private List<UserPublicDomain> userList;
+	private List<UserPublicDto> userList;
 	private String serverMessage;
 	
 	public String getUserId() {
@@ -42,11 +42,11 @@ public class UserPingRequestDto implements Serializable {
 		this.lattitude = lattitude;
 	}
 
-	public List<UserPublicDomain> getUserList() {
+	public List<UserPublicDto> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(List<UserPublicDomain> userList) {
+	public void setUserList(List<UserPublicDto> userList) {
 		this.userList = userList;
 	}
 
