@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
@@ -31,7 +30,6 @@ import com.service.chataround.task.ChatAroundRegisterUserTask;
 import com.service.chataround.util.Callback;
 import com.service.chataround.util.ChatConstants;
 
-@SuppressLint("ParserError")
 public class ChatAroundListFragment extends ListFragment implements Callback {
 	private UserListViewAdapter adapter;
 	private ArrayList<UserPublicDto> mFiles = new ArrayList<UserPublicDto>();

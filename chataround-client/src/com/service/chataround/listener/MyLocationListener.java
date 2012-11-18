@@ -3,21 +3,16 @@ package com.service.chataround.listener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.EventBus;
 import com.service.chataround.event.LocationChangeEvent;
-import com.service.chataround.util.ChatConstants;
 
-@SuppressLint("ParserError")
 public class MyLocationListener implements LocationListener {
 	private EventBus eventBus;
 	
@@ -56,12 +51,6 @@ public class MyLocationListener implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
-		final String regId = GCMRegistrar.getRegistrationId(ctx);
-		final SharedPreferences settings = ctx.getSharedPreferences(ChatConstants.PREFS_NAME, 0);
-		final String nickName=settings.getString(ChatConstants.USER_NICKNAME, "");
-		final String mood=settings.getString(ChatConstants.USER_MOOD, "");
-		boolean isRegisteredToServer=settings.getBoolean(ChatConstants.USER_REGISTERED_ONLINE,false);
-		
 		BigDecimal latitude = new BigDecimal(location.getLatitude()).setScale(2, RoundingMode.HALF_UP);
 		BigDecimal longitude = new BigDecimal(location.getLongitude()).setScale(2, RoundingMode.HALF_UP);
 		LocationChangeEvent event = new LocationChangeEvent(latitude,longitude);
@@ -93,11 +82,9 @@ public class MyLocationListener implements LocationListener {
 		
 		}
 		*/
-		
 	}
 
 	public void start() {
-
 		if (!this.running) {
 			if (this.locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
 				this.running = true;
@@ -122,6 +109,10 @@ public class MyLocationListener implements LocationListener {
 		}
 	}
 
+	public void doStart() {
+		start();
+	}
+	
 	private void stop() {
 		if (this.running) {
 			this.locationManager.removeUpdates(this);

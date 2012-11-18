@@ -19,5 +19,7 @@
     <string name="save">Save</string>
     <string name="close">Cancel</string>
     <string name="send_message">Send</string>
+    <string name="go_back_listbutton">Back to user list</string>
+    <string name="loading_list">Loading list of user</string>
     <string name="error_config">Please set the %1$s constant and recompile the app.</string>
 </resources>

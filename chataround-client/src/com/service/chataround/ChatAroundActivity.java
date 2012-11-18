@@ -38,6 +38,7 @@ public class ChatAroundActivity extends Activity {
 	private EditText emailText;
 	private EditText moodText;
 	private EventBus eventBus = new EventBus();
+	private MyLocationListener locationListener;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -68,10 +69,9 @@ public class ChatAroundActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		MyLocationListener locationListener = new MyLocationListener(
+		locationListener = new MyLocationListener(
 				locationManager, getApplicationContext(),eventBus);
 		locationListener.start();
-
 	}
 
 	@Override
@@ -264,5 +264,13 @@ public class ChatAroundActivity extends Activity {
 
 	public void setEventBus(EventBus eventBus) {
 		this.eventBus = eventBus;
+	}
+
+	public MyLocationListener getLocationListener() {
+		return locationListener;
+	}
+
+	public void setLocationListener(MyLocationListener locationListener) {
+		this.locationListener = locationListener;
 	}
 }

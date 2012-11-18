@@ -3,6 +3,7 @@
     android:id="@+id/frameLayoutId"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/google_loading_icon"
     >
 
 </FrameLayout>
