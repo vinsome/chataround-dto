@@ -3,8 +3,6 @@ package com.service.chataround.dto.chat;
 import java.io.Serializable;
 import java.util.List;
 
-import com.next.infotech.persistance.domain.UserPublicDomain;
-
 public class UserPingRequestDto implements Serializable {
 
 	/**
