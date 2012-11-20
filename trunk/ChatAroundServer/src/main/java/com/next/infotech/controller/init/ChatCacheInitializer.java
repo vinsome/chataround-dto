@@ -14,6 +14,7 @@ import com.next.ext.core.db.page.HibernateMapPageInfo;
 import com.next.infotech.cache.UserLocationCache;
 import com.next.infotech.persistance.helper.jpa.impl.UserHelper;
 import com.next.infotech.persistance.jpa.impl.User;
+import com.next.infotech.persistance.services.ChatAroundServices;
 
 @Component
 public class ChatCacheInitializer {
@@ -21,7 +22,7 @@ public class ChatCacheInitializer {
 	@Autowired
 	private UserLocationCache userLocationCache;
 	@Autowired
-	private UserHelper userHelper;
+	private ChatAroundServices chatAroundServices;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
@@ -29,29 +30,11 @@ public class ChatCacheInitializer {
 	public void initCache(){
 		try {
 			logger.info("Rebuilding User Cache in Memory - Start");
-			rebuildCache();
+			chatAroundServices.rebuildCache(userLocationCache);
 			logger.info("Rebuilding User Cache in Memory - Done");
 		} catch (AppException e) {
 			logger.error("Unable to rebuild cache on server startup", e);
 		}
 	}
-	public void rebuildCache() throws AppException{
-		int i=1;
-		int pageSize = 100;
-		userLocationCache.clearCache();
-		while(true){
-			HibernateMapPageInfo pageInfo = new HibernateMapPageInfo();
-			pageInfo.setPageNo(i);
-			pageInfo.setPageSize(pageSize);
-			pageInfo.addOrderBy("User.id", ORDER.ASC);
-			PageResult<User> users = userHelper.searchUsers(pageInfo);
-			if(users.getResultList() == null || users.getResultList().size() == 0){
-				break;
-			}
-			for(User oneUser:users.getResultList()){
-				userLocationCache.registerUser(oneUser);
-			}
-			i++;
-		}
-	}
+	
 }

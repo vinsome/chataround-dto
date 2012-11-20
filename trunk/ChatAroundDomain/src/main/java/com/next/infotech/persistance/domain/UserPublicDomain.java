@@ -46,4 +46,12 @@ public interface UserPublicDomain extends Serializable{
 	void setGender(String gender);
 	void setGender(Gender gender);
 	
+	String getSmallImageUrl();
+	void setSmallImageUrl(String smallImageUrl);
+	
+	String getMediumImageUrl();
+	void setMediumImageUrl(String mediumImageUrl);
+
+	String getLargeImageUrl();
+	void setLargeImageUrl(String largeImageUrl);
 }

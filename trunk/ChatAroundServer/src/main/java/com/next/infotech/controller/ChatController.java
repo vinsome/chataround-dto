@@ -26,11 +26,14 @@ import com.next.infotech.cache.UserLocationCache;
 import com.next.infotech.concurrent.QueueManager;
 import com.next.infotech.controller.init.ChatCacheInitializer;
 import com.next.infotech.persistance.domain.UserCacheDomain;
+import com.next.infotech.persistance.domain.UserDomain;
 import com.next.infotech.persistance.helper.jpa.impl.UserHelper;
 import com.next.infotech.persistance.jpa.impl.User;
+import com.next.infotech.persistance.services.ChatAroundServices;
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.ChatMessageInternalDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto;
+import com.service.chataround.dto.chat.UserDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto.MessageStatus;
 import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.chat.UserPingResponseDto;
@@ -42,21 +45,14 @@ public class ChatController extends BaseController{
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
-	private UserLocationCache userLocationCache;
+	private ChatAroundServices chatAroundServices;
 	@Autowired
-	private UserHelper userHelper;
+	private UserLocationCache userLocationCache;
 	@Autowired
 	private QueueManager queueManager;
 	@Autowired
 	private ChatCacheInitializer chatCacheInitializer;
 
-	@RequestMapping(value="/api/1.0/pinglocation", method = RequestMethod.GET)
-    @ResponseBody
-	public void pingUserLocation(@RequestParam("lat") Double lattitude,@RequestParam("long") Double longitude,@RequestParam("nn") String nickName,@RequestParam("uid") String userId) throws AppException{
-		userLocationCache.updateUserLocation(userId, lattitude, longitude);
-		
-	}
-	
 	@RequestMapping(value="/api/1.0/pinglocationandgetuser", method = RequestMethod.POST)
     @ResponseBody
 	public UserPingResponseDto pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
@@ -73,26 +69,17 @@ public class ChatController extends BaseController{
 	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST)
     @ResponseBody
 	public RegisterUserRequestDto registerUser(@RequestBody RegisterUserRequestDto registerUserRequest) throws AppException{
-		User user = convertUser(registerUserRequest);
-		user = userHelper.createUser(user);
+		UserDomain user = chatAroundServices.createUser(registerUserRequest);
 		userLocationCache.registerUser(user);
 		registerUserRequest.setUserId(user.getUserId());
+		//mask the password
 		registerUserRequest.setPassword("*****");
 		return registerUserRequest;
-	}
-	private User convertUser(RegisterUserRequestDto registerUserRequest) throws InternalAppException{
-		User user = new User();
-		try {
-			BeanUtils.copyProperties(user,registerUserRequest);
-		} catch (Exception e) {
-			throw new InternalAppException(e);
-		}
-		return user;
 	}
 	@RequestMapping(value="/api/1.0/updateuserstatus", method = RequestMethod.POST)
     @ResponseBody
 	public void updateUserStatus(@RequestBody UserStatusUpdateDto userStatusUpdateDto) throws AppException{
-		userHelper.updateUserStatus(userStatusUpdateDto.getUserId(),userStatusUpdateDto.getStatus());
+		chatAroundServices.updateUserStatus(userStatusUpdateDto.getUserId(), userStatusUpdateDto.getStatus());
 		userLocationCache.updateUserStatus(userStatusUpdateDto.getUserId(),userStatusUpdateDto.getStatus());
 	}
 	
@@ -136,7 +123,7 @@ public class ChatController extends BaseController{
 			try{
 				Double boxSize = Double.parseDouble(bs);
 				userLocationCache.setGridBoxSize(boxSize);
-				chatCacheInitializer.rebuildCache();
+				chatAroundServices.rebuildCache(userLocationCache);
 			}catch(Exception ex){
 				model.addAttribute("Error", "Unable to parse BoxSize(bs)");		
 			}

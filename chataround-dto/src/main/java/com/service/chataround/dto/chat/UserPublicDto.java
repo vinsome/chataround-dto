@@ -1,7 +1,6 @@
 package com.service.chataround.dto.chat;
 
 import com.next.infotech.persistance.domain.UserPublicDomain;
-import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 
 public class UserPublicDto implements UserPublicDomain {
 
@@ -15,6 +14,8 @@ public class UserPublicDto implements UserPublicDomain {
 	private Double lattitude;
 	private String statusMessage;
 	private String gender;
+	private String IMAGES_SERVER = "http://staticchataround.sravi.com/ChatAroundServer/";
+
 	public UserPublicDto(){
 		
 	}
@@ -24,6 +25,9 @@ public class UserPublicDto implements UserPublicDomain {
 		this.lattitude = user.getLattitude();
 		this.statusMessage = user.getStatusMessage();
 		this.userId = user.getUserId();
+		if(user.getGender() != null){
+			this.gender = user.getGender().getValue();	
+		}
 	}
 	public String getUserId() {
 		return userId;
@@ -71,6 +75,27 @@ public class UserPublicDto implements UserPublicDomain {
 		}else{
 			this.gender = gender.getValue();	
 		}
+	}
+	public String getSmallImageUrl() {
+		return IMAGES_SERVER+"api/1.0/userthumbnail?userId="+userId+"&size=SMALL";
+	}
+	public void setSmallImageUrl(String smallImageUrl) {
+		throw new RuntimeException("You cant set Image url");
+	}
+	public String getMediumImageUrl() {
+		return IMAGES_SERVER+"api/1.0/userthumbnail?userId="+userId+"&size=MEDIUM";
+	}
+	public void setMediumImageUrl(String mediumImageUrl) {
+		throw new RuntimeException("You cant set Image url");
+	}
+	public String getLargeImageUrl() {
+		return IMAGES_SERVER+"api/1.0/userthumbnail?userId="+userId+"&size=LARGE";
+	}
+	public String getImageUrl(int size) {
+		return IMAGES_SERVER+"api/1.0/userthumbnail?userId="+userId+"&size="+size;
+	}
+	public void setLargeImageUrl(String largeImageUrl) {
+		throw new RuntimeException("You cant set Image url");
 	}
 	@Override
 	public String toString() {

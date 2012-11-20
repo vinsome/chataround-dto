@@ -1,9 +1,8 @@
 package com.service.chataround.dto.chat;
 
-import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
-import com.service.chataround.dto.UserWebEntity;
+import com.service.chataround.dto.UserPublicWebEntity;
 
-public class UserResponseDto implements UserWebEntity {
+public class UserResponseDto implements UserPublicWebEntity {
 
 	/**
 	 * 
@@ -16,6 +15,10 @@ public class UserResponseDto implements UserWebEntity {
 	private Double lattitude;
 	private String statusMessage;
 	private String gender;
+	private String smallImageUrl;
+	private String mediumImageUrl;
+	private String largeImageUrl;
+
 	
 	public String getUserId() {
 		return userId;
@@ -63,5 +66,23 @@ public class UserResponseDto implements UserWebEntity {
 		}else{
 			this.gender = gender.getValue();	
 		}
+	}
+	public String getSmallImageUrl() {
+		return smallImageUrl;
+	}
+	public void setSmallImageUrl(String smallImageUrl) {
+		this.smallImageUrl = smallImageUrl;
+	}
+	public String getMediumImageUrl() {
+		return mediumImageUrl;
+	}
+	public void setMediumImageUrl(String mediumImageUrl) {
+		this.mediumImageUrl = mediumImageUrl;
+	}
+	public String getLargeImageUrl() {
+		return largeImageUrl;
+	}
+	public void setLargeImageUrl(String largeImageUrl) {
+		this.largeImageUrl = largeImageUrl;
 	}
 }
