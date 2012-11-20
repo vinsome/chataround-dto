@@ -24,16 +24,17 @@ import com.next.core.exception.AppException;
 import com.next.core.exception.InternalAppException;
 import com.next.infotech.cache.UserLocationCache;
 import com.next.infotech.concurrent.QueueManager;
+import com.next.infotech.controller.init.ChatCacheInitializer;
 import com.next.infotech.persistance.domain.UserCacheDomain;
-import com.next.infotech.persistance.domain.UserPublicDomain;
 import com.next.infotech.persistance.helper.jpa.impl.UserHelper;
 import com.next.infotech.persistance.jpa.impl.User;
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.ChatMessageInternalDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto;
-import com.service.chataround.dto.chat.UserPingRequestDto;
-import com.service.chataround.dto.chat.UserStatusUpdateDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto.MessageStatus;
+import com.service.chataround.dto.chat.UserPingRequestDto;
+import com.service.chataround.dto.chat.UserPingResponseDto;
+import com.service.chataround.dto.chat.UserStatusUpdateDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
 
 @Controller
@@ -46,6 +47,8 @@ public class ChatController extends BaseController{
 	private UserHelper userHelper;
 	@Autowired
 	private QueueManager queueManager;
+	@Autowired
+	private ChatCacheInitializer chatCacheInitializer;
 
 	@RequestMapping(value="/api/1.0/pinglocation", method = RequestMethod.GET)
     @ResponseBody
@@ -54,18 +57,18 @@ public class ChatController extends BaseController{
 		
 	}
 	
-	@RequestMapping(value="/api/1.0/pinglocationandgetuserold", method = RequestMethod.GET)
-    @ResponseBody
-	public List<UserPublicDomain> pingUserLocationAndGetUserList(@RequestParam("lat") Double lattitude,@RequestParam("long") Double longitude,@RequestParam("nn") String nickName,@RequestParam("uid") String userId) throws AppException{
-		userLocationCache.updateUserLocation(userId, lattitude, longitude);
-		return userLocationCache.getUsersNearMe(lattitude, longitude,userId);
-	}
 	@RequestMapping(value="/api/1.0/pinglocationandgetuser", method = RequestMethod.POST)
     @ResponseBody
-	public List<UserPublicDomain> pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
+	public UserPingResponseDto pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
 		userLocationCache.updateUserLocation(userPingRequest.getUserId(), userPingRequest.getLattitude(), userPingRequest.getLongitude());
-		return userLocationCache.getUsersNearMe(userPingRequest.getLattitude(), userPingRequest.getLongitude(),userPingRequest.getUserId());
+		UserPingResponseDto userPingResponseDto = new UserPingResponseDto();
+		userPingResponseDto.setLattitude(userPingRequest.getLattitude());
+		userPingResponseDto.setLongitude(userPingRequest.getLongitude());
+		userPingResponseDto.setUserId(userPingRequest.getUserId());
+		userPingResponseDto.setUserList(userLocationCache.getUsersNearMe(userPingRequest.getLattitude(), userPingRequest.getLongitude(),userPingRequest.getUserId()));
+		return userPingResponseDto;
 	}
+	
 	
 	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST)
     @ResponseBody
@@ -120,7 +123,30 @@ public class ChatController extends BaseController{
 		}
 		model.addAttribute("AllUsers", allUsers);
 		model.addAttribute("AllRectangles", allRectangles);
+		String systemVariable = System.getenv("VCAP_SERVICES");
+		System.out.println(systemVariable);
+		logger.info(systemVariable);
 		return "showusermap";
+	}
+	
+	@RequestMapping(value="/api/1.0/viewinfo", method = RequestMethod.GET)
+	public String viewInfo(HttpServletRequest request,Model model) throws AppException{
+		String bs = request.getParameter("bs");
+		if(bs != null && !bs.trim().equals("")){
+			try{
+				Double boxSize = Double.parseDouble(bs);
+				userLocationCache.setGridBoxSize(boxSize);
+				chatCacheInitializer.rebuildCache();
+			}catch(Exception ex){
+				model.addAttribute("Error", "Unable to parse BoxSize(bs)");		
+			}
+		}
+
+		model.addAttribute("BoxSizeInDegree", userLocationCache.getGridBoxSize());
+		model.addAttribute("BoxSizeInKm", userLocationCache.getGridBoxSizeInKm());
+		model.addAttribute("TotalUsers", userLocationCache.getTotalUser());
+		model.addAttribute("TotalLocations", userLocationCache.getTotalLocaltionBoxes());
+		return "showinfo";
 	}
 	
 	@RequestMapping(value="/api/1.0/sendchatmessage", method = RequestMethod.POST)

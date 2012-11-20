@@ -1,21 +1,18 @@
 package com.next.infotech.concurrent;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 
 import com.google.gson.Gson;
 import com.service.chataround.dto.chat.ChatMessageInternalDto;
 
 public class ChatMessageSender implements Runnable {
 
-	private static final String SERVER_URL = "http://luis.com/sendChatMessage.do";
+	private static final String SERVER_URL = "http://chataround2012.appspot.com/sendChatMessage.do";
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Gson gson = new Gson();
 	private ChatMessageInternalDto chatMessageInternalDto;
