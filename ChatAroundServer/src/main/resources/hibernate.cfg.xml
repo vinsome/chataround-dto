@@ -13,19 +13,19 @@
 <property name="connection.driver_class">org.h2.Driver</property>
 <property name="connection.url">jdbc:h2:~/unittest-restaurentdb</property>
  -->
- 	<!--
+ 	
  	<property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 		<property name="connection.driver_class">org.postgresql.Driver</property>
 		<property name="connection.url">jdbc:postgresql://localhost:5432/chat</property>
 		<property name="connection.username">postgres</property>
 		<property name="connection.password">password</property> 
- 	 -->
+ 	<!--
 		<property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 		<property name="connection.driver_class">org.postgresql.Driver</property>
 		<property name="connection.url">jdbc:postgresql://192.168.4.112:5432/d5510f24f46a64ed2abd1851399d795d5</property>
 		<property name="connection.username">uf3ff82856d2d482f8613593196422955</property>
 		<property name="connection.password">p5561a6ad801842bea65506eaf7a1812a</property>
-		
+		 -->
 		<!-- JDBC connection pool (use the built-in) -->
 		<!--<property name="connection.pool_size">1</property>-->
 		<!-- SQL dialect -->

@@ -26,6 +26,7 @@ http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 	<context:component-scan base-package="com.next.infotech.persistance.helper.jpa.impl" />
 	<context:component-scan base-package="com.next.infotech.concurrent" />
 	<context:component-scan base-package="com.next.infotech.controller.init" />
+	<context:component-scan base-package="com.next.infotech.persistance.services" />
 	
 	<!-- <import resource="spring-beans.xml"/> -->
    	<import resource="classpath:data-source-prod.xml" />
@@ -42,7 +43,7 @@ http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 	
 	<aop:config>
         <aop:aspect id="ChatPersistanceAspect" ref="DbSessionProfiler" >
-            <aop:pointcut id="ChatPersistancePointcut" expression="execution(* com.next.infotech.persistance.helper.jpa.impl.*.*(..))" />
+            <aop:pointcut id="ChatPersistancePointcut" expression="execution(* com.next.infotech.persistance.services.ChatAroundServicesImpl.*(..))" />
             <aop:before method="before" pointcut-ref="ChatPersistancePointcut" />
             <aop:after-returning method="afterNormalReturn" pointcut-ref="ChatPersistancePointcut" />
             <aop:around method="around" pointcut-ref="ChatPersistancePointcut" />

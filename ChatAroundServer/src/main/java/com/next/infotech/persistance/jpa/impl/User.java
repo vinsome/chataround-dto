@@ -64,6 +64,13 @@ public class User implements UserEntity{
 	private String userId;
 	@Column(name="gender")
 	private String gender;
+	@Column(name="small_image_url")
+	private String smallImageUrl;
+	@Column(name="medium_image_url")
+	private String mediumImageUrl;
+	@Column(name="large_image_url")
+	private String largeImageUrl;
+
 	public Long getId() {
 		return id;
 	}
@@ -164,6 +171,24 @@ public class User implements UserEntity{
 		}else{
 			this.gender = gender.getValue();	
 		}
+	}
+	public String getSmallImageUrl() {
+		return smallImageUrl;
+	}
+	public void setSmallImageUrl(String smallImageUrl) {
+		this.smallImageUrl = smallImageUrl;
+	}
+	public String getMediumImageUrl() {
+		return mediumImageUrl;
+	}
+	public void setMediumImageUrl(String mediumImageUrl) {
+		this.mediumImageUrl = mediumImageUrl;
+	}
+	public String getLargeImageUrl() {
+		return largeImageUrl;
+	}
+	public void setLargeImageUrl(String largeImageUrl) {
+		this.largeImageUrl = largeImageUrl;
 	}
 	@Override
 	public String toString() {

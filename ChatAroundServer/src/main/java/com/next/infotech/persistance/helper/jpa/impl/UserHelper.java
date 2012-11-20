@@ -35,12 +35,6 @@ public class UserHelper extends BasePersistanceHelper<User> {
 		checkIfObjectMissing("Gender", user.getGender());
 		checkUserUniqueAttributes(user);
 	}
-	public void updateUserStatus(String userId,String status) throws AppException{
-		User existingUser = getUserByUserId(userId);
-		if(existingUser == null){
-			throw new AppException("No such user exists "+userId);
-		}
-	}
 	private void checkUserUniqueAttributes(User user) throws AppException{
 		User existingUser = getUserByEmailId(user.getEmail());
 		if(existingUser != null && existingUser.getId() != user.getId()){
@@ -149,6 +143,5 @@ public class UserHelper extends BasePersistanceHelper<User> {
 		}
 		return pageResult.getResultList().get(0);
 	}
-
-
+	
 }
