@@ -1,8 +1,9 @@
 package com.service.chataround.dto.chat;
 
 import java.io.Serializable;
+import java.util.List;
 
-public class UserPingRequestDto implements Serializable {
+public class UserPingResponseDto extends BaseDto implements Serializable {
 
 	/**
 	 * 
@@ -12,6 +13,7 @@ public class UserPingRequestDto implements Serializable {
 	private String userId;
 	private Double longitude;
 	private Double lattitude;
+	private List<UserPublicDto> userList;
 	
 	public String getUserId() {
 		return userId;
@@ -35,6 +37,14 @@ public class UserPingRequestDto implements Serializable {
 
 	public void setLattitude(Double lattitude) {
 		this.lattitude = lattitude;
+	}
+
+	public List<UserPublicDto> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<UserPublicDto> userList) {
+		this.userList = userList;
 	}
 
 }

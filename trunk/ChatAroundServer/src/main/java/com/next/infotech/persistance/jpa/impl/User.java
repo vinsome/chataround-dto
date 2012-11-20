@@ -62,6 +62,8 @@ public class User implements UserEntity{
 	private String deviceId;
 	@Column(name="user_id")
 	private String userId;
+	@Column(name="gender")
+	private String gender;
 	public Long getId() {
 		return id;
 	}
@@ -146,6 +148,23 @@ public class User implements UserEntity{
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	public Gender getGender() {
+		return Gender.parse(gender);
+	}
+	public void setGender(String gender) {
+		Gender gendreEnum = Gender.parse(gender);
+		if(gendreEnum == null){
+			throw new RuntimeException(gender + " is not a correct value for Gender");
+		}
+		this.gender = gender;
+	}
+	public void setGender(Gender gender) {
+		if(gender == null){
+			this.gender = null;
+		}else{
+			this.gender = gender.getValue();	
+		}
+	}
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -177,6 +196,8 @@ public class User implements UserEntity{
 		builder.append(deviceId);
 		builder.append(", userId=");
 		builder.append(userId);
+		builder.append(", gender=");
+		builder.append(gender);
 		builder.append("]");
 		return builder.toString();
 	}

@@ -25,6 +25,7 @@ http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 	<context:component-scan base-package="com.next.infotech.cache" />
 	<context:component-scan base-package="com.next.infotech.persistance.helper.jpa.impl" />
 	<context:component-scan base-package="com.next.infotech.concurrent" />
+	<context:component-scan base-package="com.next.infotech.controller.init" />
 	
 	<!-- <import resource="spring-beans.xml"/> -->
    	<import resource="classpath:data-source-prod.xml" />

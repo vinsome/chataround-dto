@@ -1,5 +1,6 @@
 package com.service.chataround.dto.chat;
 
+import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.dto.UserWebEntity;
 
 public class UserResponseDto implements UserWebEntity {
@@ -14,6 +15,7 @@ public class UserResponseDto implements UserWebEntity {
 	private Double longitude;
 	private Double lattitude;
 	private String statusMessage;
+	private String gender;
 	
 	public String getUserId() {
 		return userId;
@@ -44,5 +46,22 @@ public class UserResponseDto implements UserWebEntity {
 	}
 	public void setStatusMessage(String statusMessage) {
 		this.statusMessage = statusMessage;
+	}
+	public Gender getGender() {
+		return Gender.parse(gender);
+	}
+	public void setGender(String gender) {
+		Gender gendreEnum = Gender.parse(gender);
+		if(gendreEnum == null){
+			throw new RuntimeException(gender + " is not a correct value for Gender");
+		}
+		this.gender = gender;
+	}
+	public void setGender(Gender gender) {
+		if(gender == null){
+			this.gender = null;
+		}else{
+			this.gender = gender.getValue();	
+		}
 	}
 }

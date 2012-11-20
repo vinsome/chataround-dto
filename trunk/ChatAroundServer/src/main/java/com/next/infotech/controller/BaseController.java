@@ -8,17 +8,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.next.core.exception.AppException;
+import com.service.chataround.dto.HasError;
 
 public class BaseController {
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public class ErrorMessage{
+	public class ErrorMessage implements HasError{
 		private String responseStatus;
-		private String message;
+		private String serverMessage;
 		public ErrorMessage(String responseStatus, String message) {
 			super();
 			this.responseStatus = responseStatus;
-			this.message = message;
+			this.serverMessage = message;
 		}
 		public String getResponseStatus() {
 			return responseStatus;
@@ -26,12 +27,13 @@ public class BaseController {
 		public void setResponseStatus(String responseStatus) {
 			this.responseStatus = responseStatus;
 		}
-		public String getMessage() {
-			return message;
+		public String getServerMessage() {
+			return serverMessage;
 		}
-		public void setMessage(String message) {
-			this.message = message;
+		public void setServerMessage(String serverMessage) {
+			this.serverMessage = serverMessage;
 		}
+		
 	}
 	
 	@ExceptionHandler(AppException.class)

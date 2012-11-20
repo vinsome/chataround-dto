@@ -1,8 +1,9 @@
 package com.service.chataround.dto.register;
 
 import com.next.infotech.persistance.domain.UserDomain;
+import com.service.chataround.dto.chat.BaseDto;
 
-public class RegisterUserRequestDto implements UserDomain {
+public class RegisterUserRequestDto extends BaseDto implements UserDomain {
 	private static final long serialVersionUID = 1L;
 	private String userId;
 	private String email;
@@ -12,7 +13,7 @@ public class RegisterUserRequestDto implements UserDomain {
 	private Double lattitude;
 	private String statusMessage;
 	private String deviceId;
-	private String serverMessage;
+	private String gender;
 
 	public String getUserId() {
 		return userId;
@@ -75,10 +76,21 @@ public class RegisterUserRequestDto implements UserDomain {
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
-	public String getServerMessage() {
-		return serverMessage;
+	public Gender getGender() {
+		return Gender.parse(gender);
 	}
-	public void setServerMessage(String serverMessage) {
-		this.serverMessage = serverMessage;
+	public void setGender(String gender) {
+		Gender gendreEnum = Gender.parse(gender);
+		if(gendreEnum == null){
+			throw new RuntimeException(gender + " is not a correct value for Gender");
+		}
+		this.gender = gender;
+	}
+	public void setGender(Gender gender) {
+		if(gender == null){
+			this.gender = null;
+		}else{
+			this.gender = gender.getValue();	
+		}
 	}
 }

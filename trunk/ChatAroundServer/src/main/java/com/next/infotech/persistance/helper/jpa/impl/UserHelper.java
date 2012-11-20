@@ -23,6 +23,7 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	throws AppException {
 		checkIfStringMissing("Email", user.getEmail());
 		checkIfStringMissing("NickName", user.getNickName());
+		checkIfObjectMissing("Gender", user.getGender());
 		checkUserUniqueAttributes(user);
 	}
 
@@ -31,6 +32,7 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	throws AppException {
 		checkIfStringMissing("Email", user.getEmail());
 		checkIfStringMissing("NickName", user.getNickName());
+		checkIfObjectMissing("Gender", user.getGender());
 		checkUserUniqueAttributes(user);
 	}
 	public void updateUserStatus(String userId,String status) throws AppException{

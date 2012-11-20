@@ -2,7 +2,7 @@ package com.service.chataround.dto.chat;
 
 import java.io.Serializable;
 
-public class ChatMessageResponseDto implements Serializable{
+public class ChatMessageResponseDto extends BaseDto implements Serializable{
 
 	public enum MessageStatus {
 		Sent("Sent"), Failed("Failed"),Pending("Pending");
