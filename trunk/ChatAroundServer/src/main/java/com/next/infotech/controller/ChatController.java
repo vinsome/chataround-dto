@@ -141,15 +141,33 @@ public class ChatController extends BaseController{
 	public ChatMessageResponseDto sendChatMessage(@RequestBody ChatMessageDto chatMessageDto) throws AppException{
 		ChatMessageResponseDto chatMessageResponseDto = new ChatMessageResponseDto();
 		UserCacheDomain receipientUser = userLocationCache.getUserByExternalId(chatMessageDto.getRecipientId());
+		
 		if(receipientUser == null){
 			chatMessageResponseDto.setStatus(MessageStatus.Failed);
 			chatMessageResponseDto.setMessage("User is offline");
 		}else{
-			chatMessageResponseDto.setStatus(MessageStatus.Pending);
-			ChatMessageInternalDto chatMessageInternalDto = new ChatMessageInternalDto(chatMessageDto);
-			chatMessageInternalDto.setReceipientDeviceId(receipientUser.getDeviceId());
-			//and send this message to Luis's App Engine controller using thread pool in async way
-			queueManager.addChatMessageToQueue(chatMessageInternalDto);
+			UserCacheDomain senderUser = userLocationCache.getUserByExternalId(chatMessageDto.getSenderId());
+			if(senderUser == null){
+				//This should not happen, even if it happens try top find this user from DB and save it in cache
+				UserDomain user = chatAroundServices.getUserByExternalId(chatMessageDto.getSenderId());
+				if(user != null){
+					userLocationCache.registerUser(user);
+					senderUser = user;
+				}
+			}
+			//If sender not found in cache and DB then raise the error
+			if(senderUser == null){
+				chatMessageResponseDto.setStatus(MessageStatus.Failed);
+				chatMessageResponseDto.setMessage("Invalid User");
+			}else{
+				//else send the message
+				chatMessageResponseDto.setStatus(MessageStatus.Pending);
+				ChatMessageInternalDto chatMessageInternalDto = new ChatMessageInternalDto(chatMessageDto);
+				chatMessageInternalDto.setReceipientDeviceId(receipientUser.getDeviceId());
+				chatMessageInternalDto.setSenderDeviceId(senderUser.getDeviceId());
+				//and send this message to Luis's App Engine controller using thread pool in async way
+				queueManager.addChatMessageToQueue(chatMessageInternalDto);
+			}
 		}
 		return chatMessageResponseDto;
 	}
