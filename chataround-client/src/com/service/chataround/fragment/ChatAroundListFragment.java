@@ -29,9 +29,10 @@ import com.service.chataround.event.LocationChangeEvent;
 import com.service.chataround.task.ChatAroundPingLocationTask;
 import com.service.chataround.task.ChatAroundRegisterUserTask;
 import com.service.chataround.util.Callback;
-import com.service.chataround.util.ChatConstants;
+import com.service.chataround.util.ChatUtils;
 
 public class ChatAroundListFragment extends ListFragment implements Callback {
+	public static String TAG = ChatAroundListFragment.class.getName();
 	private UserListViewAdapter adapter;
 	private ArrayList<UserPublicDto> mFiles = new ArrayList<UserPublicDto>();
 	
@@ -91,14 +92,14 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	public void eventLocationChanged(LocationChangeEvent event) {
 		final String regId = GCMRegistrar.getRegistrationId(getActivity());
 		final SharedPreferences settings = getActivity().getSharedPreferences(
-				ChatConstants.PREFS_NAME, 0);
-		final String nickName = settings.getString(ChatConstants.USER_NICKNAME,
+				ChatUtils.PREFS_NAME, 0);
+		final String nickName = settings.getString(ChatUtils.USER_NICKNAME,
 				"");
-		final String mood = settings.getString(ChatConstants.USER_MOOD, "");
-		final String userId = settings.getString(ChatConstants.USER_ID, "");
-		final String email = settings.getString(ChatConstants.USER_EMAIL, "");
+		final String mood = settings.getString(ChatUtils.USER_MOOD, "");
+		final String userId = settings.getString(ChatUtils.USER_ID, "");
+		final String email = settings.getString(ChatUtils.USER_EMAIL, "");
 		boolean isRegisteredToServer = settings.getBoolean(
-				ChatConstants.USER_REGISTERED_ONLINE, false);
+				ChatUtils.USER_REGISTERED_ONLINE, false);
 
 		if (!isRegisteredToServer && !StringUtils.hasText(userId)) {
 			// register to server!
@@ -112,7 +113,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 			dto.setStatusMessage(mood);
 			// register to server
 			new ChatAroundRegisterUserTask(getActivity(), this).execute(dto,
-					ChatConstants.REGISTER_SERVER_URL);
+					ChatUtils.REGISTER_SERVER_URL);
 
 		} else {
 
@@ -125,7 +126,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 			// longitude,@RequestParam("nn") String
 			// nickName,@RequestParam("uid")
 			new ChatAroundPingLocationTask(getActivity(), this).execute(dto,
-					ChatConstants.PING_LOCATION_AND_GET_USERS_SERVER_URL);
+					ChatUtils.PING_LOCATION_AND_GET_USERS_SERVER_URL);
 
 		}
 
@@ -134,11 +135,11 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
 		if (dto!=null && StringUtils.hasText(dto.getUserId())) {
 			final SharedPreferences settings = getActivity()
-					.getSharedPreferences(ChatConstants.PREFS_NAME, 0);
+					.getSharedPreferences(ChatUtils.PREFS_NAME, 0);
 			String userId = dto.getUserId();
 			SharedPreferences.Editor editor = settings.edit();
-			editor.putString(ChatConstants.USER_ID, userId);
-			editor.putBoolean(ChatConstants.USER_REGISTERED_ONLINE, true);
+			editor.putString(ChatUtils.USER_ID, userId);
+			editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
 			editor.commit();
 		}
 	}

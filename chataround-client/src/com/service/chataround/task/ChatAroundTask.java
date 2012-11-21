@@ -14,6 +14,7 @@ import com.service.chataround.fragment.ChatFragment;
 import com.service.chataround.util.ChatAroundHttpClient;
 
 public class ChatAroundTask extends AsyncTask<Object, Integer, ChatAroundDto> {
+	public static String TAG = ChatAroundTask.class.getName();
 	protected final Context mContext;
 	protected final Fragment fragment;
 

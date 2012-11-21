@@ -31,7 +31,7 @@ import com.google.android.gcm.GCMRegistrar;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.task.ChatAroundTask;
-import com.service.chataround.util.ChatConstants;
+import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.DatabaseUtils;
 import com.service.chataround.util.PushUtils;
 
@@ -40,14 +40,14 @@ import com.service.chataround.util.PushUtils;
  */
 public class GCMIntentService extends GCMBaseIntentService {
 
-	private static final String TAG = "ChatAround";
+	private static final String TAG = GCMIntentService.class.getName();
 	public static final String USER_NOTIFICATIONS="notificationsUser";
 	public static final String USER_SOUND_ENABLED="notificationsUserSound";
 	
 	public static final String PREFS_NAME = "ChatAround2012";
 
 	public GCMIntentService() {
-		super(ChatConstants.SENDER_ID);
+		super(ChatUtils.SENDER_ID);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		dto.setTime(Calendar.getInstance().getTime());
 
 		new ChatAroundTask(context,null).execute(dto,
-				ChatConstants.SERVER_URL + ChatConstants.REGISTER_URL);
+				ChatUtils.SERVER_URL + ChatUtils.REGISTER_URL);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			dto.setAppId(PushUtils.APP_ID);
 
 			new ChatAroundTask(context,null).execute(dto,
-					ChatConstants.SERVER_URL + ChatConstants.UNREGISTER_URL);
+					ChatUtils.SERVER_URL + ChatUtils.UNREGISTER_URL);
 			
 			GCMRegistrar.setRegisteredOnServer(context, false);
 			// ServerUtilities.unregister(context, registrationId);
@@ -112,7 +112,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		if(!dto.isMine())
 			DatabaseUtils.addMessageToDb(context,dto);
 		
-		ChatConstants.displayMessage(context, message, regIdFromMessanger);
+		ChatUtils.displayMessage(context, message, regIdFromMessanger);
 		
 		// notifies user
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);

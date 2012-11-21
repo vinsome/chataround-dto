@@ -28,7 +28,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 public class ChatAroundHttpClient {
-	
+	public static String TAG = ChatAroundHttpClient.class.getName();	
 	public static final String PARAMS_QUERY = "?q1={query}&p2={query}";
 
 	public static <T> T postSpringData(String url, Class<T> responseType,

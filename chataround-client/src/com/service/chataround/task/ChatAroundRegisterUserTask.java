@@ -10,6 +10,7 @@ import com.service.chataround.fragment.ChatAroundListFragment;
 import com.service.chataround.util.ChatAroundHttpClient;
 
 public class ChatAroundRegisterUserTask extends AsyncTask<Object, Integer, RegisterUserRequestDto> {
+	public static String TAG = ChatAroundRegisterUserTask.class.getName();
 	protected final Context mContext;
 	protected final Fragment fragment;
 

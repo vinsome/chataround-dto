@@ -13,11 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.service.chataround.R;
-import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.dto.chat.ChatMessageDto;
 
 public class IconListViewAdapter extends ArrayAdapter<ChatMessageDto> {
-
+	public static String TAG = IconListViewAdapter.class.getName();
 	private ArrayList<ChatMessageDto> items;
 	private Context ctx;
 

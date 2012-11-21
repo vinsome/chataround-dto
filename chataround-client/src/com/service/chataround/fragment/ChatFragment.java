@@ -26,12 +26,12 @@ import com.service.chataround.adapter.IconListViewAdapter;
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto;
 import com.service.chataround.task.ChatAroundSendMessageTask;
-import com.service.chataround.util.ChatConstants;
+import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.DatabaseUtils;
 import com.service.chataround.util.PushUtils;
 
 public class ChatFragment extends ListFragment implements OnClickListener {
-
+	public static String TAG = ChatFragment.class.getName();
 	private IconListViewAdapter adapter;
 	private ArrayList<ChatMessageDto> mFiles = new ArrayList<ChatMessageDto>();
 	private Button sendButton;
@@ -60,8 +60,8 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		super.onViewCreated(view, savedInstanceState);
 		//regId = GCMRegistrar.getRegistrationId(getActivity());
 		final SharedPreferences settings = getActivity().getSharedPreferences(
-				ChatConstants.PREFS_NAME, 0);
-		userId = settings.getString(ChatConstants.USER_ID, "");		
+				ChatUtils.PREFS_NAME, 0);
+		userId = settings.getString(ChatUtils.USER_ID, "");		
 	}
 
 	@Override
@@ -80,8 +80,8 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		textMessage = (EditText) getView().findViewById(R.id.textMessage);
 
 		final SharedPreferences settings = getActivity().getSharedPreferences(
-				ChatConstants.PREFS_NAME, 0);
-		nickName = settings.getString(ChatConstants.USER_NICKNAME, "");
+				ChatUtils.PREFS_NAME, 0);
+		nickName = settings.getString(ChatUtils.USER_NICKNAME, "");
 
 		if (!StringUtils.hasText(nickName)) {
 			ChatAroundActivity chat = (ChatAroundActivity) getActivity();
@@ -125,7 +125,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 				setListAdapter(adapter);
 
 				new ChatAroundSendMessageTask(getActivity(), this).execute(dto,
-						ChatConstants.SEND_MESSAGE_USER_SERVER_URL);
+						ChatUtils.SEND_MESSAGE_USER_SERVER_URL);
 			}
 		}
 	}

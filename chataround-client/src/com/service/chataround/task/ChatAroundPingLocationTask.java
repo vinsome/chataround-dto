@@ -12,6 +12,7 @@ import com.service.chataround.util.ChatAroundHttpClient;
 
 public class ChatAroundPingLocationTask extends
 		AsyncTask<Object, Integer, UserPingResponseDto> {
+	public static String TAG = ChatAroundPingLocationTask.class.getName();
 	protected final Context mContext;
 	protected final Fragment fragment;
 

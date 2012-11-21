@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:orientation="horizontal"
-		    android:weightSum="2"
+		    android:weightSum="4"
         >
 	    <TextView
 	        android:id="@+id/userMoodLabelLeft"
@@ -49,8 +49,15 @@
 	        android:id="@+id/userMoodLeft"
 	        android:layout_width="0dp"
 	        android:layout_height="match_parent"
-	        android:layout_weight="1"
+	        android:layout_weight="2"
 	        android:background="@drawable/rowshapeothers"
 	        />
+	    <TextView
+	        android:id="@+id/userDistanceFromLeft"
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        android:background="@drawable/rowshapeothers"
+	        />	    
 	     </LinearLayout>   
 </LinearLayout>

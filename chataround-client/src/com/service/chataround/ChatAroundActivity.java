@@ -33,10 +33,11 @@ import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.fragment.ChatAroundListFragment;
 import com.service.chataround.listener.MyLocationListener;
 import com.service.chataround.task.ChatAroundTask;
-import com.service.chataround.util.ChatConstants;
+import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.PushUtils;
 
 public class ChatAroundActivity extends Activity {
+	public static String TAG = ChatAroundActivity.class.getName();
 	private Dialog settingsDialog;
 	private EditText nickName;
 	private EditText emailText;
@@ -61,19 +62,19 @@ public class ChatAroundActivity extends Activity {
 			registerToCloud();
 		}
 		final SharedPreferences settings = getSharedPreferences(
-				ChatConstants.PREFS_NAME, 0);
+				ChatUtils.PREFS_NAME, 0);
 		
-		String nick = settings.getString(ChatConstants.USER_NICKNAME, "");
-		String mood = settings.getString(ChatConstants.USER_MOOD, "");
-		String email = settings.getString(ChatConstants.USER_EMAIL, "");
-		String passw = settings.getString(ChatConstants.USER_PASSW,"");		
+		String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
+		String mood = settings.getString(ChatUtils.USER_MOOD, "");
+		String email = settings.getString(ChatUtils.USER_EMAIL, "");
+		String passw = settings.getString(ChatUtils.USER_PASSW,"");		
 		
 		if(!StringUtils.hasText(nick) || !StringUtils.hasText(email)||!StringUtils.hasText(passw)) {
 				settingsDialog();
 		}		
 		
 		registerReceiver(mHandleMessageReceiver, new IntentFilter(
-				ChatConstants.DISPLAY_MESSAGE_ACTION));
+				ChatUtils.DISPLAY_MESSAGE_ACTION));
 	}
 
 	@Override
@@ -106,7 +107,7 @@ public class ChatAroundActivity extends Activity {
 
 	public void settingsDialog() {
 		final SharedPreferences settings = getSharedPreferences(
-				ChatConstants.PREFS_NAME, 0);
+				ChatUtils.PREFS_NAME, 0);
 
 		settingsDialog = new Dialog(ChatAroundActivity.this);
 		settingsDialog.setContentView(R.layout.settingsdialog);
@@ -120,10 +121,10 @@ public class ChatAroundActivity extends Activity {
 		moodText = (EditText) settingsDialog.findViewById(R.id.moodTextView);
 		userPassw= (EditText) settingsDialog.findViewById(R.id.passwordTextView);
 		
-		String nick = settings.getString(ChatConstants.USER_NICKNAME, "");
-		String mood = settings.getString(ChatConstants.USER_MOOD, "");
-		String email = settings.getString(ChatConstants.USER_EMAIL, "");
-		String passw = settings.getString(ChatConstants.USER_PASSW,"");
+		String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
+		String mood = settings.getString(ChatUtils.USER_MOOD, "");
+		String email = settings.getString(ChatUtils.USER_EMAIL, "");
+		String passw = settings.getString(ChatUtils.USER_PASSW,"");
 		
 		nickName.setText(nick);
 		moodText.setText(mood);
@@ -133,14 +134,14 @@ public class ChatAroundActivity extends Activity {
 		Switch switchButton = (Switch) settingsDialog
 				.findViewById(R.id.switchNotifId);
 		Boolean isNotifications = settings.getBoolean(
-				ChatConstants.USER_NOTIFICATIONS, true);
+				ChatUtils.USER_NOTIFICATIONS, true);
 		switchButton.setChecked(isNotifications);
 		switchButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				Switch notif = (Switch) v;
 				SharedPreferences.Editor editor = settings.edit();
-				editor.putBoolean(ChatConstants.USER_NOTIFICATIONS,
+				editor.putBoolean(ChatUtils.USER_NOTIFICATIONS,
 						notif.isChecked());
 				editor.commit();
 			}
@@ -148,7 +149,7 @@ public class ChatAroundActivity extends Activity {
 
 		Switch switchButtonSound = (Switch) settingsDialog
 				.findViewById(R.id.switchNotifSoundId);
-		Boolean isSound = settings.getBoolean(ChatConstants.USER_STAY_ONLINE,
+		Boolean isSound = settings.getBoolean(ChatUtils.USER_STAY_ONLINE,
 				true);
 		switchButtonSound.setChecked(isSound);
 		switchButtonSound.setOnClickListener(new OnClickListener() {
@@ -156,7 +157,7 @@ public class ChatAroundActivity extends Activity {
 			public void onClick(View v) {
 				Switch sound = (Switch) v;
 				SharedPreferences.Editor editor = settings.edit();
-				editor.putBoolean(ChatConstants.USER_STAY_ONLINE,
+				editor.putBoolean(ChatUtils.USER_STAY_ONLINE,
 						sound.isChecked());
 				editor.commit();
 			}
@@ -178,10 +179,10 @@ public class ChatAroundActivity extends Activity {
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
-					editor.putString(ChatConstants.USER_NICKNAME, nickname);
-					editor.putString(ChatConstants.USER_MOOD, mood);
-					editor.putString(ChatConstants.USER_EMAIL, email);
-					editor.putString(ChatConstants.USER_PASSW, passw);
+					editor.putString(ChatUtils.USER_NICKNAME, nickname);
+					editor.putString(ChatUtils.USER_MOOD, mood);
+					editor.putString(ChatUtils.USER_EMAIL, email);
+					editor.putString(ChatUtils.USER_PASSW, passw);
 					editor.commit();
 					settingsDialog.hide();
 				}
@@ -200,8 +201,8 @@ public class ChatAroundActivity extends Activity {
 	}
 
 	private void registerToCloud() {
-		checkNotNull(ChatConstants.SERVER_URL, "SERVER_URL");
-		checkNotNull(ChatConstants.SENDER_ID, "SENDER_ID");
+		checkNotNull(ChatUtils.SERVER_URL, "SERVER_URL");
+		checkNotNull(ChatUtils.SENDER_ID, "SENDER_ID");
 		// Make sure the device has the proper dependencies.
 		GCMRegistrar.checkDevice(this);
 		// Make sure the manifest was properly set - comment out this line
@@ -211,7 +212,7 @@ public class ChatAroundActivity extends Activity {
 		final String regId = GCMRegistrar.getRegistrationId(this);
 		if (regId.equals("")) {
 			// Automatically registers application on startup.
-			GCMRegistrar.register(this, ChatConstants.SENDER_ID);
+			GCMRegistrar.register(this, ChatUtils.SENDER_ID);
 		} else {
 			// Device is already registered on GCM, check server.
 			if (GCMRegistrar.isRegisteredOnServer(this)) {
@@ -230,7 +231,7 @@ public class ChatAroundActivity extends Activity {
 				dto.setTime(Calendar.getInstance().getTime());
 
 				new ChatAroundTask(context,null).execute(dto,
-						ChatConstants.SERVER_URL + ChatConstants.REGISTER_URL);
+						ChatUtils.SERVER_URL + ChatUtils.REGISTER_URL);
 			}
 		}
 	}

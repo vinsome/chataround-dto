@@ -11,6 +11,7 @@ import com.service.chataround.db.DB_Helper;
 import com.service.chataround.dto.chat.ChatMessageDto;
 
 public class DatabaseUtils {
+	public static String TAG = DatabaseUtils.class.getName();
 	public static ChatMessageDto addMessageToDb(Context ctx, ChatMessageDto dto) {
 		DB_Helper db = new DB_Helper(ctx);
 		SQLiteDatabase sdb = db.getWritableDatabase();

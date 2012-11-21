@@ -11,8 +11,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.service.chataround.dto.chat.ChatMessageDto;
 
 public class DB_Helper extends SQLiteOpenHelper {
+	public static String TAG = DB_Helper.class.getName();
+	
 	public static String dbName = "DB_CHATAROUND";
-
 	public static String CHAT_AROUND_MESSAGE_TABLE = "CHAT_AROUND_MESSAGE";
 
 	public static String ID_FIELD = "ID";
