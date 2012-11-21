@@ -8,7 +8,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -26,6 +29,7 @@ import android.widget.Switch;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.EventBus;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.fragment.ChatAroundListFragment;
 import com.service.chataround.listener.MyLocationListener;
 import com.service.chataround.task.ChatAroundTask;
@@ -68,6 +72,8 @@ public class ChatAroundActivity extends Activity {
 				settingsDialog();
 		}		
 		
+		registerReceiver(mHandleMessageReceiver, new IntentFilter(
+				ChatConstants.DISPLAY_MESSAGE_ACTION));
 	}
 
 	@Override
@@ -300,4 +306,19 @@ public class ChatAroundActivity extends Activity {
 	public void setFragmentPresent(String fragmentPresent) {
 		this.fragmentPresent = fragmentPresent;
 	}
+
+	@Override
+	public void onAttachFragment(Fragment fragment) {
+		super.onAttachFragment(fragment);
+		
+	}
+	
+	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			ChatMessageDto dto = new ChatMessageDto();
+			eventBus.post(dto);
+		}
+		
+	};	
 }

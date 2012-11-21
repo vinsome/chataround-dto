@@ -146,14 +146,12 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 
 		}
 	}
+	
 	@Subscribe
-	public void refreshChatList(ChatMessageDto dto) {
-		if(dto!=null){
-			mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
-			adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
-			setListAdapter(adapter);			
-		}
-		
+	public void receiveMessageFromCloud(ChatMessageDto dto){
+		mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+		adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
+		setListAdapter(adapter);
 	}
 	private boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getActivity()

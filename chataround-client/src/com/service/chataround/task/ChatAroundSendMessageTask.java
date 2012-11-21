@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto;
-import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.fragment.ChatFragment;
 import com.service.chataround.util.ChatAroundHttpClient;
 

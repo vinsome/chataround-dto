@@ -112,7 +112,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 		//if(!dto.isMine())
 			DatabaseUtils.addMessageToDb(context,dto);
 		
-		//displayMessage(context, message, regIdFromMessanger,true);
+		ChatConstants.displayMessage(context, message, regIdFromMessanger);
+		
 		// notifies user
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		boolean isNotificaciones=settings.getBoolean(USER_NOTIFICATIONS,true);

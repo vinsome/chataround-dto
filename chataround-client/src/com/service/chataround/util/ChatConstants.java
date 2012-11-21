@@ -1,5 +1,8 @@
 package com.service.chataround.util;
 
+import android.content.Context;
+import android.content.Intent;
+
 
 public class ChatConstants {
     /**
@@ -28,5 +31,22 @@ public class ChatConstants {
 	public static final String REGISTER_URL="/chatAroundRegister.do";
 	public static final String UNREGISTER_URL="/chatAroundUnRegister.do";
 	public static final String SENDMESSAGE_URL="/chatAroundSendMessage.do";
-
+	
+	public static final String DISPLAY_MESSAGE_ACTION =
+        "com.service.chataround.ChatAroundActivity";
+    /**
+     * Notifies UI to display a message.
+     * <p>
+     * This method is defined in the common helper because it's used both by
+     * the UI and the background service.
+     *
+     * @param context application's context.
+     * @param message message to be displayed.
+     */
+    public static void displayMessage(Context context, String message,String senderRegId) {
+        Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
+        intent.putExtra(PushUtils.PARAMETER_MESSAGE, message);
+        intent.putExtra(PushUtils.REG_ID_FROM_MESSANGER, senderRegId);
+        context.sendBroadcast(intent);
+    }	
 }
