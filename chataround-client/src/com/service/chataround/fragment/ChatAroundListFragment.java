@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.Subscribe;
+import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
 import com.service.chataround.adapter.UserListViewAdapter;
@@ -35,7 +36,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	public static String TAG = ChatAroundListFragment.class.getName();
 	private UserListViewAdapter adapter;
 	private ArrayList<UserPublicDto> mFiles = new ArrayList<UserPublicDto>();
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,9 +59,10 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Log.i("FragmentList", "Item clicked: " + id);
-		
-		UserPublicDto userSelected = (UserPublicDto)l.getAdapter().getItem(Long.valueOf(id).intValue());
-		ChatAroundActivity chat = (ChatAroundActivity)getActivity();
+
+		UserPublicDto userSelected = (UserPublicDto) l.getAdapter().getItem(
+				Long.valueOf(id).intValue());
+		ChatAroundActivity chat = (ChatAroundActivity) getActivity();
 		chat.setRecipientId(userSelected.getUserId());
 		onButtonBClicked();
 	}
@@ -78,10 +80,10 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 	}
-	
+
 	@Override
 	public void onResume() {
-		//mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+		// mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
 		super.onResume();
 		adapter = new UserListViewAdapter(getActivity(), R.layout.row_userlist,
 				mFiles);
@@ -93,11 +95,11 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		final String regId = GCMRegistrar.getRegistrationId(getActivity());
 		final SharedPreferences settings = getActivity().getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
-		final String nickName = settings.getString(ChatUtils.USER_NICKNAME,
-				"");
+		final String nickName = settings.getString(ChatUtils.USER_NICKNAME, "");
 		final String mood = settings.getString(ChatUtils.USER_MOOD, "");
 		final String userId = settings.getString(ChatUtils.USER_ID, "");
 		final String email = settings.getString(ChatUtils.USER_EMAIL, "");
+		final int sex = settings.getInt(ChatUtils.USER_SEX, R.id.radioMaleId);
 		boolean isRegisteredToServer = settings.getBoolean(
 				ChatUtils.USER_REGISTERED_ONLINE, false);
 
@@ -105,12 +107,20 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 			// register to server!
 			RegisterUserRequestDto dto = new RegisterUserRequestDto();
 			dto.setDeviceId(regId);
-			dto.setEmail(email);//validating user
+			dto.setEmail(email);// validating user
 			dto.setLattitude(event.getLatitude().doubleValue());
 			dto.setLongitude(event.getLongitude().doubleValue());
-			dto.setNickName(nickName);//validating nickname
+			dto.setNickName(nickName);// validating nickname
 			dto.setPassword("");
 			dto.setStatusMessage(mood);
+			if (sex == R.id.radioMaleId) {
+				dto.setGender(Gender.Male);
+			} else if (sex == R.id.radioFemaleId) {
+				dto.setGender(Gender.Female);
+			} else {
+				dto.setGender(Gender.Other);
+			}
+
 			// register to server
 			new ChatAroundRegisterUserTask(getActivity(), this).execute(dto,
 					ChatUtils.REGISTER_SERVER_URL);
@@ -133,7 +143,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	}
 
 	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
-		if (dto!=null && StringUtils.hasText(dto.getUserId())) {
+		if (dto != null && StringUtils.hasText(dto.getUserId())) {
 			final SharedPreferences settings = getActivity()
 					.getSharedPreferences(ChatUtils.PREFS_NAME, 0);
 			String userId = dto.getUserId();
@@ -145,11 +155,12 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	}
 
 	public void finishTaskPingUser(UserPingResponseDto result) {
-		if(result!=null && !CollectionUtils.isEmpty(result.getUserList())){
-			Log.i("ChatAroundListFragment", "size of list="+result.getUserList().size());
-			adapter = new UserListViewAdapter(getActivity(), R.layout.row_userlist,
-					result.getUserList());
-			setListAdapter(adapter);			
+		if (result != null && !CollectionUtils.isEmpty(result.getUserList())) {
+			Log.i("ChatAroundListFragment", "size of list="
+					+ result.getUserList().size());
+			adapter = new UserListViewAdapter(getActivity(),
+					R.layout.row_userlist, result.getUserList());
+			setListAdapter(adapter);
 		}
 	}
 }

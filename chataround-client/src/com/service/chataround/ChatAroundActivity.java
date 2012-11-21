@@ -24,6 +24,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -43,16 +45,19 @@ public class ChatAroundActivity extends Activity {
 	private EditText emailText;
 	private EditText moodText;
 	private EditText userPassw;
+	private RadioGroup radioSex;
 	private EventBus eventBus = new EventBus();
 	private MyLocationListener locationListener;
 	private String recipientId;
 	private String fragmentPresent;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_around);
-		
-		Fragment frg = Fragment.instantiate(this,ChatAroundListFragment.class.getName());
+
+		Fragment frg = Fragment.instantiate(this,
+				ChatAroundListFragment.class.getName());
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.add(R.id.frameLayoutId, frg);
 		ft.addToBackStack(null);
@@ -63,16 +68,17 @@ public class ChatAroundActivity extends Activity {
 		}
 		final SharedPreferences settings = getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
-		
+
 		String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
 		String mood = settings.getString(ChatUtils.USER_MOOD, "");
 		String email = settings.getString(ChatUtils.USER_EMAIL, "");
-		String passw = settings.getString(ChatUtils.USER_PASSW,"");		
-		
-		if(!StringUtils.hasText(nick) || !StringUtils.hasText(email)||!StringUtils.hasText(passw)) {
-				settingsDialog();
-		}		
-		
+		String passw = settings.getString(ChatUtils.USER_PASSW, "");
+
+		if (!StringUtils.hasText(nick) || !StringUtils.hasText(email)
+				|| !StringUtils.hasText(passw)) {
+			settingsDialog();
+		}
+
 		registerReceiver(mHandleMessageReceiver, new IntentFilter(
 				ChatUtils.DISPLAY_MESSAGE_ACTION));
 	}
@@ -81,8 +87,8 @@ public class ChatAroundActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		locationListener = new MyLocationListener(
-				locationManager, getApplicationContext(),eventBus);
+		locationListener = new MyLocationListener(locationManager,
+				getApplicationContext(), eventBus);
 		locationListener.start();
 	}
 
@@ -116,21 +122,33 @@ public class ChatAroundActivity extends Activity {
 
 		nickName = (EditText) settingsDialog
 				.findViewById(R.id.nicknameTextView);
-		emailText = (EditText) settingsDialog
-		.findViewById(R.id.emailTextView);
+		emailText = (EditText) settingsDialog.findViewById(R.id.emailTextView);
 		moodText = (EditText) settingsDialog.findViewById(R.id.moodTextView);
-		userPassw= (EditText) settingsDialog.findViewById(R.id.passwordTextView);
-		
+		userPassw = (EditText) settingsDialog
+				.findViewById(R.id.passwordTextView);
+		radioSex = (RadioGroup) settingsDialog.findViewById(R.id.radioSexId);
+
 		String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
 		String mood = settings.getString(ChatUtils.USER_MOOD, "");
 		String email = settings.getString(ChatUtils.USER_EMAIL, "");
-		String passw = settings.getString(ChatUtils.USER_PASSW,"");
-		
+		String passw = settings.getString(ChatUtils.USER_PASSW, "");
+		int selectedId = settings.getInt(ChatUtils.USER_SEX, R.id.radioMaleId);
+
 		nickName.setText(nick);
 		moodText.setText(mood);
 		emailText.setText(email);
 		userPassw.setText(passw);
-		
+		radioSex.check(selectedId);
+		/*
+		if (selectedId == R.id.radioMaleId) {
+			//RadioButton ra = (RadioButton)settingsDialog.findViewById(R.id.radioMaleId);ra.setSelected(true);
+			
+		} else if (selectedId == R.id.radioFemaleId) {
+			//RadioButton ra = (RadioButton)settingsDialog.findViewById(R.id.radioFemaleId);ra.setSelected(true);
+		} else {
+			//RadioButton ra = (RadioButton)settingsDialog.findViewById(R.id.radioOtherId);ra.setSelected(true);
+		}
+		 */
 		Switch switchButton = (Switch) settingsDialog
 				.findViewById(R.id.switchNotifId);
 		Boolean isNotifications = settings.getBoolean(
@@ -149,16 +167,14 @@ public class ChatAroundActivity extends Activity {
 
 		Switch switchButtonSound = (Switch) settingsDialog
 				.findViewById(R.id.switchNotifSoundId);
-		Boolean isSound = settings.getBoolean(ChatUtils.USER_STAY_ONLINE,
-				true);
+		Boolean isSound = settings.getBoolean(ChatUtils.USER_STAY_ONLINE, true);
 		switchButtonSound.setChecked(isSound);
 		switchButtonSound.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				Switch sound = (Switch) v;
 				SharedPreferences.Editor editor = settings.edit();
-				editor.putBoolean(ChatUtils.USER_STAY_ONLINE,
-						sound.isChecked());
+				editor.putBoolean(ChatUtils.USER_STAY_ONLINE, sound.isChecked());
 				editor.commit();
 			}
 		});
@@ -167,22 +183,27 @@ public class ChatAroundActivity extends Activity {
 		button.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				if (StringUtils.hasText(nickName.getText().toString().trim())  &&
-					StringUtils.hasText(moodText.getText().toString().trim())  &&
-					StringUtils.hasText(emailText.getText().toString().trim()) && 
-					StringUtils.hasText(userPassw.getText().toString().trim()))  {
-					
+				if (StringUtils.hasText(nickName.getText().toString().trim())
+						&& StringUtils.hasText(moodText.getText().toString()
+								.trim())
+						&& StringUtils.hasText(emailText.getText().toString()
+								.trim())
+						&& StringUtils.hasText(userPassw.getText().toString()
+								.trim())) {
+
 					String nickname = nickName.getText().toString().trim();
 					String mood = moodText.getText().toString().trim();
 					String email = emailText.getText().toString().trim();
 					String passw = userPassw.getText().toString().trim();
+					int selectedId = radioSex.getCheckedRadioButtonId();
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
 					editor.putString(ChatUtils.USER_NICKNAME, nickname);
 					editor.putString(ChatUtils.USER_MOOD, mood);
 					editor.putString(ChatUtils.USER_EMAIL, email);
-					editor.putString(ChatUtils.USER_PASSW, passw);
+					editor.putInt(ChatUtils.USER_SEX, selectedId);
+
 					editor.commit();
 					settingsDialog.hide();
 				}
@@ -230,7 +251,7 @@ public class ChatAroundActivity extends Activity {
 				dto.setAppId(PushUtils.APP_ID);
 				dto.setTime(Calendar.getInstance().getTime());
 
-				new ChatAroundTask(context,null).execute(dto,
+				new ChatAroundTask(context, null).execute(dto,
 						ChatUtils.SERVER_URL + ChatUtils.REGISTER_URL);
 			}
 		}
@@ -311,15 +332,15 @@ public class ChatAroundActivity extends Activity {
 	@Override
 	public void onAttachFragment(Fragment fragment) {
 		super.onAttachFragment(fragment);
-		
+
 	}
-	
+
 	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			ChatMessageDto dto = new ChatMessageDto();
 			eventBus.post(dto);
 		}
-		
-	};	
+
+	};
 }

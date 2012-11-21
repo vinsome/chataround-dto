@@ -26,6 +26,7 @@ public class ChatUtils {
 	public static final String USER_MOOD = "mood";
 	public static final String USER_EMAIL = "emailUser";
 	public static final String USER_PASSW = "userPssw";
+	public static final String USER_SEX = "userSex";
 	public static final String PREFS_NAME = "ChatAroundPreferences";
 	public static final String USER_NOTIFICATIONS = "UserNotifications";
 	public static final String USER_STAY_ONLINE = "StayOnline";

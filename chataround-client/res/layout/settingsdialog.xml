@@ -82,7 +82,43 @@
 	            android:maxLength="50"
 	            android:minEms="50"
 	            android:minLines="4" />
-	    </LinearLayout>	       
+	    </LinearLayout>
+	    
+	<LinearLayout
+	        android:id="@+id/sexLayoutId"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:paddingLeft="@dimen/global_padding_left"
+	        android:paddingRight="@dimen/global_padding_right"
+	        android:paddingTop="@dimen/global_padding_top" >
+		<RadioGroup
+	        android:id="@+id/radioSexId"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" >
+	 
+	        <RadioButton
+	            android:id="@+id/radioMaleId"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/radio_male" 
+	            />
+	 
+	        <RadioButton
+	            android:id="@+id/radioFemaleId"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/radio_female" />
+	        
+	         <RadioButton
+	            android:id="@+id/radioOtherId"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/radio_other" />
+	    </RadioGroup>
+    	
+	    </LinearLayout>
+	    	    	       
 	<LinearLayout
 	        android:id="@+id/linearMoodLayoutId"
 	        android:layout_width="wrap_content"
