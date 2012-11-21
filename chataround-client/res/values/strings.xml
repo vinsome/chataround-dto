@@ -12,6 +12,7 @@
     <string name="nickname_label">Nick:</string>
     <string name="email_label">Email:</string>
     <string name="mood_label">Mood:</string>
+    <string name="password_label">Desired password:</string>
     <string name="chatNotifications">Get notifications:</string>
     <string name="switch_off">Off</string>
     <string name="switch_on">On</string>

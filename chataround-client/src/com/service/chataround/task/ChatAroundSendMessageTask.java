@@ -5,17 +5,18 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.service.chataround.dto.chat.ChatMessageDto;
+import com.service.chataround.dto.chat.ChatMessageResponseDto;
 import com.service.chataround.dto.chat.UserPingRequestDto;
-import com.service.chataround.dto.chat.UserPingResponseDto;
-import com.service.chataround.fragment.ChatAroundListFragment;
+import com.service.chataround.fragment.ChatFragment;
 import com.service.chataround.util.ChatAroundHttpClient;
 
-public class ChatAroundPingLocationTask extends
-		AsyncTask<Object, Integer, UserPingResponseDto> {
+public class ChatAroundSendMessageTask extends
+		AsyncTask<Object, Integer, ChatMessageResponseDto> {
 	protected final Context mContext;
 	protected final Fragment fragment;
 
-	public ChatAroundPingLocationTask(Context ctx, Fragment fragment) {
+	public ChatAroundSendMessageTask(Context ctx, Fragment fragment) {
 		this.mContext = ctx;
 		this.fragment = fragment;
 
@@ -27,39 +28,40 @@ public class ChatAroundPingLocationTask extends
 	}
 
 	@Override
-	protected UserPingResponseDto doInBackground(Object... params) {
-		UserPingResponseDto result = null;
+	protected ChatMessageResponseDto doInBackground(Object... params) {
+		ChatMessageResponseDto result = null;
 		try {
-			if (params[0] instanceof UserPingRequestDto) {
-				UserPingRequestDto dto = (UserPingRequestDto) params[0];
+			if (params[0] instanceof ChatMessageDto) {
+				ChatMessageDto dto = (ChatMessageDto) params[0];
 				String url2call = (String) params[1];
 				result = ChatAroundHttpClient
-						.postSpringData(url2call, UserPingResponseDto.class,
+						.postSpringData(url2call, ChatMessageResponseDto.class,
 								dto);
 				//patch to do the trick
 				//rest = "{'userList': "+ rest+"}";
 				//Gson gson = new Gson();
 				//result =	gson.fromJson(rest, UserPingRequestDto.class);
 				if (result != null) {
-					Log.i("RegisterUserRequestDto server.response",
+					Log.i("ChatMessageResponseDto server.response",
 							"Result not null");
 				} else {
-					Log.i("RegisterUserRequestDto server.response",
+					Log.i("ChatMessageResponseDto server.response",
 							"Result null");
 				}
 			}
 		} catch (Exception e) {
-			Log.e("validateUser error.loading.datafromserver",
+			Log.e("Send message error.loading.datafromserver",
 					"Error loading data from server", e);
 		}
 		return result;
 	}
 
 	@Override
-	protected void onPostExecute(UserPingResponseDto result) {
+	protected void onPostExecute(ChatMessageResponseDto result) {
 		if (result != null) {
-			ChatAroundListFragment frag = (ChatAroundListFragment) fragment;
-			frag.finishTaskPingUser(result);
+			ChatFragment frag = (ChatFragment) fragment;
+			frag.finishTask(result);
 		}
 	}
+
 }

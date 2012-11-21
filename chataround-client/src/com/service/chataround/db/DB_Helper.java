@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.ChatMessageDto;
 
 public class DB_Helper extends SQLiteOpenHelper {
 	public static String dbName = "DB_CHATAROUND";
@@ -48,14 +48,14 @@ public class DB_Helper extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
-	public ChatAroundDto addMessage(ChatAroundDto dto, SQLiteDatabase db) {
+	public ChatMessageDto addMessage(ChatMessageDto dto, SQLiteDatabase db) {
 		ContentValues cv = new ContentValues();
 		cv.put(USER_FIELD, dto.getNickName());
 		cv.put(MESSAGE_FIELD, dto.getMessage());
 		cv.put(TIME_FIELD, new Date().getTime());
 		cv.put(SENT_FIELD, dto.isSent());
 		cv.put(MINE_FIELD, dto.isMine());
-		cv.put(REG_FIELD, dto.getDeviceId());
+		cv.put(REG_FIELD, dto.getSenderId());
 		long id = db.insert(CHAT_AROUND_MESSAGE_TABLE, null, cv);
 		dto.setId(id);
 		db.close();

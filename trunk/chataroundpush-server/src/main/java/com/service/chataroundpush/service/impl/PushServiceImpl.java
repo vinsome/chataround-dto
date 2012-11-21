@@ -3,6 +3,7 @@ package com.service.chataroundpush.service.impl;
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -118,10 +119,21 @@ public class PushServiceImpl implements PushService {
 	@Override
 	public ChatMessageInternalDto pushMessage(ChatMessageInternalDto dto) {
 		String appId = dto.getAppId();
-		String regId = dto.getSenderId();// is who sends the message!
+		//String regId = dto.getSenderId();// is who sends the message!
+		
+		String recipientDeviceId = dto.getRecipientId();
+		String senderDeviceId = dto.getSenderDeviceId();
+		//my android database id
+		
+		//we dont have it yet!
+		//String androidSenderMessageId = Long.toString(dto.getId());
+		
 		//Map<String, String> params = dto.getParams();
-		logger.info("PushServiceImpl doPush  deviceId "+regId);
-		Map<String,String> devices = PushDatastore.getDevicesToMessage(appId);
+		//logger.info("PushServiceImpl doPush  deviceId "+regId);
+		//Map<String,String> devices = PushDatastore.getDevicesToMessage(appId);
+		Map<String,String> devices = new HashMap<String,String>(0);
+		devices.put(recipientDeviceId,recipientDeviceId);
+		devices.put(senderDeviceId, senderDeviceId);
 		logger.info("PushServiceImpl doPush devices selected "+devices);
 	    String status;
 	    if (devices.isEmpty()) {
@@ -138,7 +150,7 @@ public class PushServiceImpl implements PushService {
 	        		.param(SendMessageServlet.PARAMETER_DEVICE, device)
 	        		.param(PushUtils.PARAMETER_MESSAGE, dto.getMessage())
 	        		.param(PushUtils.NICK_ID_FROM_MESSANGER, dto.getNickName())
-	        		.param(PushUtils.REG_ID_FROM_MESSANGER,regId)
+	        		.param(PushUtils.REG_ID_FROM_MESSANGER,senderDeviceId)
 	        );
 	        status = "Single message queued for registration id " + device;
 	      } else {
@@ -163,7 +175,7 @@ public class PushServiceImpl implements PushService {
 		                .param(SendMessageServlet.PARAMETER_MULTICAST, multicastKey)
 		                .param(PushUtils.PARAMETER_MESSAGE, dto.getMessage())
 		        		.param(PushUtils.NICK_ID_FROM_MESSANGER, dto.getNickName())
-		                .param(PushUtils.REG_ID_FROM_MESSANGER,regId)
+		                .param(PushUtils.REG_ID_FROM_MESSANGER,senderDeviceId)
 		                .method(Method.POST);
 		            queue.add(taskOptions);
 		            partialDevices.clear();

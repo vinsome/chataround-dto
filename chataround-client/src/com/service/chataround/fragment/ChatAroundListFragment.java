@@ -22,6 +22,7 @@ import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
 import com.service.chataround.adapter.UserListViewAdapter;
 import com.service.chataround.dto.chat.UserPingRequestDto;
+import com.service.chataround.dto.chat.UserPingResponseDto;
 import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
 import com.service.chataround.event.LocationChangeEvent;
@@ -39,6 +40,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		super.onCreate(savedInstanceState);
 		ChatAroundActivity act = (ChatAroundActivity) getActivity();
 		act.getEventBus().register(this);
+		act.setFragmentPresent(ChatAroundListFragment.class.getName());
 	}
 
 	@Override
@@ -55,6 +57,10 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Log.i("FragmentList", "Item clicked: " + id);
+		
+		UserPublicDto userSelected = (UserPublicDto)l.getAdapter().getItem(Long.valueOf(id).intValue());
+		ChatAroundActivity chat = (ChatAroundActivity)getActivity();
+		chat.setRecipientId(userSelected.getUserId());
 		onButtonBClicked();
 	}
 
@@ -137,7 +143,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		}
 	}
 
-	public void finishTaskPingUser(UserPingRequestDto result) {
+	public void finishTaskPingUser(UserPingResponseDto result) {
 		if(result!=null && !CollectionUtils.isEmpty(result.getUserList())){
 			Log.i("ChatAroundListFragment", "size of list="+result.getUserList().size());
 			adapter = new UserListViewAdapter(getActivity(), R.layout.row_userlist,

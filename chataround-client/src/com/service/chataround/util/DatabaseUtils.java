@@ -8,10 +8,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.service.chataround.db.DB_Helper;
-import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.ChatMessageDto;
 
 public class DatabaseUtils {
-	public static ChatAroundDto addMessageToDb(Context ctx, ChatAroundDto dto) {
+	public static ChatMessageDto addMessageToDb(Context ctx, ChatMessageDto dto) {
 		DB_Helper db = new DB_Helper(ctx);
 		SQLiteDatabase sdb = db.getWritableDatabase();
 			dto = db.addMessage(dto, sdb);
@@ -20,11 +20,11 @@ public class DatabaseUtils {
 		return dto;
 	}
 	
-	public static ArrayList<ChatAroundDto> getMessageFromToDb(Context ctx) {
+	public static ArrayList<ChatMessageDto> getMessageFromToDb(Context ctx) {
 		DB_Helper db = new DB_Helper(ctx);
 		SQLiteDatabase sdb = db.getWritableDatabase();
 			Cursor cursor = db.getAllMessages(sdb);
-			ArrayList<ChatAroundDto> result = getMessages(cursor);
+			ArrayList<ChatMessageDto> result = getMessages(cursor);
 		sdb.close();
 		db.close();
 		return result;
@@ -45,11 +45,11 @@ public class DatabaseUtils {
 		db.close();
 	}		
 		
-	private  static ArrayList<ChatAroundDto> getMessages(Cursor c){
-		 ArrayList<ChatAroundDto> mFilas = new ArrayList<ChatAroundDto>();
+	private  static ArrayList<ChatMessageDto> getMessages(Cursor c){
+		 ArrayList<ChatMessageDto> mFilas = new ArrayList<ChatMessageDto>();
 		 c.moveToFirst();
 		 while (!c.isAfterLast()) {
-			 	ChatAroundDto dto = cursorToChatAroundDto(c);
+			 ChatMessageDto dto = cursorToChatAroundDto(c);
 			 	mFilas.add(dto);
 			 c.moveToNext();
 		 }
@@ -58,13 +58,13 @@ public class DatabaseUtils {
 		 return mFilas;
 	}
 	
-	private static ChatAroundDto cursorToChatAroundDto(Cursor c){
-		ChatAroundDto dto = new ChatAroundDto();
+	private static ChatMessageDto cursorToChatAroundDto(Cursor c){
+		ChatMessageDto dto = new ChatMessageDto();
 		    dto.setId(c.getLong(0));
 			dto.setNickName(c.getString(1));
 			dto.setMessage(c.getString(2));
 			dto.setTime(new Date(c.getLong(3)));
-			dto.setDeviceId((c.getString(4)));
+			dto.setSenderId((c.getString(4)));
 			dto.setSent(( c.getInt(5)==0?false:true ));
 			dto.setMine(( c.getInt(6)==0?false:true ));
 			return dto;

@@ -14,14 +14,15 @@ import android.widget.TextView;
 
 import com.service.chataround.R;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.ChatMessageDto;
 
-public class IconListViewAdapter extends ArrayAdapter<ChatAroundDto> {
+public class IconListViewAdapter extends ArrayAdapter<ChatMessageDto> {
 
-	private ArrayList<ChatAroundDto> items;
+	private ArrayList<ChatMessageDto> items;
 	private Context ctx;
 
 	public IconListViewAdapter(Context context, int textViewResourceId,
-			ArrayList<ChatAroundDto> items) {
+			ArrayList<ChatMessageDto> items) {
 		super(context, textViewResourceId, items);
 		this.items = items;
 		this.ctx = context;
@@ -34,7 +35,7 @@ public class IconListViewAdapter extends ArrayAdapter<ChatAroundDto> {
 			LayoutInflater vi = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.row_foro, null);
 		}
-		ChatAroundDto o = items.get(position);
+		ChatMessageDto o = items.get(position);
 		if (o != null) {
 
 			TextView messageMine = (TextView) v.findViewById(R.id.messageright);

@@ -29,6 +29,7 @@ public class ChatMessageResponseDto extends BaseDto implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Long id;
 	private String recipientId;
 	private String message;
 	private MessageStatus status;
@@ -49,6 +50,12 @@ public class ChatMessageResponseDto extends BaseDto implements Serializable{
 	}
 	public void setStatus(MessageStatus status) {
 		this.status = status;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 }

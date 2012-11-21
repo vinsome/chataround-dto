@@ -9,7 +9,9 @@ public class ChatMessageInternalDto extends ChatMessageDto{
 	private static final long serialVersionUID = 1L;
 	private String senderDeviceId; 
 	private String receipientDeviceId;
-	
+	public ChatMessageInternalDto(){
+		super();
+	}
 	public String getSenderDeviceId() {
 		return senderDeviceId;
 	}

@@ -1,7 +1,6 @@
 package com.service.chataround.fragment;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import org.springframework.util.StringUtils;
 
@@ -20,12 +19,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.gcm.GCMRegistrar;
+import com.google.common.eventbus.Subscribe;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
 import com.service.chataround.adapter.IconListViewAdapter;
-import com.service.chataround.dto.chat.ChatAroundDto;
-import com.service.chataround.task.ChatAroundTask;
+import com.service.chataround.dto.chat.ChatMessageDto;
+import com.service.chataround.dto.chat.ChatMessageResponseDto;
+import com.service.chataround.task.ChatAroundSendMessageTask;
 import com.service.chataround.util.ChatConstants;
 import com.service.chataround.util.DatabaseUtils;
 import com.service.chataround.util.PushUtils;
@@ -33,13 +33,22 @@ import com.service.chataround.util.PushUtils;
 public class ChatFragment extends ListFragment implements OnClickListener {
 
 	private IconListViewAdapter adapter;
-	private ArrayList<ChatAroundDto> mFiles = new ArrayList<ChatAroundDto>();
+	private ArrayList<ChatMessageDto> mFiles = new ArrayList<ChatMessageDto>();
 	private Button sendButton;
 	private Button goBackButton;
 	private EditText textMessage;
 	private String nickName;
-	private String regId;
+	//private String regId;
+	private String userId;
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		ChatAroundActivity act = (ChatAroundActivity) getActivity();
+		act.getEventBus().register(this);
+		act.setFragmentPresent(ChatFragment.class.getName());
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -49,7 +58,10 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		regId = GCMRegistrar.getRegistrationId(getActivity());
+		//regId = GCMRegistrar.getRegistrationId(getActivity());
+		final SharedPreferences settings = getActivity().getSharedPreferences(
+				ChatConstants.PREFS_NAME, 0);
+		userId = settings.getString(ChatConstants.USER_ID, "");		
 	}
 
 	@Override
@@ -85,15 +97,22 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		if (v.getId() == R.id.goBackListButton) {
 			onButtonBClicked();
 		} else {
-			if (isOnline()) {
-				ChatAroundDto dto = new ChatAroundDto();
-				dto.setDeviceId(regId);
+			String recipientId = ((ChatAroundActivity)getActivity()).getRecipientId();
+			if (isOnline() && recipientId!=null ) {
+				ChatMessageDto dto = new ChatMessageDto();
+				//MY user id
+				dto.setSenderId(userId);
+				
+				//Recipient to whom I want to seend the message
+				dto.setRecipientId(recipientId);
+				
 				dto.setMessage(textMessage.getText().toString());
+
 				dto.setMine(true);
 				dto.setNickName(nickName);
-				dto.setSent(false);
+				
 				dto.setAppId(PushUtils.APP_ID);
-				dto.setTime(Calendar.getInstance().getTime());
+				dto.setTime(null);
 
 				dto = DatabaseUtils.addMessageToDb(getActivity(), dto);
 				textMessage.setText("");
@@ -105,38 +124,37 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 
 				setListAdapter(adapter);
 
-				new ChatAroundTask(getActivity(), this).execute(dto,
-						ChatConstants.SERVER_URL
-								+ ChatConstants.SENDMESSAGE_URL);
+				new ChatAroundSendMessageTask(getActivity(), this).execute(dto,
+						ChatConstants.SEND_MESSAGE_USER_SERVER_URL);
 			}
 		}
 	}
 
-	public void finishTask(ChatAroundDto result) {
+	public void finishTask(ChatMessageResponseDto result) {
 		if (result != null
-				&& result.getResponse().equals(
-						"push.server.operation.sendmessage.ok")) {
-			DatabaseUtils.updateMessageFieldById(getActivity(),
-					Long.toString(result.getId()), "SENT", "1");
+				&& !StringUtils.hasText(result.getServerMessage())) {
+			
+			// DatabaseUtils.updateMessageFieldById(getActivity(),Long.toString(result.getId()), "SENT", "1");
 
 			// some phones are slower to get here and get the message sooner
 			// than update to sent 1.
-			mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
-			adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,
-					mFiles);
-			setListAdapter(adapter);
-
-		} else if (result != null
-				&& result.getResponse().equals(
-						"push.server.operation.unregister.ok")) {
-
-			GCMRegistrar.setRegisteredOnServer(getActivity(), false);
+			//mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+			//adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
+			//setListAdapter(adapter);
 
 		} else {
 
 		}
 	}
-
+	@Subscribe
+	public void refreshChatList(ChatMessageDto dto) {
+		if(dto!=null){
+			mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+			adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
+			setListAdapter(adapter);			
+		}
+		
+	}
 	private boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getActivity()
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -155,6 +173,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		ft.addToBackStack(null);
 		ft.commit();
 		ChatAroundActivity act = (ChatAroundActivity)getActivity();
+			act.setRecipientId(null);
 			act.getLocationListener().doStart();
 	}	
 

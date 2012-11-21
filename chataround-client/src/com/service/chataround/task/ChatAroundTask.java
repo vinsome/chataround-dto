@@ -66,7 +66,7 @@ public class ChatAroundTask extends AsyncTask<Object, Integer, ChatAroundDto> {
 		} else if (fragment instanceof ChatFragment) {
 			ChatFragment fg = (ChatFragment)fragment;
 				if(result!=null){
-					fg.finishTask(result);
+					//fg.finishTask(result);
 				}
 		} else {
 			// The registration progress ends saving the regId into the device

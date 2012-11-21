@@ -29,6 +29,7 @@ import android.util.Log;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.task.ChatAroundTask;
 import com.service.chataround.util.ChatConstants;
 import com.service.chataround.util.DatabaseUtils;
@@ -43,7 +44,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	public static final String USER_NOTIFICATIONS="notificationsUser";
 	public static final String USER_SOUND_ENABLED="notificationsUserSound";
 	
-	public static final String PREFS_NAME = "EvangelioPrefsFileESP";
+	public static final String PREFS_NAME = "ChatAround2012";
 
 	public GCMIntentService() {
 		super(ChatConstants.SENDER_ID);
@@ -100,7 +101,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		String nick = intent.getExtras().getString(PushUtils.NICK_ID_FROM_MESSANGER);
 		
 		//build dto
-		ChatAroundDto dto = new ChatAroundDto();
+		ChatMessageDto dto = new ChatMessageDto();
 		dto.setNickName(nick);
 		dto.setMessage(message);
 		dto.setTime(Calendar.getInstance().getTime());
@@ -108,7 +109,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		dto.setMine(regId.equals(regIdFromMessanger));
 		
 		//mines are already in it!
-		if(!dto.isMine())
+		//if(!dto.isMine())
 			DatabaseUtils.addMessageToDb(context,dto);
 		
 		//displayMessage(context, message, regIdFromMessanger,true);
@@ -117,10 +118,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 		boolean isNotificaciones=settings.getBoolean(USER_NOTIFICATIONS,true);
 		boolean isSound=settings.getBoolean(USER_SOUND_ENABLED,true);
 		
-		if (isNotificaciones&&!regId.equals(regIdFromMessanger))
+		//if (isNotificaciones&&!regId.equals(regIdFromMessanger))
 			generateNotification(context, TAG
 					+ ": " + nick+"@ "+message,isSound);
-					
+			
 	}
 	
 

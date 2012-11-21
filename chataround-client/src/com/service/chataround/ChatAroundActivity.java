@@ -37,15 +37,17 @@ public class ChatAroundActivity extends Activity {
 	private EditText nickName;
 	private EditText emailText;
 	private EditText moodText;
+	private EditText userPassw;
 	private EventBus eventBus = new EventBus();
 	private MyLocationListener locationListener;
+	private String recipientId;
+	private String fragmentPresent;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_around);
-
-		Fragment frg = Fragment.instantiate(this,
-				ChatAroundListFragment.class.getName());
+		
+		Fragment frg = Fragment.instantiate(this,ChatAroundListFragment.class.getName());
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.add(R.id.frameLayoutId, frg);
 		ft.addToBackStack(null);
@@ -58,8 +60,11 @@ public class ChatAroundActivity extends Activity {
 				ChatConstants.PREFS_NAME, 0);
 		
 		String nick = settings.getString(ChatConstants.USER_NICKNAME, "");
+		String mood = settings.getString(ChatConstants.USER_MOOD, "");
+		String email = settings.getString(ChatConstants.USER_EMAIL, "");
+		String passw = settings.getString(ChatConstants.USER_PASSW,"");		
 		
-		if(!StringUtils.hasText(nick)) {
+		if(!StringUtils.hasText(nick) || !StringUtils.hasText(email)||!StringUtils.hasText(passw)) {
 				settingsDialog();
 		}		
 		
@@ -107,14 +112,17 @@ public class ChatAroundActivity extends Activity {
 		emailText = (EditText) settingsDialog
 		.findViewById(R.id.emailTextView);
 		moodText = (EditText) settingsDialog.findViewById(R.id.moodTextView);
+		userPassw= (EditText) settingsDialog.findViewById(R.id.passwordTextView);
 		
 		String nick = settings.getString(ChatConstants.USER_NICKNAME, "");
 		String mood = settings.getString(ChatConstants.USER_MOOD, "");
 		String email = settings.getString(ChatConstants.USER_EMAIL, "");
+		String passw = settings.getString(ChatConstants.USER_PASSW,"");
 		
 		nickName.setText(nick);
 		moodText.setText(mood);
 		emailText.setText(email);
+		userPassw.setText(passw);
 		
 		Switch switchButton = (Switch) settingsDialog
 				.findViewById(R.id.switchNotifId);
@@ -152,19 +160,22 @@ public class ChatAroundActivity extends Activity {
 		button.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				if (StringUtils.hasText(nickName.getText().toString().trim())&&
-					StringUtils.hasText(moodText.getText().toString().trim())&&
-					StringUtils.hasText(emailText.getText().toString().trim()) ) {
+				if (StringUtils.hasText(nickName.getText().toString().trim())  &&
+					StringUtils.hasText(moodText.getText().toString().trim())  &&
+					StringUtils.hasText(emailText.getText().toString().trim()) && 
+					StringUtils.hasText(userPassw.getText().toString().trim()))  {
 					
 					String nickname = nickName.getText().toString().trim();
 					String mood = moodText.getText().toString().trim();
 					String email = emailText.getText().toString().trim();
+					String passw = userPassw.getText().toString().trim();
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
 					editor.putString(ChatConstants.USER_NICKNAME, nickname);
 					editor.putString(ChatConstants.USER_MOOD, mood);
 					editor.putString(ChatConstants.USER_EMAIL, email);
+					editor.putString(ChatConstants.USER_PASSW, passw);
 					editor.commit();
 					settingsDialog.hide();
 				}
@@ -272,5 +283,21 @@ public class ChatAroundActivity extends Activity {
 
 	public void setLocationListener(MyLocationListener locationListener) {
 		this.locationListener = locationListener;
+	}
+
+	public String getRecipientId() {
+		return recipientId;
+	}
+
+	public void setRecipientId(String recipientId) {
+		this.recipientId = recipientId;
+	}
+
+	public String getFragmentPresent() {
+		return fragmentPresent;
+	}
+
+	public void setFragmentPresent(String fragmentPresent) {
+		this.fragmentPresent = fragmentPresent;
 	}
 }

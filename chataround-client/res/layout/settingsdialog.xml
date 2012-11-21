@@ -57,7 +57,32 @@
 	            android:minEms="50"
 	            android:minLines="4" />
 	    </LinearLayout>
-	       
+ 	<LinearLayout
+	        android:id="@+id/linearPasswLayoutId"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:paddingLeft="@dimen/global_padding_left"
+	        android:paddingRight="@dimen/global_padding_right"
+	        android:paddingTop="@dimen/global_padding_top" >
+	
+	        <TextView
+	            android:id="@+id/passwLabelId"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:paddingRight="@dimen/settings_nick_padding_right"
+	            android:text="@string/password_label"
+	            android:textSize="16sp" />
+	
+	        <EditText
+	            android:id="@+id/passwordTextView"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:inputType="text"
+	            android:maxLength="50"
+	            android:minEms="50"
+	            android:minLines="4" />
+	    </LinearLayout>	       
 	<LinearLayout
 	        android:id="@+id/linearMoodLayoutId"
 	        android:layout_width="wrap_content"
