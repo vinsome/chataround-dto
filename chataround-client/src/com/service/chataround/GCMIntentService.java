@@ -109,7 +109,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		dto.setMine(regId.equals(regIdFromMessanger));
 		
 		//mines are already in it!
-		//if(!dto.isMine())
+		if(!dto.isMine())
 			DatabaseUtils.addMessageToDb(context,dto);
 		
 		ChatConstants.displayMessage(context, message, regIdFromMessanger);
@@ -119,7 +119,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		boolean isNotificaciones=settings.getBoolean(USER_NOTIFICATIONS,true);
 		boolean isSound=settings.getBoolean(USER_SOUND_ENABLED,true);
 		
-		//if (isNotificaciones&&!regId.equals(regIdFromMessanger))
+		if (isNotificaciones&&!regId.equals(regIdFromMessanger))
 			generateNotification(context, TAG
 					+ ": " + nick+"@ "+message,isSound);
 			

@@ -134,13 +134,13 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		if (result != null
 				&& !StringUtils.hasText(result.getServerMessage())) {
 			
-			// DatabaseUtils.updateMessageFieldById(getActivity(),Long.toString(result.getId()), "SENT", "1");
+			 DatabaseUtils.updateMessageFieldById(getActivity(),Long.toString(result.getId()), "SENT", "1");
 
 			// some phones are slower to get here and get the message sooner
 			// than update to sent 1.
-			//mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
-			//adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
-			//setListAdapter(adapter);
+			mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+			adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
+			setListAdapter(adapter);
 
 		} else {
 
