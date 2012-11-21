@@ -141,7 +141,7 @@ public class ChatController extends BaseController{
 	public ChatMessageResponseDto sendChatMessage(@RequestBody ChatMessageDto chatMessageDto) throws AppException{
 		ChatMessageResponseDto chatMessageResponseDto = new ChatMessageResponseDto();
 		UserCacheDomain receipientUser = userLocationCache.getUserByExternalId(chatMessageDto.getRecipientId());
-		
+		chatMessageResponseDto.setId(chatMessageDto.getId());
 		if(receipientUser == null){
 			chatMessageResponseDto.setStatus(MessageStatus.Failed);
 			chatMessageResponseDto.setMessage("User is offline");
