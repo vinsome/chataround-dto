@@ -3,6 +3,7 @@ package com.next.infotech.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.next.core.exception.AppException;
 import com.next.core.exception.InternalAppException;
 import com.next.infotech.cache.UserLocationCache;
+import com.next.infotech.concurrent.CounterManager;
+import com.next.infotech.concurrent.CounterNames;
 import com.next.infotech.concurrent.QueueManager;
 import com.next.infotech.controller.init.ChatCacheInitializer;
 import com.next.infotech.persistance.domain.UserCacheDomain;
@@ -53,9 +56,10 @@ public class ChatController extends BaseController{
 	@Autowired
 	private ChatCacheInitializer chatCacheInitializer;
 
-	@RequestMapping(value="/api/1.0/pinglocationandgetuser", method = RequestMethod.POST)
+	@RequestMapping(value="/api/1.0/pinglocationandgetuser", method = RequestMethod.POST, consumes="application/*")
     @ResponseBody
 	public UserPingResponseDto pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
+		counterManager.incrementCounter(CounterNames.PING_REQUEST);
 		userLocationCache.updateUserLocation(userPingRequest.getUserId(), userPingRequest.getLattitude(), userPingRequest.getLongitude());
 		UserPingResponseDto userPingResponseDto = new UserPingResponseDto();
 		userPingResponseDto.setLattitude(userPingRequest.getLattitude());
@@ -66,9 +70,10 @@ public class ChatController extends BaseController{
 	}
 	
 	
-	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST)
+	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST, consumes="application/*")
     @ResponseBody
 	public RegisterUserRequestDto registerUser(@RequestBody RegisterUserRequestDto registerUserRequest) throws AppException{
+		counterManager.incrementCounter(CounterNames.REGISTER_USER_REQUEST);
 		UserDomain user = chatAroundServices.createUser(registerUserRequest);
 		userLocationCache.registerUser(user);
 		registerUserRequest.setUserId(user.getUserId());
@@ -76,16 +81,18 @@ public class ChatController extends BaseController{
 		registerUserRequest.setPassword("*****");
 		return registerUserRequest;
 	}
-	@RequestMapping(value="/api/1.0/updateuserstatus", method = RequestMethod.POST)
+	@RequestMapping(value="/api/1.0/updateuserstatus", method = RequestMethod.POST, consumes="application/*")
     @ResponseBody
 	public void updateUserStatus(@RequestBody UserStatusUpdateDto userStatusUpdateDto) throws AppException{
+		counterManager.incrementCounter(CounterNames.UPDATE_USER_STATUS_REQUEST);
 		chatAroundServices.updateUserStatus(userStatusUpdateDto.getUserId(), userStatusUpdateDto.getStatus());
 		userLocationCache.updateUserStatus(userStatusUpdateDto.getUserId(),userStatusUpdateDto.getStatus());
 	}
 	
-	@RequestMapping(value="/api/1.0/ofline/{userId}", method = RequestMethod.POST)
+	@RequestMapping(value="/api/1.0/ofline/{userId}", method = RequestMethod.POST, consumes="application/*")
     @ResponseBody
 	public void offlineUser(@PathVariable Long userId) throws AppException{
+		counterManager.incrementCounter(CounterNames.OFFLINE_USER_REQUEST);
 		userLocationCache.offlineUser(userId);
 	}
 	
@@ -133,16 +140,21 @@ public class ChatController extends BaseController{
 		model.addAttribute("BoxSizeInKm", userLocationCache.getGridBoxSizeInKm());
 		model.addAttribute("TotalUsers", userLocationCache.getTotalUser());
 		model.addAttribute("TotalLocations", userLocationCache.getTotalLocaltionBoxes());
+		Map<String, Long> counterValues = counterManager.getCounters();
+		model.addAttribute("counterMap", counterValues);
+		
 		return "showinfo";
 	}
 	
-	@RequestMapping(value="/api/1.0/sendchatmessage", method = RequestMethod.POST)
+	@RequestMapping(value="/api/1.0/sendchatmessage", method = RequestMethod.POST, consumes="application/*")
     @ResponseBody
 	public ChatMessageResponseDto sendChatMessage(@RequestBody ChatMessageDto chatMessageDto) throws AppException{
+		counterManager.incrementCounter(CounterNames.CHAT_MESSAGE_REQUEST);
 		ChatMessageResponseDto chatMessageResponseDto = new ChatMessageResponseDto();
 		UserCacheDomain receipientUser = userLocationCache.getUserByExternalId(chatMessageDto.getRecipientId());
 		chatMessageResponseDto.setId(chatMessageDto.getId());
 		if(receipientUser == null){
+			counterManager.incrementCounter(CounterNames.CHAT_MESSAGE_FAILED);
 			chatMessageResponseDto.setStatus(MessageStatus.Failed);
 			chatMessageResponseDto.setMessage("User is offline");
 		}else{
@@ -157,6 +169,7 @@ public class ChatController extends BaseController{
 			}
 			//If sender not found in cache and DB then raise the error
 			if(senderUser == null){
+				counterManager.incrementCounter(CounterNames.CHAT_MESSAGE_FAILED);
 				chatMessageResponseDto.setStatus(MessageStatus.Failed);
 				chatMessageResponseDto.setMessage("Invalid User");
 			}else{

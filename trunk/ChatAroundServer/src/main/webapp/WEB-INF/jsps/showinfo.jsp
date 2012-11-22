@@ -34,5 +34,14 @@
 </tr>
 </table>
 <c:out value="${Error}"></c:out>
+
+<table>
+<c:forEach items="${counterMap}" var="counterMap" varStatus="status">
+        <tr>
+            <td>${contactMap.key}</td>
+            <td><input name="counterMap['${counterMap.key}']" value="${counterMap.value}"/></td>
+        </tr>
+    </c:forEach>
+</table>
 </body>
 </html>

@@ -14,9 +14,12 @@ public class QueueManager {
 	@Qualifier("sendChatMessageTaskExecutor")
 	ThreadPoolTaskExecutor sendChatMessageTaskExecutor;
 	
+	@Autowired
+	private CounterManager counterManager;
+	
 	public void addChatMessageToQueue(
 			ChatMessageInternalDto chatMessageInternalDto) {
-		ChatMessageSender chatMessageSender = new ChatMessageSender(chatMessageInternalDto);
+		ChatMessageSender chatMessageSender = new ChatMessageSender(chatMessageInternalDto,counterManager);
 		sendChatMessageTaskExecutor.execute(chatMessageSender);
 	}
 }

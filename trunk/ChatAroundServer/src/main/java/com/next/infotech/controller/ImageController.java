@@ -34,8 +34,10 @@ import com.next.core.exception.AppException;
 import com.next.core.exception.InternalAppException;
 import com.next.core.picasa.PicasaUploadUtil;
 import com.next.infotech.cache.UserLocationCache;
+import com.next.infotech.concurrent.CounterNames;
 import com.next.infotech.persistance.domain.UserCacheDomain;
 import com.next.infotech.persistance.domain.UserDomain;
+import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.next.infotech.persistance.services.ChatAroundServices;
 
 @Controller
@@ -56,7 +58,7 @@ public class ImageController extends BaseController{
 	@RequestMapping(value="/api/1.0/uploadimage", method = RequestMethod.POST)
     @ResponseBody
 	public String uploadImage(HttpServletRequest httpServletRequest) throws AppException{
-		
+		counterManager.incrementCounter(CounterNames.TOTAL_UPLOAD_IMAGE_REQUEST);
 		try {
 			ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 			//FileItemIterator iterator = upload.getItemIterator(httpServletRequest);
@@ -129,10 +131,12 @@ public class ImageController extends BaseController{
 			logger.info("UserBeforeUpdate="+user);
 			UserDomain updatedUser = chatAroundServices.updateUserPhotoUrls(userExternalId, smallPhotoUrl, mediumImageUrl, largeImageUrl);
 			logger.info("updatedUser="+updatedUser);
-			
+			counterManager.incrementCounter(CounterNames.TOTAL_SUCCESS_UPLOAD_IMAGE_REQUEST);
 		} catch (FileUploadException e) {
+			counterManager.incrementCounter(CounterNames.TOTAL_FAILED_UPLOAD_IMAGE_REQUEST);
 			throw new InternalAppException(e);
 		} catch (IOException e) {
+			counterManager.incrementCounter(CounterNames.TOTAL_FAILED_UPLOAD_IMAGE_REQUEST);
 			throw new InternalAppException(e);
 		}		
 		
@@ -145,6 +149,7 @@ public class ImageController extends BaseController{
 	}
 	@RequestMapping(value="/api/1.0/userthumbnail", method = RequestMethod.GET)
 	public ModelAndView getUserThumbNail(HttpServletRequest httpServletRequest,ModelAndView mv,@RequestParam("userId") String userId) throws AppException{
+		counterManager.incrementCounter(CounterNames.TOTAL_USER_THUMBNAIL_REQUEST);
 		logger.info("getting user by userId from cache="+userId);
 		UserCacheDomain user = userLocationCache.getUserByExternalId(userId);
 		if(user == null){
@@ -155,7 +160,7 @@ public class ImageController extends BaseController{
 		logger.info("User="+user);
 		String redirectUrl = user.getSmallImageUrl();
 		String imageSize = httpServletRequest.getParameter("size");
-		if(imageSize != null && !imageSize.trim().equals("")){
+		if(redirectUrl != null && imageSize != null && !imageSize.trim().equals("")){
 			String imageSizeUpper = imageSize.toUpperCase();
 			int size = 0;
 			try{
@@ -179,6 +184,18 @@ public class ImageController extends BaseController{
 					redirectUrl = user.getLargeImageUrl();
 				}
 			}
+		}
+		if(redirectUrl == null){
+			if(Gender.Male.equals(user.getGender())){
+				redirectUrl="http://cdn1.iconfinder.com/data/icons/general10/png/128/administrator.png";	
+			}
+			if(Gender.Female.equals(user.getGender())){
+				redirectUrl="http://cdn1.iconfinder.com/data/icons/CrystalClear/128x128/kdm/user_female.png";	
+			}
+			if(Gender.Other.equals(user.getGender())){
+				redirectUrl="http://cdn1.iconfinder.com/data/icons/sphericalcons/128/users%201.png";	
+			}
+			
 		}
 		logger.info("Rediecting to url="+redirectUrl);
 		RedirectView view = new RedirectView(redirectUrl);

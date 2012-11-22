@@ -16,8 +16,10 @@ public class ChatMessageSender implements Runnable {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Gson gson = new Gson();
 	private ChatMessageInternalDto chatMessageInternalDto;
-	public ChatMessageSender(ChatMessageInternalDto chatMessageInternalDto){
+	private CounterManager counterManager;
+	public ChatMessageSender(ChatMessageInternalDto chatMessageInternalDto,CounterManager counterManager){
 		this.chatMessageInternalDto = chatMessageInternalDto;
+		this.counterManager = counterManager;
 	}
 	public void run() {
 		try{
@@ -32,9 +34,10 @@ public class ChatMessageSender implements Runnable {
 			httpost.setEntity(httpEntity);
 			
 			httpClient.execute(httpost);
-			
+			counterManager.incrementCounter(CounterNames.CHAT_MESSAGE_SENT_TO_APP_ENGINE);
 			
 		}catch(Exception ex){
+			counterManager.incrementCounter(CounterNames.CHAT_MESSAGE_FAILED_TOSENT_TO_APP_ENGINE);
 			logger.error(ex.getMessage(),ex);
 		}
 	}
