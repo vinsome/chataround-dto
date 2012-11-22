@@ -38,8 +38,8 @@
 <table>
 <c:forEach items="${counterMap}" var="counterMap" varStatus="status">
         <tr>
-            <td>${contactMap.key}</td>
-            <td><input name="counterMap['${counterMap.key}']" value="${counterMap.value}"/></td>
+            <td>${counterMap.key}</td>
+            <td><c:out value="${counterMap.value}"/></td>
         </tr>
     </c:forEach>
 </table>

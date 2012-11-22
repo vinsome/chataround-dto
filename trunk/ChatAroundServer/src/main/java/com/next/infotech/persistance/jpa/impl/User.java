@@ -155,8 +155,8 @@ public class User implements UserEntity{
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public Gender getGender() {
-		return Gender.parse(gender);
+	public String getGender() {
+		return gender;
 	}
 	public void setGender(String gender) {
 		Gender gendreEnum = Gender.parse(gender);
@@ -164,13 +164,6 @@ public class User implements UserEntity{
 			throw new RuntimeException(gender + " is not a correct value for Gender");
 		}
 		this.gender = gender;
-	}
-	public void setGender(Gender gender) {
-		if(gender == null){
-			this.gender = null;
-		}else{
-			this.gender = gender.getValue();	
-		}
 	}
 	public String getSmallImageUrl() {
 		return smallImageUrl;

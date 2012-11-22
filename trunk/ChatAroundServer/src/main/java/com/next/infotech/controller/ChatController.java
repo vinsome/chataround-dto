@@ -8,9 +8,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,25 +18,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.next.core.exception.AppException;
-import com.next.core.exception.InternalAppException;
 import com.next.infotech.cache.UserLocationCache;
-import com.next.infotech.concurrent.CounterManager;
 import com.next.infotech.concurrent.CounterNames;
 import com.next.infotech.concurrent.QueueManager;
-import com.next.infotech.controller.init.ChatCacheInitializer;
 import com.next.infotech.persistance.domain.UserCacheDomain;
 import com.next.infotech.persistance.domain.UserDomain;
-import com.next.infotech.persistance.helper.jpa.impl.UserHelper;
-import com.next.infotech.persistance.jpa.impl.User;
 import com.next.infotech.persistance.services.ChatAroundServices;
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.ChatMessageInternalDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto;
-import com.service.chataround.dto.chat.UserDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto.MessageStatus;
 import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.chat.UserPingResponseDto;
@@ -53,10 +46,8 @@ public class ChatController extends BaseController{
 	private UserLocationCache userLocationCache;
 	@Autowired
 	private QueueManager queueManager;
-	@Autowired
-	private ChatCacheInitializer chatCacheInitializer;
 
-	@RequestMapping(value="/api/1.0/pinglocationandgetuser", method = RequestMethod.POST, consumes="application/*")
+	@RequestMapping(value="/api/1.0/pinglocationandgetuser", method = RequestMethod.POST)
     @ResponseBody
 	public UserPingResponseDto pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
 		counterManager.incrementCounter(CounterNames.PING_REQUEST);
@@ -70,18 +61,23 @@ public class ChatController extends BaseController{
 	}
 	
 	
-	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST, consumes="application/*")
+	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST)
     @ResponseBody
-	public RegisterUserRequestDto registerUser(@RequestBody RegisterUserRequestDto registerUserRequest) throws AppException{
+	public void registerUser(@RequestBody RegisterUserRequestDto userRequestDtoTest) throws AppException{
 		counterManager.incrementCounter(CounterNames.REGISTER_USER_REQUEST);
-		UserDomain user = chatAroundServices.createUser(registerUserRequest);
+		RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto();
+		BeanUtils.copyProperties(userRequestDtoTest, registerUserRequestDto);
+		UserDomain user = chatAroundServices.createUser(registerUserRequestDto);
 		userLocationCache.registerUser(user);
-		registerUserRequest.setUserId(user.getUserId());
+		registerUserRequestDto.setUserId(user.getUserId());
 		//mask the password
-		registerUserRequest.setPassword("*****");
-		return registerUserRequest;
+		registerUserRequestDto.setPassword("*****");
+		//return registerUserRequest;
+		 
+		 
 	}
-	@RequestMapping(value="/api/1.0/updateuserstatus", method = RequestMethod.POST, consumes="application/*")
+	
+	@RequestMapping(value="/api/1.0/updateuserstatus", method = RequestMethod.POST)
     @ResponseBody
 	public void updateUserStatus(@RequestBody UserStatusUpdateDto userStatusUpdateDto) throws AppException{
 		counterManager.incrementCounter(CounterNames.UPDATE_USER_STATUS_REQUEST);
@@ -89,7 +85,7 @@ public class ChatController extends BaseController{
 		userLocationCache.updateUserStatus(userStatusUpdateDto.getUserId(),userStatusUpdateDto.getStatus());
 	}
 	
-	@RequestMapping(value="/api/1.0/ofline/{userId}", method = RequestMethod.POST, consumes="application/*")
+	@RequestMapping(value="/api/1.0/ofline/{userId}", method = RequestMethod.POST)
     @ResponseBody
 	public void offlineUser(@PathVariable Long userId) throws AppException{
 		counterManager.incrementCounter(CounterNames.OFFLINE_USER_REQUEST);
@@ -146,7 +142,7 @@ public class ChatController extends BaseController{
 		return "showinfo";
 	}
 	
-	@RequestMapping(value="/api/1.0/sendchatmessage", method = RequestMethod.POST, consumes="application/*")
+	@RequestMapping(value="/api/1.0/sendchatmessage", method = RequestMethod.POST)
     @ResponseBody
 	public ChatMessageResponseDto sendChatMessage(@RequestBody ChatMessageDto chatMessageDto) throws AppException{
 		counterManager.incrementCounter(CounterNames.CHAT_MESSAGE_REQUEST);
