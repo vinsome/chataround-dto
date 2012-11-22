@@ -24,10 +24,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.EventBus;
 import com.service.chataround.dto.chat.ChatAroundDto;
@@ -50,12 +50,15 @@ public class ChatAroundActivity extends Activity {
 	private MyLocationListener locationListener;
 	private String recipientId;
 	private String fragmentPresent;
-
+	private GoogleAnalyticsTracker tracker;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_around);
-
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start("UA-36514546-1",10, this);
+		
 		Fragment frg = Fragment.instantiate(this,
 				ChatAroundListFragment.class.getName());
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -76,7 +79,7 @@ public class ChatAroundActivity extends Activity {
 
 		if (!StringUtils.hasText(nick) || !StringUtils.hasText(email)
 				|| !StringUtils.hasText(passw)) {
-			settingsDialog();
+			goToSettingActivity();
 		}
 
 		registerReceiver(mHandleMessageReceiver, new IntentFilter(
@@ -86,6 +89,7 @@ public class ChatAroundActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		tracker.trackPageView("/"+TAG);
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationListener = new MyLocationListener(locationManager,
 				getApplicationContext(), eventBus);
@@ -105,13 +109,18 @@ public class ChatAroundActivity extends Activity {
 			// NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.menu_settings:
-			settingsDialog();
+			goToSettingActivity();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void goToSettingActivity(){
+	    Intent intent = new Intent(this, ChatAroundSettingActivity.class);
+	    startActivity(intent);
+	}
 
-	public void settingsDialog() {
+	public void settingsDialogDeprecated() {
 		final SharedPreferences settings = getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
 
@@ -343,4 +352,10 @@ public class ChatAroundActivity extends Activity {
 		}
 
 	};
+
+	@Override
+	protected void onDestroy() {
+		tracker.stop();
+		super.onDestroy();
+	}
 }

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.Subscribe;
 import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
@@ -36,13 +37,14 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	public static String TAG = ChatAroundListFragment.class.getName();
 	private UserListViewAdapter adapter;
 	private ArrayList<UserPublicDto> mFiles = new ArrayList<UserPublicDto>();
-
+	private GoogleAnalyticsTracker tracker;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChatAroundActivity act = (ChatAroundActivity) getActivity();
 		act.getEventBus().register(this);
 		act.setFragmentPresent(ChatAroundListFragment.class.getName());
+		tracker = GoogleAnalyticsTracker.getInstance();
 	}
 
 	@Override
@@ -83,8 +85,8 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 
 	@Override
 	public void onResume() {
-		// mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
 		super.onResume();
+		tracker.trackPageView("/"+TAG);
 		adapter = new UserListViewAdapter(getActivity(), R.layout.row_userlist,
 				mFiles);
 		setListAdapter(adapter);

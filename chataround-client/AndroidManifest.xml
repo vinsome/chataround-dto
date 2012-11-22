@@ -52,6 +52,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ChatAroundActivity" />
         </activity>
+        <activity android:name=".ChatAroundSettingActivity" />
 
         <!--
           BroadcastReceiver that will receive intents from GCM

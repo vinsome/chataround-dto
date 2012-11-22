@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.common.eventbus.Subscribe;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
@@ -40,13 +41,15 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	private String nickName;
 	//private String regId;
 	private String userId;
-
+	private GoogleAnalyticsTracker tracker;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChatAroundActivity act = (ChatAroundActivity) getActivity();
 		act.getEventBus().register(this);
 		act.setFragmentPresent(ChatFragment.class.getName());
+		tracker = GoogleAnalyticsTracker.getInstance();
 	}
 	
 	@Override
@@ -67,6 +70,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
+		tracker.trackPageView("/"+TAG);
 		mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
 
 		adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,
@@ -85,7 +89,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 
 		if (!StringUtils.hasText(nickName)) {
 			ChatAroundActivity chat = (ChatAroundActivity) getActivity();
-			chat.settingsDialog();
+			chat.goToSettingActivity();
 		}
 
 		goBackButton = (Button) getView().findViewById(R.id.goBackListButton);
