@@ -63,16 +63,14 @@ public class ChatController extends BaseController{
 	
 	@RequestMapping(value="/api/1.0/registeruser", method = RequestMethod.POST)
     @ResponseBody
-	public void registerUser(@RequestBody RegisterUserRequestDto userRequestDtoTest) throws AppException{
+	public RegisterUserRequestDto registerUser(@RequestBody RegisterUserRequestDto registerUserRequestDto) throws AppException{
 		counterManager.incrementCounter(CounterNames.REGISTER_USER_REQUEST);
-		RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto();
-		BeanUtils.copyProperties(userRequestDtoTest, registerUserRequestDto);
 		UserDomain user = chatAroundServices.createUser(registerUserRequestDto);
 		userLocationCache.registerUser(user);
 		registerUserRequestDto.setUserId(user.getUserId());
 		//mask the password
 		registerUserRequestDto.setPassword("*****");
-		//return registerUserRequest;
+		return registerUserRequestDto;
 		 
 		 
 	}
