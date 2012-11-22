@@ -5,7 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>apk</packaging>
 <properties>
-		<sdk.path>/Users/lukas/datacom/android-sdk-macosx</sdk.path>
+		<sdk.path>/usr/local/android-sdk-macosx</sdk.path>
 		<!-- sdk.path>/Users/lfernandezm/android-sdks</sdk.path -->
 		<android.run.debug>false</android.run.debug>
 	</properties>
@@ -53,21 +53,21 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework-android</groupId>
+			<groupId>org.springframework.android</groupId>
 			<artifactId>spring-android-auth</artifactId>
-			<version>1.0.0.M4</version>
+			<version>1.0.0.RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework-android</groupId>
+			<groupId>org.springframework.android</groupId>
 			<artifactId>spring-android-core</artifactId>
-			<version>1.0.0.M4</version>
+			<version>1.0.0.RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework-android</groupId>
+			<groupId>org.springframework.android</groupId>
 			<artifactId>spring-android-rest-template</artifactId>
-			<version>1.0.0.M4</version>
+			<version>1.0.0.RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>	
@@ -126,6 +126,44 @@ mvn install:install-file -Dfile=spring-android-rest-template-1.0.0.M4.jar -Dgrou
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.jayway.maven.plugins.android.generation2
+										</groupId>
+										<artifactId>
+											android-maven-plugin
+										</artifactId>
+										<versionRange>
+											[3.3.2,)
+										</versionRange>
+										<goals>
+											<goal>
+												generate-sources
+											</goal>
+											<goal>proguard</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<profiles>
 		<profile>
