@@ -12,14 +12,14 @@ public class ChatMessageInternalDto extends ChatMessageDto{
 	public ChatMessageInternalDto(){
 		super();
 	}
+	public ChatMessageInternalDto(ChatMessageDto chatMessageDto){
+		super(chatMessageDto);
+	}
 	public String getSenderDeviceId() {
 		return senderDeviceId;
 	}
 	public void setSenderDeviceId(String senderDeviceId) {
 		this.senderDeviceId = senderDeviceId;
-	}
-	public ChatMessageInternalDto(ChatMessageDto chatMessageDto){
-		super(chatMessageDto);
 	}
 	public String getReceipientDeviceId() {
 		return receipientDeviceId;

@@ -1,8 +1,10 @@
 package com.service.chataround.dto.chat;
 
+import java.io.Serializable;
+
 import com.service.chataround.dto.UserPublicWebEntity;
 
-public class UserResponseDto implements UserPublicWebEntity {
+public class UserResponseDto implements UserPublicWebEntity,Serializable {
 
 	/**
 	 * 
@@ -19,7 +21,9 @@ public class UserResponseDto implements UserPublicWebEntity {
 	private String mediumImageUrl;
 	private String largeImageUrl;
 
-	
+	public UserResponseDto(){
+		
+	}
 	public String getUserId() {
 		return userId;
 	}
@@ -50,8 +54,8 @@ public class UserResponseDto implements UserPublicWebEntity {
 	public void setStatusMessage(String statusMessage) {
 		this.statusMessage = statusMessage;
 	}
-	public Gender getGender() {
-		return Gender.parse(gender);
+	public String getGender() {
+		return gender;
 	}
 	public void setGender(String gender) {
 		Gender gendreEnum = Gender.parse(gender);
@@ -59,13 +63,6 @@ public class UserResponseDto implements UserPublicWebEntity {
 			throw new RuntimeException(gender + " is not a correct value for Gender");
 		}
 		this.gender = gender;
-	}
-	public void setGender(Gender gender) {
-		if(gender == null){
-			this.gender = null;
-		}else{
-			this.gender = gender.getValue();	
-		}
 	}
 	public String getSmallImageUrl() {
 		return smallImageUrl;

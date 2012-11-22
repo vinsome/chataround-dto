@@ -15,6 +15,9 @@ public class UserPingResponseDto extends BaseDto implements Serializable {
 	private Double lattitude;
 	private List<UserPublicDto> userList;
 	
+	public UserPingResponseDto(){
+		
+	}
 	public String getUserId() {
 		return userId;
 	}

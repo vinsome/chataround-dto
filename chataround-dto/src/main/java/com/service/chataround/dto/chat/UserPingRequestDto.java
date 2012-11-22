@@ -13,6 +13,9 @@ public class UserPingRequestDto implements Serializable {
 	private Double longitude;
 	private Double lattitude;
 	
+	public UserPingRequestDto(){
+		
+	}
 	public String getUserId() {
 		return userId;
 	}

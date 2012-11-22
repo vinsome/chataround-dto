@@ -1,8 +1,10 @@
 package com.service.chataround.dto.chat;
 
+import java.io.Serializable;
+
 import com.next.infotech.persistance.domain.UserPublicDomain;
 
-public class UserPublicDto implements UserPublicDomain {
+public class UserPublicDto implements UserPublicDomain,Serializable {
 
 	/**
 	 * 
@@ -25,9 +27,7 @@ public class UserPublicDto implements UserPublicDomain {
 		this.lattitude = user.getLattitude();
 		this.statusMessage = user.getStatusMessage();
 		this.userId = user.getUserId();
-		if(user.getGender() != null){
-			this.gender = user.getGender().getValue();	
-		}
+		this.gender = user.getGender();	
 	}
 	public String getUserId() {
 		return userId;
@@ -59,8 +59,8 @@ public class UserPublicDto implements UserPublicDomain {
 	public void setStatusMessage(String statusMessage) {
 		this.statusMessage = statusMessage;
 	}
-	public Gender getGender() {
-		return Gender.parse(gender);
+	public String getGender() {
+		return gender;
 	}
 	public void setGender(String gender) {
 		Gender gendreEnum = Gender.parse(gender);
@@ -68,13 +68,6 @@ public class UserPublicDto implements UserPublicDomain {
 			throw new RuntimeException(gender + " is not a correct value for Gender");
 		}
 		this.gender = gender;
-	}
-	public void setGender(Gender gender) {
-		if(gender == null){
-			this.gender = null;
-		}else{
-			this.gender = gender.getValue();	
-		}
 	}
 	public String getSmallImageUrl() {
 		return IMAGES_SERVER+"api/1.0/userthumbnail?userId="+userId+"&size=SMALL";
