@@ -5,8 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.service.chataround.ChatAroundSettingActivity;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
-import com.service.chataround.fragment.ChatAroundListFragment;
 import com.service.chataround.util.ChatAroundHttpClient;
 
 public class ChatAroundRegisterUserTask extends AsyncTask<Object, Integer, RegisterUserRequestDto> {
@@ -22,7 +22,7 @@ public class ChatAroundRegisterUserTask extends AsyncTask<Object, Integer, Regis
 
 	@Override
 	protected void onPreExecute() {
-
+ 
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class ChatAroundRegisterUserTask extends AsyncTask<Object, Integer, Regis
 
 	@Override
 	protected void onPostExecute(RegisterUserRequestDto result) {
-			ChatAroundListFragment frag = (ChatAroundListFragment)fragment;
+		ChatAroundSettingActivity frag = (ChatAroundSettingActivity)mContext;
 			frag.finishTaskRegisterUser(result);			
 	}
 

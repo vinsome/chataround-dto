@@ -1,6 +1,7 @@
 package com.service.chataround.fragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -19,7 +20,6 @@ import android.widget.ListView;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.Subscribe;
-import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
 import com.service.chataround.adapter.UserListViewAdapter;
@@ -29,15 +29,15 @@ import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
 import com.service.chataround.event.LocationChangeEvent;
 import com.service.chataround.task.ChatAroundPingLocationTask;
-import com.service.chataround.task.ChatAroundRegisterUserTask;
 import com.service.chataround.util.Callback;
 import com.service.chataround.util.ChatUtils;
 
 public class ChatAroundListFragment extends ListFragment implements Callback {
 	public static String TAG = ChatAroundListFragment.class.getName();
 	private UserListViewAdapter adapter;
-	private ArrayList<UserPublicDto> mFiles = new ArrayList<UserPublicDto>();
+	private List<UserPublicDto> mFiles = new ArrayList<UserPublicDto>();
 	private GoogleAnalyticsTracker tracker;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,7 +86,10 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	@Override
 	public void onResume() {
 		super.onResume();
-		tracker.trackPageView("/"+TAG);
+		tracker.trackPageView("/" + TAG);
+		ChatAroundActivity act = (ChatAroundActivity)getActivity();
+			if(!CollectionUtils.isEmpty(act.getCacheList()));
+			mFiles=act.getCacheList();
 		adapter = new UserListViewAdapter(getActivity(), R.layout.row_userlist,
 				mFiles);
 		setListAdapter(adapter);
@@ -101,47 +104,36 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		final String mood = settings.getString(ChatUtils.USER_MOOD, "");
 		final String userId = settings.getString(ChatUtils.USER_ID, "");
 		final String email = settings.getString(ChatUtils.USER_EMAIL, "");
+		final String password = settings.getString(ChatUtils.USER_EMAIL, "");
 		final int sex = settings.getInt(ChatUtils.USER_SEX, R.id.radioMaleId);
+
 		boolean isRegisteredToServer = settings.getBoolean(
 				ChatUtils.USER_REGISTERED_ONLINE, false);
 
-		if (!isRegisteredToServer && !StringUtils.hasText(userId)) {
+		if (!isRegisteredToServer && nickName!=null && !"".equals(nickName) && (userId==null || "".equals(userId)) 
+				&& password!=null && !"".equals(password)&&email!=null && !"".equals(email)) {
 			// register to server!
-			RegisterUserRequestDto dto = new RegisterUserRequestDto();
-			dto.setDeviceId(regId);
-			dto.setEmail(email);// validating user
-			dto.setLattitude(event.getLatitude().doubleValue());
-			dto.setLongitude(event.getLongitude().doubleValue());
-			dto.setNickName(nickName);// validating nickname
-			dto.setPassword("");
-			dto.setStatusMessage(mood);
-			if (sex == R.id.radioMaleId) {
-				dto.setGender(Gender.Male);
-			} else if (sex == R.id.radioFemaleId) {
-				dto.setGender(Gender.Female);
-			} else {
-				dto.setGender(Gender.Other);
-			}
-
-			// register to server
-			new ChatAroundRegisterUserTask(getActivity(), this).execute(dto,
-					ChatUtils.REGISTER_SERVER_URL);
-
+				
+		} else if(isRegisteredToServer && userId!=null && !"".equals(userId)) {
+			pingToServerAndGetUsers(userId, event);
 		} else {
-
-			UserPingRequestDto dto = new UserPingRequestDto();
-			dto.setLattitude(event.getLatitude().doubleValue());
-			dto.setLongitude(event.getLongitude().doubleValue());
-			dto.setUserId(userId);
-
-			// param based : ("lat") Double lattitude, "long") Double
-			// longitude,@RequestParam("nn") String
-			// nickName,@RequestParam("uid")
-			new ChatAroundPingLocationTask(getActivity(), this).execute(dto,
-					ChatUtils.PING_LOCATION_AND_GET_USERS_SERVER_URL);
-
+			//some settings missing
 		}
 
+	}
+
+	private void pingToServerAndGetUsers(String userId,
+			LocationChangeEvent event) {
+		UserPingRequestDto dto = new UserPingRequestDto();
+		dto.setLattitude(event.getLatitude().doubleValue());
+		dto.setLongitude(event.getLongitude().doubleValue());
+		dto.setUserId(userId);
+
+		// param based : ("lat") Double lattitude, "long") Double
+		// longitude,@RequestParam("nn") String
+		// nickName,@RequestParam("uid")
+		new ChatAroundPingLocationTask(getActivity(), this).execute(dto,
+				ChatUtils.PING_LOCATION_AND_GET_USERS_SERVER_URL);
 	}
 
 	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
@@ -160,9 +152,12 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		if (result != null && !CollectionUtils.isEmpty(result.getUserList())) {
 			Log.i("ChatAroundListFragment", "size of list="
 					+ result.getUserList().size());
+			List<UserPublicDto> cacheList = result.getUserList();
 			adapter = new UserListViewAdapter(getActivity(),
-					R.layout.row_userlist, result.getUserList());
+					R.layout.row_userlist, cacheList);
 			setListAdapter(adapter);
+			ChatAroundActivity act = (ChatAroundActivity) getActivity();
+			act.setCacheList(cacheList);
 		}
 	}
 }

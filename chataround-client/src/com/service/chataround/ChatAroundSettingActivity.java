@@ -1,11 +1,14 @@
 package com.service.chataround;
 
+import java.util.Calendar;
+
 import org.springframework.util.StringUtils;
 
-import com.service.chataround.util.ChatUtils;
-
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +19,15 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 
+import com.google.android.gcm.GCMRegistrar;
+import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
+import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.register.RegisterUserRequestDto;
+import com.service.chataround.task.ChatAroundRegisterUserTask;
+import com.service.chataround.task.ChatAroundTask;
+import com.service.chataround.util.ChatUtils;
+import com.service.chataround.util.PushUtils;
+
 public class ChatAroundSettingActivity extends Activity {
 	public static String TAG = ChatAroundSettingActivity.class.getName();
 	private EditText nickName;
@@ -23,16 +35,21 @@ public class ChatAroundSettingActivity extends Activity {
 	private EditText moodText;
 	private EditText userPassw;
 	private RadioGroup radioSex;
+	private String regId;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settingsdialog);
+		//only register if not yet registered
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		if (isOnline()) {
+			registerToCloud();
+		}		
 		final SharedPreferences settings = getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
 		nickName = (EditText) findViewById(R.id.nicknameTextView);
@@ -91,12 +108,12 @@ public class ChatAroundSettingActivity extends Activity {
 								.trim())
 						&& StringUtils.hasText(userPassw.getText().toString()
 								.trim())) {
-
+					regId = GCMRegistrar.getRegistrationId(getApplicationContext());
 					String nickname = nickName.getText().toString().trim();
 					String mood = moodText.getText().toString().trim();
 					String email = emailText.getText().toString().trim();
 					String passw = userPassw.getText().toString().trim();
-					int selectedId = radioSex.getCheckedRadioButtonId();
+					int sex = radioSex.getCheckedRadioButtonId();
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
@@ -104,10 +121,12 @@ public class ChatAroundSettingActivity extends Activity {
 					editor.putString(ChatUtils.USER_MOOD, mood);
 					editor.putString(ChatUtils.USER_EMAIL, email);
 					editor.putString(ChatUtils.USER_PASSW, passw);
-					editor.putInt(ChatUtils.USER_SEX, selectedId);
+					editor.putInt(ChatUtils.USER_SEX, sex);
 
 					editor.commit();
 					// settingsDialog.hide();
+					//finish();
+					registerToServer(regId,email,nickname,passw,mood,sex);
 				}
 			}
 		});
@@ -115,7 +134,7 @@ public class ChatAroundSettingActivity extends Activity {
 		Button closeButton = (Button) findViewById(R.id.closeSettings);
 		closeButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-
+				finish();
 			}
 		});
 	}
@@ -138,4 +157,91 @@ public class ChatAroundSettingActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	private void registerToServer(String regId, String email, String nickName,
+			String password, String mood, int sex) {
+		RegisterUserRequestDto dto = new RegisterUserRequestDto();
+		dto.setDeviceId(regId);
+		dto.setEmail(email);// validating user
+		dto.setLattitude(0.0d);
+		dto.setLongitude(0.0d);
+		dto.setNickName(nickName);// validating nickname
+		dto.setPassword(password);
+		dto.setStatusMessage(mood);
+		if (sex == R.id.radioMaleId) {
+			dto.setGender(Gender.Male.getValue());
+		} else if (sex == R.id.radioFemaleId) {
+			dto.setGender(Gender.Female.getValue());
+		} else {
+			dto.setGender(Gender.Other.getValue());
+		}
+
+		// register to server and get users...
+		new ChatAroundRegisterUserTask(this, null).execute(dto,
+				ChatUtils.REGISTER_SERVER_URL);
+		
+		
+	}
+	
+	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
+		if (dto != null && StringUtils.hasText(dto.getUserId())) {
+				final SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
+				String userId = dto.getUserId();
+				SharedPreferences.Editor editor = settings.edit();
+				editor.putString(ChatUtils.USER_ID, userId);
+				editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
+				editor.commit();
+				finish();
+		}
+	}
+	
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+			return true;
+		}
+		return false;
+	}	
+	
+	private void registerToCloud() {
+		checkNotNull(ChatUtils.SERVER_URL, "SERVER_URL");
+		checkNotNull(ChatUtils.SENDER_ID, "SENDER_ID");
+		// Make sure the device has the proper dependencies.
+		GCMRegistrar.checkDevice(this);
+		// Make sure the manifest was properly set - comment out this line
+		// while developing the app, then uncomment it when it's ready.
+		GCMRegistrar.checkManifest(this);
+
+		final String regId = GCMRegistrar.getRegistrationId(this);
+		if (regId.equals("")) {
+			// Automatically registers application on startup.
+			GCMRegistrar.register(this, ChatUtils.SENDER_ID);
+		} else {
+			// Device is already registered on GCM, check server.
+			if (GCMRegistrar.isRegisteredOnServer(this)) {
+				// Skips registration.
+				// No need to display anything cause it«s background thingy
+				// mDisplay.append(getString(R.string.already_registered) +
+				// "\n");
+			} else {
+				// Try to register again, but not in the UI thread.
+				// It's also necessary to cancel the thread onDestroy(),
+				// hence the use of AsyncTask instead of a raw thread.
+				final Context context = this;
+				ChatAroundDto dto = new ChatAroundDto();
+				dto.setDeviceId(regId);
+				dto.setAppId(PushUtils.APP_ID);
+				dto.setTime(Calendar.getInstance().getTime());
+				
+				//new ChatAroundTask(context, null).execute(dto,ChatUtils.SERVER_URL + ChatUtils.REGISTER_URL);
+			}
+		}
+	}
+	private void checkNotNull(Object reference, String name) {
+		if (reference == null) {
+			throw new NullPointerException(getString(R.string.error_config,
+					name));
+		}
+	}	
 }

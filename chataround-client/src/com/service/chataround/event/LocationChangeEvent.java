@@ -12,6 +12,8 @@ public class LocationChangeEvent implements Serializable{
 	
 	private BigDecimal latitude ;
 	private BigDecimal longitude;
+	private String userId;
+	private boolean registeredToServer;
 	public LocationChangeEvent (BigDecimal latitude,BigDecimal longitude){
 		this.latitude=latitude;
 		this.longitude=longitude;
@@ -27,6 +29,18 @@ public class LocationChangeEvent implements Serializable{
 	}
 	public void setLongitude(BigDecimal longitude) {
 		this.longitude = longitude;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public boolean isRegisteredToServer() {
+		return registeredToServer;
+	}
+	public void setRegisteredToServer(boolean registeredToServer) {
+		this.registeredToServer = registeredToServer;
 	} 
 	
 }

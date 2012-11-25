@@ -87,7 +87,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 				ChatUtils.PREFS_NAME, 0);
 		nickName = settings.getString(ChatUtils.USER_NICKNAME, "");
 
-		if (!StringUtils.hasText(nickName)) {
+		if (nickName==null||"".equals(nickName)) {
 			ChatAroundActivity chat = (ChatAroundActivity) getActivity();
 			chat.goToSettingActivity();
 		}
@@ -174,9 +174,6 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		ft.replace(R.id.frameLayoutId, anotherFragment);
 		ft.addToBackStack(null);
 		ft.commit();
-		ChatAroundActivity act = (ChatAroundActivity)getActivity();
-			act.setRecipientId(null);
-			act.getLocationListener().doStart();
 	}	
 
 }

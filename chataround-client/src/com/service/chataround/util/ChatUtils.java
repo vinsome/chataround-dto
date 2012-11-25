@@ -73,7 +73,8 @@ public class ChatUtils {
 			return results[0];// in metres
 		}
 	}
-
+	
+	@Deprecated
 	public static boolean isLocationChanged(Double myLatitude,
 			Double myLongitude, Double otherLatitude, Double otherLongitude) {
 		float distance = Math.abs(distanceFromUser(myLatitude, myLongitude,

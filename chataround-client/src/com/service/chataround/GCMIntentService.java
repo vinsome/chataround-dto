@@ -30,7 +30,6 @@ import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.dto.chat.ChatMessageDto;
-import com.service.chataround.task.ChatAroundTask;
 import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.DatabaseUtils;
 import com.service.chataround.util.PushUtils;
@@ -59,9 +58,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 		dto.setDeviceId(registrationId);
 		dto.setAppId(PushUtils.APP_ID);
 		dto.setTime(Calendar.getInstance().getTime());
-
-		new ChatAroundTask(context,null).execute(dto,
-				ChatUtils.SERVER_URL + ChatUtils.REGISTER_URL);
+		//no more need required
+		//new ChatAroundTask(context,null).execute(dto,ChatUtils.SERVER_URL + ChatUtils.REGISTER_URL);
+		GCMRegistrar.setRegisteredOnServer(context, true);
 	}
 
 	@Override
@@ -73,9 +72,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 			ChatAroundDto dto = new ChatAroundDto();
 			dto.setDeviceId(registrationId);
 			dto.setAppId(PushUtils.APP_ID);
-
-			new ChatAroundTask(context,null).execute(dto,
-					ChatUtils.SERVER_URL + ChatUtils.UNREGISTER_URL);
+			
+			//new ChatAroundTask(context,null).execute(dto,ChatUtils.SERVER_URL + ChatUtils.UNREGISTER_URL);
 			
 			GCMRegistrar.setRegisteredOnServer(context, false);
 			// ServerUtilities.unregister(context, registrationId);
