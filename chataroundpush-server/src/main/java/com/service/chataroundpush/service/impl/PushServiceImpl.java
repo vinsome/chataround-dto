@@ -123,6 +123,9 @@ public class PushServiceImpl implements PushService {
 		
 		String recipientDeviceId = dto.getRecipientId();
 		String senderDeviceId = dto.getSenderDeviceId();
+		String recipientUserId = dto.getRecipientId();
+		String senderUserId = dto.getSenderId();
+		
 		//my android database id
 		
 		//we dont have it yet!
@@ -134,6 +137,9 @@ public class PushServiceImpl implements PushService {
 		Map<String,String> devices = new HashMap<String,String>(0);
 		devices.put(recipientDeviceId,recipientDeviceId);
 		devices.put(senderDeviceId, senderDeviceId);
+		devices.put(recipientUserId, recipientUserId);
+		devices.put(senderUserId, senderUserId);
+		
 		logger.info("PushServiceImpl doPush devices selected "+devices);
 	    String status;
 	    if (devices.isEmpty()) {
@@ -151,6 +157,9 @@ public class PushServiceImpl implements PushService {
 	        		.param(PushUtils.PARAMETER_MESSAGE, dto.getMessage())
 	        		.param(PushUtils.NICK_ID_FROM_MESSANGER, dto.getNickName())
 	        		.param(PushUtils.REG_ID_FROM_MESSANGER,senderDeviceId)
+	        		.param(PushUtils.USER_ID_FROM_RECIPIENT, recipientUserId)
+	        		.param(PushUtils.USER_ID_FROM_SENDER, senderUserId)
+	        		
 	        );
 	        status = "Single message queued for registration id " + device;
 	      } else {
@@ -176,6 +185,8 @@ public class PushServiceImpl implements PushService {
 		                .param(PushUtils.PARAMETER_MESSAGE, dto.getMessage())
 		        		.param(PushUtils.NICK_ID_FROM_MESSANGER, dto.getNickName())
 		                .param(PushUtils.REG_ID_FROM_MESSANGER,senderDeviceId)
+		                .param(PushUtils.USER_ID_FROM_RECIPIENT, recipientUserId)
+		                .param(PushUtils.USER_ID_FROM_SENDER, senderUserId)
 		                .method(Method.POST);
 		            queue.add(taskOptions);
 		            partialDevices.clear();
