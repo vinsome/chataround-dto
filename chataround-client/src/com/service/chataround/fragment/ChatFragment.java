@@ -36,7 +36,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	private IconListViewAdapter adapter;
 	private ArrayList<ChatMessageDto> mFiles = new ArrayList<ChatMessageDto>();
 	private Button sendButton;
-	private Button goBackButton;
+	//private Button goBackButton;
 	private EditText textMessage;
 	private String nickName;
 	//private String regId;
@@ -93,15 +93,16 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 			chat.goToSettingActivity();
 		}
 
-		goBackButton = (Button) getView().findViewById(R.id.goBackListButton);
-		goBackButton.setOnClickListener(this);
+		//goBackButton = (Button) getView().findViewById(R.id.goBackListButton);
+		//goBackButton.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.goBackListButton) {
-			onButtonBClicked();
-		} else {
+	//	if (v.getId() == R.id.goBackListButton) {
+	//		onButtonBClicked();
+	//	} else {
+			
 			String recipientId = ((ChatAroundActivity)getActivity()).getRecipientId();
 			if (isOnline() && recipientId!=null ) {
 				ChatMessageDto dto = new ChatMessageDto();
@@ -131,7 +132,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 
 				new ChatAroundSendMessageTask(getActivity(), this).execute(dto,
 						ChatUtils.SEND_MESSAGE_USER_SERVER_URL);
-			}
+			//}
 		}
 	}
 

@@ -86,6 +86,7 @@
 	            android:inputType="text"
 	            android:maxLength="50"
 	            android:minEms="50"
+	            android:password="true"
 	            android:minLines="4" />
 	    </LinearLayout>
 	    

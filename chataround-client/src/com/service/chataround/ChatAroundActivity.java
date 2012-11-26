@@ -24,6 +24,7 @@ import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.fragment.ChatAroundListFragment;
+import com.service.chataround.fragment.ChatFragment;
 import com.service.chataround.listener.MyLocationListener;
 import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.PushUtils;
@@ -209,6 +210,18 @@ public class ChatAroundActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
+		if(getFragmentPresent()!=null && !"".equals(getFragmentPresent())) {
+			if(ChatFragment.class.getName().equals( getFragmentPresent()) ) {
+				Fragment anotherFragment = Fragment.instantiate(this,
+						ChatAroundListFragment.class.getName());
+				FragmentTransaction ft = getFragmentManager().beginTransaction();
+				ft.replace(R.id.frameLayoutId, anotherFragment);
+				ft.addToBackStack(null);
+				ft.commit();				
+			}else{
+				//where are in the list...probably we want to go out of app?
+			}
+		}
 		/*
 		 * new AlertDialog.Builder(this)
 		 * .setIcon(android.R.drawable.ic_dialog_alert) .setTitle("Deixar")
@@ -262,4 +275,5 @@ public class ChatAroundActivity extends Activity {
 	public void setNickNameRecipientId(String nickNameRecipientId) {
 		this.nickNameRecipientId = nickNameRecipientId;
 	}
+
 }

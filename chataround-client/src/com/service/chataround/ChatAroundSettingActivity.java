@@ -66,7 +66,14 @@ public class ChatAroundSettingActivity extends Activity {
 		String email = settings.getString(ChatUtils.USER_EMAIL, "");
 		String passw = settings.getString(ChatUtils.USER_PASSW, "");
 		int selectedId = settings.getInt(ChatUtils.USER_SEX, R.id.radioMaleId);
-
+		boolean isRegistered = settings.getBoolean(ChatUtils.USER_REGISTERED_ONLINE, false);
+		//dont modify mandatory fields
+		if (isRegistered) {
+			nickName.setEnabled(false);
+			emailText.setEnabled(false);
+			userPassw.setEnabled(false);			
+		}
+		
 		nickName.setText(nick);
 		moodText.setText(mood);
 		currentMood=mood;
@@ -123,6 +130,8 @@ public class ChatAroundSettingActivity extends Activity {
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
 					boolean isRegistered = settings.getBoolean(ChatUtils.USER_REGISTERED_ONLINE, false);
+					String userId = settings.getString(ChatUtils.USER_ID, "");
+					
 					if(!isRegistered){
 						editor.putString(ChatUtils.USER_NICKNAME, nickname);
 						editor.putString(ChatUtils.USER_MOOD, mood);
@@ -133,11 +142,12 @@ public class ChatAroundSettingActivity extends Activity {
 						// settingsDialog.hide();
 						//finish();
 						registerToServer(regId,email,nickname,passw,mood,sex);						
-					}else{
+					}else if(isRegistered && !"".equals(userId) ) {
 						//not registered, we only want user to change mood...and notifications
 						if(currentMood!=null && !currentMood.equals(moodText.getText().toString()
 								.trim()) ){
 							//mood changed, call service to change mood
+							changeMoodStatus(userId,moodText.getText().toString().trim());
 							
 						}
 					}
