@@ -18,13 +18,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.UserStatusUpdateDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
+import com.service.chataround.task.ChatAroundMoodTask;
 import com.service.chataround.task.ChatAroundRegisterUserTask;
-import com.service.chataround.task.ChatAroundTask;
 import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.PushUtils;
 
@@ -36,6 +38,7 @@ public class ChatAroundSettingActivity extends Activity {
 	private EditText userPassw;
 	private RadioGroup radioSex;
 	private String regId;
+	private String currentMood;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class ChatAroundSettingActivity extends Activity {
 
 		nickName.setText(nick);
 		moodText.setText(mood);
+		currentMood=mood;
 		emailText.setText(email);
 		userPassw.setText(passw);
 		radioSex.check(selectedId);
@@ -109,6 +113,7 @@ public class ChatAroundSettingActivity extends Activity {
 						&& StringUtils.hasText(userPassw.getText().toString()
 								.trim())) {
 					regId = GCMRegistrar.getRegistrationId(getApplicationContext());
+					
 					String nickname = nickName.getText().toString().trim();
 					String mood = moodText.getText().toString().trim();
 					String email = emailText.getText().toString().trim();
@@ -117,16 +122,27 @@ public class ChatAroundSettingActivity extends Activity {
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
-					editor.putString(ChatUtils.USER_NICKNAME, nickname);
-					editor.putString(ChatUtils.USER_MOOD, mood);
-					editor.putString(ChatUtils.USER_EMAIL, email);
-					editor.putString(ChatUtils.USER_PASSW, passw);
-					editor.putInt(ChatUtils.USER_SEX, sex);
+					boolean isRegistered = settings.getBoolean(ChatUtils.USER_REGISTERED_ONLINE, false);
+					if(!isRegistered){
+						editor.putString(ChatUtils.USER_NICKNAME, nickname);
+						editor.putString(ChatUtils.USER_MOOD, mood);
+						editor.putString(ChatUtils.USER_EMAIL, email);
+						editor.putString(ChatUtils.USER_PASSW, passw);
+						editor.putInt(ChatUtils.USER_SEX, sex);
+						editor.commit();
+						// settingsDialog.hide();
+						//finish();
+						registerToServer(regId,email,nickname,passw,mood,sex);						
+					}else{
+						//not registered, we only want user to change mood...and notifications
+						if(currentMood!=null && !currentMood.equals(moodText.getText().toString()
+								.trim()) ){
+							//mood changed, call service to change mood
+							
+						}
+					}
 
-					editor.commit();
-					// settingsDialog.hide();
-					//finish();
-					registerToServer(regId,email,nickname,passw,mood,sex);
+					
 				}
 			}
 		});
@@ -179,12 +195,18 @@ public class ChatAroundSettingActivity extends Activity {
 		// register to server and get users...
 		new ChatAroundRegisterUserTask(this, null).execute(dto,
 				ChatUtils.REGISTER_SERVER_URL);
-		
-		
+	}
+	
+	private void changeMoodStatus(String userId, String mood) {
+		UserStatusUpdateDto dto = new UserStatusUpdateDto();
+		dto.setUserId(userId);
+		dto.setStatus(mood);
+		new ChatAroundMoodTask(this, null).execute(dto,
+				ChatUtils.CHANGE_MOOD_SERVER_URL);
 	}
 	
 	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
-		if (dto != null && StringUtils.hasText(dto.getUserId())) {
+		if (dto != null && StringUtils.hasText(dto.getUserId()) && (dto.getServerMessage()==null || "".equals(dto.getServerMessage())) ) {
 				final SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
 				String userId = dto.getUserId();
 				SharedPreferences.Editor editor = settings.edit();
@@ -192,6 +214,14 @@ public class ChatAroundSettingActivity extends Activity {
 				editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
 				editor.commit();
 				finish();
+		}else if (dto.getServerMessage()!=null && !"".equals(dto.getServerMessage())){
+			//some error:
+			Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();			
+		}
+	}
+	public void finishTaskRegisterUser(UserStatusUpdateDto dto) {
+		if( dto != null ){
+			
 		}
 	}
 	

@@ -71,7 +71,8 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	public void onResume() {
 		super.onResume();
 		tracker.trackPageView("/"+TAG);
-		mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+		String recipientId = ((ChatAroundActivity)getActivity()).getRecipientId();
+		mFiles = DatabaseUtils.getMessageFromToDb(recipientId,getActivity());
 
 		adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,
 				mFiles);
@@ -121,7 +122,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 				dto = DatabaseUtils.addMessageToDb(getActivity(), dto);
 				textMessage.setText("");
 				// call to cloud to send message
-				mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+				mFiles = DatabaseUtils.getMessageFromToDb(recipientId,getActivity());
 
 				adapter = new IconListViewAdapter(getActivity(),
 						R.layout.row_foro, mFiles);
@@ -142,7 +143,8 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 
 			// some phones are slower to get here and get the message sooner
 			// than update to sent 1.
-			mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
+			String recipientId = ((ChatAroundActivity)getActivity()).getRecipientId();
+			mFiles = DatabaseUtils.getMessageFromToDb(recipientId,getActivity());
 			adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
 			setListAdapter(adapter);
 
@@ -153,9 +155,15 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	
 	@Subscribe
 	public void receiveMessageFromCloud(ChatMessageDto dto){
-		mFiles = DatabaseUtils.getMessageFromToDb(getActivity());
-		adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
-		setListAdapter(adapter);
+		//this one is the one Im talking to!
+		String recipientId = ((ChatAroundActivity)getActivity()).getRecipientId();
+		if(dto!=null && dto.getSenderId()!=null && !"".equals(dto.getSenderId()) 
+				&& recipientId.equals(dto.getSenderId())){
+			//only refresh current view if one talking to me sends message
+			mFiles = DatabaseUtils.getMessageFromToDb(dto.getRecipientId(),getActivity());
+			adapter = new IconListViewAdapter(getActivity(), R.layout.row_foro,mFiles);
+			setListAdapter(adapter);
+		}
 	}
 	private boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getActivity()

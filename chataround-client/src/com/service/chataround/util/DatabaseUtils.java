@@ -21,10 +21,10 @@ public class DatabaseUtils {
 		return dto;
 	}
 	
-	public static ArrayList<ChatMessageDto> getMessageFromToDb(Context ctx) {
+	public static ArrayList<ChatMessageDto> getMessageFromToDb(String userId,Context ctx) {
 		DB_Helper db = new DB_Helper(ctx);
 		SQLiteDatabase sdb = db.getWritableDatabase();
-			Cursor cursor = db.getAllMessages(sdb);
+			Cursor cursor = db.getAllMessagesByUser(userId, sdb);
 			ArrayList<ChatMessageDto> result = getMessages(cursor);
 		sdb.close();
 		db.close();

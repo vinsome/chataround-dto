@@ -39,12 +39,10 @@ import com.service.chataround.util.PushUtils;
  */
 public class GCMIntentService extends GCMBaseIntentService {
 
-	private static final String TAG = GCMIntentService.class.getName();
+	private static final String TAG = "ChatAround!";
 	public static final String USER_NOTIFICATIONS="notificationsUser";
 	public static final String USER_SOUND_ENABLED="notificationsUserSound";
 	
-	public static final String PREFS_NAME = "ChatAround2012";
-
 	public GCMIntentService() {
 		super(ChatUtils.SENDER_ID);
 	}
@@ -97,7 +95,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 				PushUtils.REG_ID_FROM_MESSANGER);
 		
 		String nick = intent.getExtras().getString(PushUtils.NICK_ID_FROM_MESSANGER);
-		
+		String recipientId = intent.getExtras().getString(PushUtils.USER_ID_FROM_RECIPIENT);
+		String senderId = intent.getExtras().getString(PushUtils.USER_ID_FROM_SENDER);
 		//build dto
 		ChatMessageDto dto = new ChatMessageDto();
 		dto.setNickName(nick);
@@ -106,14 +105,20 @@ public class GCMIntentService extends GCMBaseIntentService {
 		dto.setSent(true);
 		dto.setMine(regId.equals(regIdFromMessanger));
 		
-		//mines are already in it!
-		if(!dto.isMine())
-			DatabaseUtils.addMessageToDb(context,dto);
 		
-		ChatUtils.displayMessage(context, message, regIdFromMessanger);
+		//mines are already in it!
+		if(!dto.isMine()){
+			//since its not mine, need to put here the senders cause my database looks for user_id from
+			//which I«m talking to.
+			dto.setRecipientId(senderId);	
+			DatabaseUtils.addMessageToDb(context,dto);
+			ChatUtils.displayMessage(context, message, senderId);
+		}else{
+			//its mine, so no need to add it to database
+		}
 		
 		// notifies user
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
 		boolean isNotificaciones=settings.getBoolean(USER_NOTIFICATIONS,true);
 		boolean isSound=settings.getBoolean(USER_SOUND_ENABLED,true);
 		

@@ -26,6 +26,7 @@ import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.fragment.ChatAroundListFragment;
 import com.service.chataround.listener.MyLocationListener;
 import com.service.chataround.util.ChatUtils;
+import com.service.chataround.util.PushUtils;
 
 public class ChatAroundActivity extends Activity {
 	public static String TAG = ChatAroundActivity.class.getName();
@@ -33,6 +34,7 @@ public class ChatAroundActivity extends Activity {
 	private EventBus eventBus = new EventBus();
 	private MyLocationListener locationListener;
 	private String recipientId;
+	private String nickNameRecipientId;
 	private String fragmentPresent;
 	private GoogleAnalyticsTracker tracker;
 	private List<UserPublicDto> cacheList = new ArrayList<UserPublicDto>(0);
@@ -245,9 +247,19 @@ public class ChatAroundActivity extends Activity {
 	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			String senderUserId = intent.getExtras().getString(PushUtils.USER_ID_FROM_SENDER);
 			ChatMessageDto dto = new ChatMessageDto();
+			dto.setSenderId(senderUserId);
 			eventBus.post(dto);
 		}
 
 	};
+
+	public String getNickNameRecipientId() {
+		return nickNameRecipientId;
+	}
+
+	public void setNickNameRecipientId(String nickNameRecipientId) {
+		this.nickNameRecipientId = nickNameRecipientId;
+	}
 }

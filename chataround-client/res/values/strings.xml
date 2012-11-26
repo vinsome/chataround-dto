@@ -26,5 +26,5 @@
     <string name="radio_other">Other</string>
     <string name="radio_female">Female</string>
     <string name="radio_male">Male</string>
-    
+    <string name="progress_register_message">Registering user</string>
 </resources>

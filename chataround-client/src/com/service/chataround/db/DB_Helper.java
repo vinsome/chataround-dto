@@ -23,6 +23,7 @@ public class DB_Helper extends SQLiteOpenHelper {
 	public static String SENT_FIELD = "SENT";
 	public static String MINE_FIELD = "MINE";
 	public static String REG_FIELD = "REGID";
+	public static String USER_ID = "USER_ID";
 	
 
 	public DB_Helper(Context context) {
@@ -39,7 +40,7 @@ public class DB_Helper extends SQLiteOpenHelper {
 				+ " " + REG_FIELD + " TEXT, " + " " + SENT_FIELD
 				+ " INTEGER NOT NULL DEFAULT 0, " + " " 
 				+ " " + MINE_FIELD
-				+ " INTEGER NOT NULL DEFAULT 0 " + " )");
+				+ " INTEGER NOT NULL DEFAULT 0, " + USER_ID + " TEXT"+" )");
 
 	}
 
@@ -57,6 +58,7 @@ public class DB_Helper extends SQLiteOpenHelper {
 		cv.put(SENT_FIELD, dto.isSent());
 		cv.put(MINE_FIELD, dto.isMine());
 		cv.put(REG_FIELD, dto.getSenderId());
+		cv.put(USER_ID, dto.getRecipientId());//to identify messages later will change for proper userId field
 		long id = db.insert(CHAT_AROUND_MESSAGE_TABLE, null, cv);
 		dto.setId(id);
 		db.close();
@@ -67,7 +69,15 @@ public class DB_Helper extends SQLiteOpenHelper {
 		Cursor cur = db.rawQuery("SELECT * FROM " + CHAT_AROUND_MESSAGE_TABLE, null);
 		return cur;
 	}
-
+	
+	public Cursor getAllMessagesByUser(String userId, SQLiteDatabase db) {
+		String[] params = new String[] { userId };
+		Cursor c = db.rawQuery("SELECT * FROM " + CHAT_AROUND_MESSAGE_TABLE + " WHERE "
+				+ USER_ID + " =? ", params);
+		c.moveToFirst();
+		return c;
+	}
+	
 	public Cursor getMessageById(int id, SQLiteDatabase db) {
 		String[] params = new String[] { String.valueOf(id) };
 		Cursor c = db.rawQuery("SELECT * FROM " + CHAT_AROUND_MESSAGE_TABLE + " WHERE "

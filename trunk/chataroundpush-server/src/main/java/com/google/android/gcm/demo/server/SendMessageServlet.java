@@ -101,20 +101,28 @@ public class SendMessageServlet extends BaseServlet {
     String regId = req.getParameter(PARAMETER_DEVICE);
     String data = req.getParameter(PushUtils.PARAMETER_MESSAGE);
     String senderRegId = req.getParameter(PushUtils.REG_ID_FROM_MESSANGER);
-    
     String nick = req.getParameter(PushUtils.NICK_ID_FROM_MESSANGER);
-    
+    String recipientUserId = req.getParameter(PushUtils.USER_ID_FROM_RECIPIENT);
+    String senderUserId = req.getParameter(PushUtils.USER_ID_FROM_SENDER);
     String multicastKey = req.getParameter(PARAMETER_MULTICAST);
+    
+    /*
+    .param(PushUtils.PARAMETER_MESSAGE, dto.getMessage())
+	.param(PushUtils.NICK_ID_FROM_MESSANGER, dto.getNickName())
+    .param(PushUtils.REG_ID_FROM_MESSANGER,senderDeviceId)
+    .param(PushUtils.USER_ID_FROM_RECIPIENT, recipientUserId)
+    .param(PushUtils.USER_ID_FROM_SENDER, senderUserId)
+    */
     
     logger.info("SendMessageServlet - doPost regId=["+regId+"] dat["+data+"] multicastKey=["+multicastKey+"]");
     
     if (regId != null) {
-      sendSingleMessage(regId,data,senderRegId,nick, resp);
+      sendSingleMessage(regId,data,senderRegId,nick, recipientUserId,senderUserId,resp);
       return;
     }
     
     if (multicastKey != null) {
-      sendMulticastMessage(multicastKey, data,senderRegId,nick,resp);
+      sendMulticastMessage(multicastKey, data,senderRegId,nick,recipientUserId,senderUserId,resp);
       return;
     }
     logger.severe("Invalid request!");
@@ -123,12 +131,14 @@ public class SendMessageServlet extends BaseServlet {
   }
 
   //if the method is called, we nedd to send message
-  private void sendSingleMessage(String regId,String data, String senderRegId,String nick,HttpServletResponse resp) {
+  private void sendSingleMessage(String regId,String data, String senderRegId,String nick,String recipientUserId, String senderUserId,HttpServletResponse resp) {
     logger.info("Sending message to device " + regId);
     Message message = new Message.Builder()
     .addData(PushUtils.PARAMETER_MESSAGE,data)
     .addData(PushUtils.REG_ID_FROM_MESSANGER,senderRegId)
     .addData(PushUtils.NICK_ID_FROM_MESSANGER,nick)
+    .addData(PushUtils.USER_ID_FROM_RECIPIENT, recipientUserId)
+    .addData(PushUtils.USER_ID_FROM_SENDER, senderUserId)    
 	.build();
     Result result;
     logger.info("Sending message sender " + sender);
@@ -163,7 +173,7 @@ public class SendMessageServlet extends BaseServlet {
     }
   }
 
-  private void sendMulticastMessage(String multicastKey, String data,String senderRegId,String nick,
+  private void sendMulticastMessage(String multicastKey, String data,String senderRegId,String nick,String recipientUserId, String senderUserId,
       HttpServletResponse resp) {
     // Recover registration ids from datastore
     List<String> regIds = PushDatastore.getMulticast(multicastKey);
@@ -171,6 +181,8 @@ public class SendMessageServlet extends BaseServlet {
 	    .addData(PushUtils.PARAMETER_MESSAGE, data)
 	    .addData(PushUtils.REG_ID_FROM_MESSANGER,senderRegId)
 	    .addData(PushUtils.NICK_ID_FROM_MESSANGER,nick)
+	    .addData(PushUtils.USER_ID_FROM_RECIPIENT, recipientUserId)
+	    .addData(PushUtils.USER_ID_FROM_SENDER, senderUserId)	    
     	.build();
     MulticastResult multicastResult;
     try {

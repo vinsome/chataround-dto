@@ -18,7 +18,8 @@ public class ChatUtils {
 	public static final String PING_LOCATION_AND_GET_USERS_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/pinglocationandgetuser";
 	public static final String REGISTER_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/registeruser";
 	public static final String SEND_MESSAGE_USER_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/sendchatmessage";
-
+	public static final String CHANGE_MOOD_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/updateuserstatus";
+	
 	// http://chataround.sravi.com/ChatAroundServer/api/1.0/viewusermap
 
 	public static final String USER_NICKNAME = "nickname";
@@ -50,10 +51,10 @@ public class ChatUtils {
 	 *            message to be displayed.
 	 */
 	public static void displayMessage(Context context, String message,
-			String senderRegId) {
+			String senderUserId) {
 		Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
 		intent.putExtra(PushUtils.PARAMETER_MESSAGE, message);
-		intent.putExtra(PushUtils.REG_ID_FROM_MESSANGER, senderRegId);
+		intent.putExtra(PushUtils.USER_ID_FROM_SENDER, senderUserId);
 		context.sendBroadcast(intent);
 	}
 
