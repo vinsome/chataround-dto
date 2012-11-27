@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.next.core.db.page.PageInfo;
 import com.next.core.db.page.PageResult;
+import com.next.core.db.page.QueryParam;
+import com.next.core.db.page.QueryParamPageInfo;
 import com.next.core.exception.AppException;
 import com.next.ext.core.db.page.HibernateMapPageInfo;
 import com.next.ext.core.persistance.helper.BasePersistanceHelper;
@@ -13,14 +15,13 @@ import com.next.infotech.persistance.jpa.impl.User;
 
 /**
  * @author Ravi Sharma
- *
+ * 
  */
 @Component
 public class UserHelper extends BasePersistanceHelper<User> {
 
 	@Override
-	protected void validateCreateObject(User user)
-	throws AppException {
+	protected void validateCreateObject(User user) throws AppException {
 		checkIfStringMissing("Email", user.getEmail());
 		checkIfStringMissing("NickName", user.getNickName());
 		checkIfStringMissing("Gender", user.getGender());
@@ -28,22 +29,35 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	}
 
 	@Override
-	protected void validateUpdateObject(User user)
-	throws AppException {
+	protected void validateUpdateObject(User user) throws AppException {
 		checkIfStringMissing("Email", user.getEmail());
 		checkIfStringMissing("NickName", user.getNickName());
 		checkIfStringMissing("Gender", user.getGender());
 		checkUserUniqueAttributes(user);
 	}
+
 	private void checkUserUniqueAttributes(User user) throws AppException{
 		User existingUser = getUserByEmailId(user.getEmail());
-		if(existingUser != null && existingUser.getId() != user.getId()){
-			throw new AppException("User already exists with email "+user.getEmail());
+		
+		if(existingUser != null){
+			if(user.getId() == null){
+				throw new AppException("User already exists with email "+user.getEmail());
+			}else{
+				if(existingUser.getId() != user.getId()){
+					throw new AppException("User already exists with email "+user.getEmail());
+				}
+			}
 		}
 		
 		existingUser = getUserByNickname(user.getNickName());
-		if(existingUser != null && existingUser.getId() != user.getId()){
-			throw new AppException("User already exists with nickname "+user.getNickName());
+		if(existingUser != null){
+			if(user.getId() == null){
+				throw new AppException("User already exists with nickname "+user.getNickName());
+			}else{
+				if(existingUser.getId() != user.getId()){
+					throw new AppException("User already exists with nickname "+user.getNickName());
+				}	
+			}
 		}
 	}
 
@@ -54,11 +68,10 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	 * @return created user
 	 * @throws AppException
 	 */
-	public User createUser(User user) throws AppException
-	{
+	public User createUser(User user) throws AppException {
 		user = super.createObject(user);
 		UUID uniqueUserId = UUID.randomUUID();
-		String userId = uniqueUserId.toString() +"-"+user.getId();
+		String userId = uniqueUserId.toString() + "-" + user.getId();
 		user.setUserId(userId);
 		return user;
 	}
@@ -70,8 +83,7 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	 * @return updated user
 	 * @throws AppException
 	 */
-	public User updateUser(User user) throws AppException
-	{
+	public User updateUser(User user) throws AppException {
 		user = super.updateObject(user);
 		return user;
 	}
@@ -83,9 +95,8 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	 * @return User with PK as id(parameter)
 	 * @throws AppException
 	 */
-	public User getUserById(Long id) throws AppException
-	{
-		User user = (User)super.getObjectByPK(User.class, id);
+	public User getUserById(Long id) throws AppException {
+		User user = (User) super.getObjectByPK(User.class, id);
 		return user;
 	}
 
@@ -94,8 +105,7 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	 * @return search result
 	 * @throws AppException
 	 */
-	public PageResult<User> searchUsers(PageInfo pageInfo) throws AppException
-	{
+	public PageResult<User> searchUsers(PageInfo pageInfo) throws AppException {
 		return super.findObject(User.class, pageInfo);
 	}
 
@@ -106,10 +116,16 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	 * @throws AppException
 	 */
 	public User getUserByEmailId(String email) throws AppException {
-		HibernateMapPageInfo pageInfo = new HibernateMapPageInfo();
-		pageInfo.addCriteria("email", email);
+		QueryParamPageInfo pageInfo = new QueryParamPageInfo();
+		QueryParam emailParam = new QueryParam();
+		emailParam.setCaseSenstive(false);
+		emailParam.setField("email");
+		emailParam.setOperator(QueryParam.OPERATOR_EQUAL);
+		emailParam.setValue(email);
+		pageInfo.addCriteria(emailParam);
 		PageResult<User> pageResult = searchUsers(pageInfo);
-		if ((pageResult == null) || (pageResult.getResultList() == null) || (pageResult.getResultList().size() <= 0)) {
+		if ((pageResult == null) || (pageResult.getResultList() == null)
+				|| (pageResult.getResultList().size() <= 0)) {
 			return null;
 		}
 		if (pageResult.getResultList().size() > 1) {
@@ -119,10 +135,17 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	}
 
 	public User getUserByNickname(String nickname) throws AppException {
-		HibernateMapPageInfo pageInfo = new HibernateMapPageInfo();
-		pageInfo.addCriteria("nickName", nickname);
+		QueryParamPageInfo pageInfo = new QueryParamPageInfo();
+		QueryParam nicknameParam = new QueryParam();
+		nicknameParam.setCaseSenstive(false);
+		nicknameParam.setField("nickName");
+		nicknameParam.setOperator(QueryParam.OPERATOR_EQUAL);
+		nicknameParam.setValue(nickname);
+		pageInfo.addCriteria(nicknameParam);
+
 		PageResult<User> pageResult = searchUsers(pageInfo);
-		if ((pageResult == null) || (pageResult.getResultList() == null) || (pageResult.getResultList().size() <= 0)) {
+		if ((pageResult == null) || (pageResult.getResultList() == null)
+				|| (pageResult.getResultList().size() <= 0)) {
 			return null;
 		}
 		if (pageResult.getResultList().size() > 1) {
@@ -130,12 +153,13 @@ public class UserHelper extends BasePersistanceHelper<User> {
 		}
 		return pageResult.getResultList().get(0);
 	}
-	
+
 	public User getUserByUserId(String userId) throws AppException {
 		HibernateMapPageInfo pageInfo = new HibernateMapPageInfo();
 		pageInfo.addCriteria("userId", userId);
 		PageResult<User> pageResult = searchUsers(pageInfo);
-		if ((pageResult == null) || (pageResult.getResultList() == null) || (pageResult.getResultList().size() <= 0)) {
+		if ((pageResult == null) || (pageResult.getResultList() == null)
+				|| (pageResult.getResultList().size() <= 0)) {
 			return null;
 		}
 		if (pageResult.getResultList().size() > 1) {
@@ -143,5 +167,5 @@ public class UserHelper extends BasePersistanceHelper<User> {
 		}
 		return pageResult.getResultList().get(0);
 	}
-	
+
 }

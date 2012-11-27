@@ -31,9 +31,11 @@ import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.ChatMessageInternalDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto.MessageStatus;
+import com.service.chataround.dto.chat.LoginDto;
 import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.chat.UserPingResponseDto;
 import com.service.chataround.dto.chat.UserStatusUpdateDto;
+import com.service.chataround.dto.chat.UserStatusUpdateResponseDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
 
 @Controller
@@ -77,10 +79,14 @@ public class ChatController extends BaseController{
 	
 	@RequestMapping(value="/api/1.0/updateuserstatus", method = RequestMethod.POST)
     @ResponseBody
-	public void updateUserStatus(@RequestBody UserStatusUpdateDto userStatusUpdateDto) throws AppException{
+	public UserStatusUpdateResponseDto updateUserStatus(@RequestBody UserStatusUpdateDto userStatusUpdateDto) throws AppException{
 		counterManager.incrementCounter(CounterNames.UPDATE_USER_STATUS_REQUEST);
 		chatAroundServices.updateUserStatus(userStatusUpdateDto.getUserId(), userStatusUpdateDto.getStatus());
 		userLocationCache.updateUserStatus(userStatusUpdateDto.getUserId(),userStatusUpdateDto.getStatus());
+		UserStatusUpdateResponseDto userStatusUpdateResponseDto =  new UserStatusUpdateResponseDto();
+		userStatusUpdateResponseDto.setStatus(userStatusUpdateDto.getStatus());
+		userStatusUpdateResponseDto.setUserId(userStatusUpdateDto.getUserId());
+		return userStatusUpdateResponseDto;
 	}
 	
 	@RequestMapping(value="/api/1.0/ofline/{userId}", method = RequestMethod.POST)
@@ -88,6 +94,15 @@ public class ChatController extends BaseController{
 	public void offlineUser(@PathVariable Long userId) throws AppException{
 		counterManager.incrementCounter(CounterNames.OFFLINE_USER_REQUEST);
 		userLocationCache.offlineUser(userId);
+	}
+	
+	@RequestMapping(value="/api/1.0/login", method = RequestMethod.POST)
+    @ResponseBody
+	public UserCacheDomain loginUser(@RequestBody LoginDto loginDto) throws AppException{
+		counterManager.incrementCounter(CounterNames.LOGIN_USER_REQUEST);
+		UserDomain user = chatAroundServices.loginUser(loginDto.getEmail(), loginDto.getNickname(), loginDto.getPassword());
+		UserCacheDomain returnUser = userLocationCache.registerUser(user);
+		return returnUser;
 	}
 	
 	@RequestMapping(value="/api/1.0/viewusermap", method = RequestMethod.GET)
