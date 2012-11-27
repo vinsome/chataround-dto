@@ -1,6 +1,5 @@
 package com.next.infotech.cache;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -8,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +88,7 @@ public class UserLocationCache {
 		return allLoggedInUsers.values();
 	}
 
-	public void registerUser(UserCacheDomain userCacheDomain)
+	public UserCacheDomain registerUser(UserCacheDomain userCacheDomain)
 			throws AppException {
 		UserCacheDomain cachedUSer = new UserCacheDto(userCacheDomain);
 		cachedUSer.setLattitude(0.0);
@@ -98,6 +96,7 @@ public class UserLocationCache {
 		allLoggedInUsers.put(cachedUSer.getUserId(), cachedUSer);
 		updateUserLocation(cachedUSer.getUserId(),
 				userCacheDomain.getLattitude(), userCacheDomain.getLongitude());
+		return cachedUSer;
 	}
 
 	public void updateUserStatus(String userId, String statusMessage)

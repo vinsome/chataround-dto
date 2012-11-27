@@ -100,4 +100,17 @@ public class ChatAroundServicesImpl implements ChatAroundServices {
 		return user;
 	}
 
+	public UserDomain loginUser(String email, String nickName, String password)
+			throws AppException {
+		User user = userHelper.getUserByEmailId(email);
+		if(user != null){
+			if(!user.getNickName().equalsIgnoreCase(nickName) || user.getPassword().equals(password)){
+				throw new AppException("Login Failed. Incorrect email/nickanme/password");
+			}
+		}else{
+			throw new AppException("Login Failed. Incorrect email/nickanme/password");
+		}
+		return convertUser(user);
+	}
+
 }
