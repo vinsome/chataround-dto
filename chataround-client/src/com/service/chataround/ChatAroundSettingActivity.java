@@ -39,6 +39,7 @@ public class ChatAroundSettingActivity extends Activity {
 	private RadioGroup radioSex;
 	private String regId;
 	private String currentMood;
+	private RegisterUserRequestDto temporalRegisteredUserDto;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -201,7 +202,8 @@ public class ChatAroundSettingActivity extends Activity {
 		} else {
 			dto.setGender(Gender.Other.getValue());
 		}
-
+		//in case user tries to login from existing one.
+		temporalRegisteredUserDto = dto;
 		// register to server and get users...
 		new ChatAroundRegisterUserTask(this, null).execute(dto,
 				ChatUtils.REGISTER_SERVER_URL);
@@ -224,7 +226,7 @@ public class ChatAroundSettingActivity extends Activity {
 				editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
 				editor.commit();
 				finish();
-		}else if (dto.getServerMessage()!=null && !"".equals(dto.getServerMessage())){
+		}else if (dto.getServerMessage()!=null && !"".equals(dto.getServerMessage())) {
 			//some error:
 			Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();			
 		}

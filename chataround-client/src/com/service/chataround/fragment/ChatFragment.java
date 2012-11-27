@@ -155,7 +155,7 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 	}
 	
 	@Subscribe
-	public void receiveMessageFromCloud(ChatMessageDto dto){
+	public void receiveMessageFromCloud(ChatMessageDto dto) {
 		//this one is the one Im talking to!
 		String recipientId = ((ChatAroundActivity)getActivity()).getRecipientId();
 		if(dto!=null && dto.getSenderId()!=null && !"".equals(dto.getSenderId()) 

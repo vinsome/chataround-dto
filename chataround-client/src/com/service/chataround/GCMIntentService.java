@@ -124,7 +124,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		
 		if (isNotificaciones&&!regId.equals(regIdFromMessanger))
 			generateNotification(context, TAG
-					+ ": " + nick+"@ "+message,isSound);
+					+ ": " + nick+"@ "+message,isSound,senderId);
 			
 	}
 	
@@ -171,7 +171,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 * Issues a notification to inform the user that server has sent a message.
 	 */
 	@SuppressWarnings("deprecation")
-	private static void generateNotification(Context context, String message,boolean isSound) {
+	private static void generateNotification(Context context, String message,boolean isSound,String senderUserId) {
         long when = System.currentTimeMillis();
         
 		
@@ -180,9 +180,10 @@ public class GCMIntentService extends GCMBaseIntentService {
         Notification notification = new Notification(R.drawable.ic_launcher, message, when);
         String title = context.getString(R.string.app_name);
         Intent notificationIntent = new Intent(context, ChatAroundActivity.class);
+        notificationIntent.putExtra(ChatUtils.NOTIFICATION_SENDER_USER_ID, senderUserId);
+        
         // set intent so it does not start a new activity
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent =
                 PendingIntent.getActivity(context, 0, notificationIntent, 0);
         notification.setLatestEventInfo(context, title, message, intent);

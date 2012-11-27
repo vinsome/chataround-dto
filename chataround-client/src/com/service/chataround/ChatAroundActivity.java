@@ -55,14 +55,9 @@ public class ChatAroundActivity extends Activity {
 
 		registerReceiver(mHandleMessageReceiver, new IntentFilter(
 				ChatUtils.DISPLAY_MESSAGE_ACTION));
-
-		Fragment frg = Fragment.instantiate(this,
-				ChatAroundListFragment.class.getName());
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-		ft.replace(R.id.frameLayoutId, frg);
-		ft.addToBackStack(null);
-		ft.commit();
-
+		
+		doNavigateToFragment();
+		
 		final SharedPreferences settings = getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
 
@@ -76,7 +71,9 @@ public class ChatAroundActivity extends Activity {
 		if ("".equals(nick) || "".equals(email) || "".equals(passw)) {
 			goToSettingActivity();
 		}
+		
 		String regId = GCMRegistrar.getRegistrationId(this);
+		
 		if (regId != null && !"".equals(regId) && userId != null
 				&& !"".equals(userId)) {
 			LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -92,7 +89,34 @@ public class ChatAroundActivity extends Activity {
 			locationListener.start();
 		}
 	}
-
+	private void doValidateSettings(){
+		
+	}
+	private void doNavigateToFragment() {
+		Intent intent = getIntent();
+		//when reciving notification, comes here ...is the one that sends us messages!
+		String senderUserId = intent.getStringExtra(ChatUtils.NOTIFICATION_SENDER_USER_ID);
+		if(senderUserId==null || "".equals(senderUserId)){
+			
+			Fragment frg = Fragment.instantiate(this,
+					ChatAroundListFragment.class.getName());
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.replace(R.id.frameLayoutId, frg);
+			ft.addToBackStack(null);
+			ft.commit();
+			
+		}else{
+			
+			//means we are talking to someone and we clicked the notification in mobile.
+			setRecipientId(senderUserId);
+			Fragment anotherFragment = Fragment.instantiate(this,
+					ChatFragment.class.getName());
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.replace(R.id.frameLayoutId, anotherFragment);
+			ft.addToBackStack(null);
+			ft.commit();
+		}
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_chat_around, menu);

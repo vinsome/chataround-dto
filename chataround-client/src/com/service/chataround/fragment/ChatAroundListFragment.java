@@ -65,6 +65,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 		UserPublicDto userSelected = (UserPublicDto) l.getAdapter().getItem(
 				Long.valueOf(id).intValue());
 		ChatAroundActivity chat = (ChatAroundActivity) getActivity();
+		//the one we are talking to
 		chat.setRecipientId(userSelected.getUserId());
 		onButtonBClicked();
 	}
@@ -97,15 +98,12 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 
 	@Subscribe
 	public void eventLocationChanged(LocationChangeEvent event) {
-		final String regId = GCMRegistrar.getRegistrationId(getActivity());
 		final SharedPreferences settings = getActivity().getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
 		final String nickName = settings.getString(ChatUtils.USER_NICKNAME, "");
-		final String mood = settings.getString(ChatUtils.USER_MOOD, "");
 		final String userId = settings.getString(ChatUtils.USER_ID, "");
 		final String email = settings.getString(ChatUtils.USER_EMAIL, "");
 		final String password = settings.getString(ChatUtils.USER_EMAIL, "");
-		final int sex = settings.getInt(ChatUtils.USER_SEX, R.id.radioMaleId);
 
 		boolean isRegisteredToServer = settings.getBoolean(
 				ChatUtils.USER_REGISTERED_ONLINE, false);

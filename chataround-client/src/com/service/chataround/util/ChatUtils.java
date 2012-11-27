@@ -32,7 +32,8 @@ public class ChatUtils {
 	public static final String USER_NOTIFICATIONS = "UserNotifications";
 	public static final String USER_STAY_ONLINE = "StayOnline";
 	public static final String USER_REGISTERED_ONLINE = "userRegisteredOnline";
-
+	public static final String NOTIFICATION_SENDER_USER_ID = "notificationSenderUserId";
+	
 	public static final String REGISTER_URL = "/chatAroundRegister.do";
 	public static final String UNREGISTER_URL = "/chatAroundUnRegister.do";
 	public static final String SENDMESSAGE_URL = "/chatAroundSendMessage.do";
