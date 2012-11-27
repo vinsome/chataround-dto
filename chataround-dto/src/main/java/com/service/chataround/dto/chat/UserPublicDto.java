@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.next.infotech.persistance.domain.UserPublicDomain;
 
-public class UserPublicDto implements UserPublicDomain,Serializable {
+public class UserPublicDto extends BaseDto implements UserPublicDomain,Serializable {
 
 	/**
 	 * 

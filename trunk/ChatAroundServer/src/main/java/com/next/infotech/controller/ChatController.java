@@ -34,6 +34,7 @@ import com.service.chataround.dto.chat.ChatMessageResponseDto.MessageStatus;
 import com.service.chataround.dto.chat.LoginDto;
 import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.chat.UserPingResponseDto;
+import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.dto.chat.UserStatusUpdateDto;
 import com.service.chataround.dto.chat.UserStatusUpdateResponseDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
@@ -98,11 +99,11 @@ public class ChatController extends BaseController{
 	
 	@RequestMapping(value="/api/1.0/login", method = RequestMethod.POST)
     @ResponseBody
-	public UserCacheDomain loginUser(@RequestBody LoginDto loginDto) throws AppException{
+	public UserPublicDto loginUser(@RequestBody LoginDto loginDto) throws AppException{
 		counterManager.incrementCounter(CounterNames.LOGIN_USER_REQUEST);
 		UserDomain user = chatAroundServices.loginUser(loginDto.getEmail(), loginDto.getNickname(), loginDto.getPassword());
-		UserCacheDomain returnUser = userLocationCache.registerUser(user);
-		return returnUser;
+		userLocationCache.registerUser(user);
+		return new UserPublicDto(user);
 	}
 	
 	@RequestMapping(value="/api/1.0/viewusermap", method = RequestMethod.GET)
