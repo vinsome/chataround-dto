@@ -3,7 +3,6 @@ package com.service.chataround.dto.register;
 import java.io.Serializable;
 
 import com.service.chataround.dto.HasError;
-import com.service.chataround.dto.UserWebEntity;
 import com.service.chataround.dto.chat.UserDto;
 
 public class RegisterUserRequestDto extends UserDto implements Serializable,HasError{

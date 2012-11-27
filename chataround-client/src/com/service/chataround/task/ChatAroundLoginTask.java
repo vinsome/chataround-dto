@@ -6,16 +6,16 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.service.chataround.ChatAroundSettingActivity;
-import com.service.chataround.dto.chat.UserStatusUpdateDto;
-import com.service.chataround.dto.chat.UserStatusUpdateResponseDto;
+import com.service.chataround.dto.chat.LoginDto;
+import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.util.ChatAroundHttpClient;
 
-public class ChatAroundMoodTask extends AsyncTask<Object, Integer, UserStatusUpdateResponseDto> {
+public class ChatAroundLoginTask extends AsyncTask<Object, Integer, UserPublicDto> {
 	public static String TAG = ChatAroundRegisterUserTask.class.getName();
 	protected final Context mContext;
 	protected final Fragment fragment;
 
-	public ChatAroundMoodTask(Context ctx, Fragment fragment) {
+	public ChatAroundLoginTask(Context ctx, Fragment fragment) {
 		this.mContext = ctx;
 		this.fragment = fragment;
 
@@ -27,13 +27,13 @@ public class ChatAroundMoodTask extends AsyncTask<Object, Integer, UserStatusUpd
 	}
 
 	@Override
-	protected UserStatusUpdateResponseDto doInBackground(Object... params) {
-		UserStatusUpdateResponseDto result = null;
+	protected UserPublicDto doInBackground(Object... params) {
+		UserPublicDto result = null;
 		try {
-			if (params[0] instanceof UserStatusUpdateDto) {
-				UserStatusUpdateDto dto = (UserStatusUpdateDto) params[0];
+			if (params[0] instanceof LoginDto) {
+				LoginDto dto = (LoginDto) params[0];
 					String url2call = (String) params[1];
-					result = ChatAroundHttpClient.postSpringData(url2call, UserStatusUpdateResponseDto.class, dto);
+					result = ChatAroundHttpClient.postSpringData(url2call, UserPublicDto.class, dto);
 					//all ok
 					
 			}
@@ -45,9 +45,9 @@ public class ChatAroundMoodTask extends AsyncTask<Object, Integer, UserStatusUpd
 	}
 
 	@Override
-	protected void onPostExecute(UserStatusUpdateResponseDto result) {
+	protected void onPostExecute(UserPublicDto result) {
 		ChatAroundSettingActivity frag = (ChatAroundSettingActivity)mContext;
-			frag.finishTaskUpdateUserStatus(result);			
+			frag.finishTaskLoginUser(result);			
 	}
 
 }

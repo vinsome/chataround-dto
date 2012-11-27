@@ -23,8 +23,12 @@ import android.widget.Toast;
 import com.google.android.gcm.GCMRegistrar;
 import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.dto.chat.ChatAroundDto;
+import com.service.chataround.dto.chat.LoginDto;
+import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.dto.chat.UserStatusUpdateDto;
+import com.service.chataround.dto.chat.UserStatusUpdateResponseDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
+import com.service.chataround.task.ChatAroundLoginTask;
 import com.service.chataround.task.ChatAroundMoodTask;
 import com.service.chataround.task.ChatAroundRegisterUserTask;
 import com.service.chataround.util.ChatUtils;
@@ -227,14 +231,36 @@ public class ChatAroundSettingActivity extends Activity {
 				editor.commit();
 				finish();
 		}else if (dto.getServerMessage()!=null && !"".equals(dto.getServerMessage())) {
-			//some error:
-			Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();			
+			//some error: will try to login first then
+			//Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();
+			
+			LoginDto loginDto = new LoginDto();
+				loginDto.setEmail(temporalRegisteredUserDto.getEmail());
+				loginDto.setNickname(temporalRegisteredUserDto.getNickName());
+				loginDto.setPassword(temporalRegisteredUserDto.getPassword());
+			doLogin(loginDto);
+				
 		}
 	}
-	public void finishTaskRegisterUser(UserStatusUpdateDto dto) {
-		if( dto != null ){
-			
+	
+	private void doLogin(LoginDto dto) {
+		new ChatAroundLoginTask(this, null).execute(dto,
+				ChatUtils.LOGIN_SERVER_URL);
+	}
+	
+	public void finishTaskUpdateUserStatus(UserStatusUpdateResponseDto dto) {
+		if( dto != null && dto.getServerMessage()==null || !"".equals(dto.getServerMessage()) ){
+			//some error going on...
+			Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();
 		}
+	}
+	public void finishTaskLoginUser(UserPublicDto dto) {
+		/*
+		if( dto != null && dto.getServerMessage()==null || !"".equals(dto.getServerMessage()) ){
+			//some error going on...
+			Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();
+		}
+		*/
 	}
 	
 	private boolean isOnline() {

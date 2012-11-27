@@ -19,6 +19,8 @@ public class ChatUtils {
 	public static final String REGISTER_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/registeruser";
 	public static final String SEND_MESSAGE_USER_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/sendchatmessage";
 	public static final String CHANGE_MOOD_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/updateuserstatus";
+	public static final String LOGIN_SERVER_URL = "http://chataround.sravi.com/ChatAroundServer/api/1.0/login";
+	
 	
 	// http://chataround.sravi.com/ChatAroundServer/api/1.0/viewusermap
 
