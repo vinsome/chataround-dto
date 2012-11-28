@@ -271,32 +271,7 @@ public class ChatAroundActivity extends Activity {
 												ChatUtils.PREFS_NAME, 0);
 										String userId = settings.getString(
 												ChatUtils.USER_ID, "");
-										ChatAroundAsyncHtpp
-												.post(ChatAroundAsyncHtpp.ChatAroundHttpEnum.OFFLINE
-														.getUrl() + userId,
-														null,
-														new JsonHttpResponseHandler() {
-															@Override
-															public void onSuccess(
-																	JSONObject arg0) {
-
-																super.onSuccess(arg0);
-															}
-
-															@Override
-															protected Object parseResponse(
-																	String arg0)
-																	throws JSONException {
-
-																return super
-																		.parseResponse(arg0);
-															}
-
-														}
-
-												);
-
-										finish();
+										doGoOfLine(userId);
 									}
 								})
 						.setNegativeButton(getString(R.string.leave_app_ko),
@@ -305,7 +280,33 @@ public class ChatAroundActivity extends Activity {
 		}
 
 	}
+	private void doGoOfLine(String userId){
+		ChatAroundAsyncHtpp
+		.post(ChatAroundAsyncHtpp.ChatAroundHttpEnum.OFFLINE
+				.getUrl() + userId,
+				null,
+				new JsonHttpResponseHandler() {
+					@Override
+					public void onSuccess(
+							JSONObject arg0) {
 
+						super.onSuccess(arg0);
+						finish();
+					}
+
+					@Override
+					protected Object parseResponse(
+							String arg0)
+							throws JSONException {
+
+						return super
+								.parseResponse(arg0);
+					}
+
+				}
+
+		);		
+	}
 	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
