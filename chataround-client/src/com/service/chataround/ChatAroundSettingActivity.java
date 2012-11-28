@@ -2,6 +2,8 @@ package com.service.chataround;
 
 import java.util.Calendar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
 import android.app.Activity;
@@ -21,7 +23,9 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
+import com.service.chataround.async.ChatAroundAsyncHtpp;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.dto.chat.LoginDto;
 import com.service.chataround.dto.chat.UserPublicDto;
@@ -49,7 +53,7 @@ public class ChatAroundSettingActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settingsdialog);
-		//only register if not yet registered
+		// only register if not yet registered
 	}
 
 	@Override
@@ -57,7 +61,7 @@ public class ChatAroundSettingActivity extends Activity {
 		super.onResume();
 		if (isOnline()) {
 			registerToCloud();
-		}		
+		}
 		final SharedPreferences settings = getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
 		nickName = (EditText) findViewById(R.id.nicknameTextView);
@@ -66,22 +70,25 @@ public class ChatAroundSettingActivity extends Activity {
 		userPassw = (EditText) findViewById(R.id.passwordTextView);
 		radioSex = (RadioGroup) findViewById(R.id.radioSexId);
 
-		String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
-		String mood = settings.getString(ChatUtils.USER_MOOD, "");
-		String email = settings.getString(ChatUtils.USER_EMAIL, "");
-		String passw = settings.getString(ChatUtils.USER_PASSW, "");
-		int selectedId = settings.getInt(ChatUtils.USER_SEX, R.id.radioMaleId);
-		boolean isRegistered = settings.getBoolean(ChatUtils.USER_REGISTERED_ONLINE, false);
-		//dont modify mandatory fields
+		final String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
+		final String mood = settings.getString(ChatUtils.USER_MOOD, "");
+		final String email = settings.getString(ChatUtils.USER_EMAIL, "");
+		final String passw = settings.getString(ChatUtils.USER_PASSW, "");
+		final String userId = settings.getString(ChatUtils.USER_ID, "");
+		final int selectedId = settings.getInt(ChatUtils.USER_SEX,
+				R.id.radioMaleId);
+		boolean isRegistered = settings.getBoolean(
+				ChatUtils.USER_REGISTERED_ONLINE, false);
+		// dont modify mandatory fields
 		if (isRegistered) {
 			nickName.setEnabled(false);
 			emailText.setEnabled(false);
-			userPassw.setEnabled(false);			
+			userPassw.setEnabled(false);
 		}
-		
+
 		nickName.setText(nick);
 		moodText.setText(mood);
-		currentMood=mood;
+		currentMood = mood;
 		emailText.setText(email);
 		userPassw.setText(passw);
 		radioSex.check(selectedId);
@@ -110,6 +117,11 @@ public class ChatAroundSettingActivity extends Activity {
 				SharedPreferences.Editor editor = settings.edit();
 				editor.putBoolean(ChatUtils.USER_STAY_ONLINE, sound.isChecked());
 				editor.commit();
+				if (userId != null && !"".equals(userId)) {
+					doGoOfline(userId);
+				}else{
+					//listener will update status atutomatically
+				}
 			}
 		});
 
@@ -124,8 +136,9 @@ public class ChatAroundSettingActivity extends Activity {
 								.trim())
 						&& StringUtils.hasText(userPassw.getText().toString()
 								.trim())) {
-					regId = GCMRegistrar.getRegistrationId(getApplicationContext());
-					
+					regId = GCMRegistrar
+							.getRegistrationId(getApplicationContext());
+
 					String nickname = nickName.getText().toString().trim();
 					String mood = moodText.getText().toString().trim();
 					String email = emailText.getText().toString().trim();
@@ -134,10 +147,11 @@ public class ChatAroundSettingActivity extends Activity {
 					// We need an Editor object to make preference changes.
 					// All objects are from android.context.Context
 					SharedPreferences.Editor editor = settings.edit();
-					boolean isRegistered = settings.getBoolean(ChatUtils.USER_REGISTERED_ONLINE, false);
+					boolean isRegistered = settings.getBoolean(
+							ChatUtils.USER_REGISTERED_ONLINE, false);
 					String userId = settings.getString(ChatUtils.USER_ID, "");
-					
-					if(!isRegistered){
+
+					if (!isRegistered) {
 						editor.putString(ChatUtils.USER_NICKNAME, nickname);
 						editor.putString(ChatUtils.USER_MOOD, mood);
 						editor.putString(ChatUtils.USER_EMAIL, email);
@@ -145,19 +159,22 @@ public class ChatAroundSettingActivity extends Activity {
 						editor.putInt(ChatUtils.USER_SEX, sex);
 						editor.commit();
 						// settingsDialog.hide();
-						//finish();
-						registerToServer(regId,email,nickname,passw,mood,sex);						
-					}else if(isRegistered && !"".equals(userId) ) {
-						//not registered, we only want user to change mood...and notifications
-						if(currentMood!=null && !currentMood.equals(moodText.getText().toString()
-								.trim()) ){
-							//mood changed, call service to change mood
-							changeMoodStatus(userId,moodText.getText().toString().trim());
-							
+						// finish();
+						registerToServer(regId, email, nickname, passw, mood,
+								sex);
+					} else if (isRegistered && !"".equals(userId)) {
+						// not registered, we only want user to change
+						// mood...and notifications
+						if (currentMood != null
+								&& !currentMood.equals(moodText.getText()
+										.toString().trim())) {
+							// mood changed, call service to change mood
+							changeMoodStatus(userId, moodText.getText()
+									.toString().trim());
+
 						}
 					}
 
-					
 				}
 			}
 		});
@@ -188,7 +205,7 @@ public class ChatAroundSettingActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	private void registerToServer(String regId, String email, String nickName,
 			String password, String mood, int sex) {
 		RegisterUserRequestDto dto = new RegisterUserRequestDto();
@@ -206,13 +223,13 @@ public class ChatAroundSettingActivity extends Activity {
 		} else {
 			dto.setGender(Gender.Other.getValue());
 		}
-		//in case user tries to login from existing one.
+		// in case user tries to login from existing one.
 		temporalRegisteredUserDto = dto;
 		// register to server and get users...
 		new ChatAroundRegisterUserTask(this, null).execute(dto,
 				ChatUtils.REGISTER_SERVER_URL);
 	}
-	
+
 	private void changeMoodStatus(String userId, String mood) {
 		UserStatusUpdateDto dto = new UserStatusUpdateDto();
 		dto.setUserId(userId);
@@ -220,49 +237,70 @@ public class ChatAroundSettingActivity extends Activity {
 		new ChatAroundMoodTask(this, null).execute(dto,
 				ChatUtils.CHANGE_MOOD_SERVER_URL);
 	}
-	
+
 	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
-		if (dto != null && StringUtils.hasText(dto.getUserId()) && (dto.getServerMessage()==null || "".equals(dto.getServerMessage())) ) {
-				final SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
-				String userId = dto.getUserId();
-				SharedPreferences.Editor editor = settings.edit();
-				editor.putString(ChatUtils.USER_ID, userId);
-				editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
-				editor.commit();
-				finish();
-		}else if (dto.getServerMessage()!=null && !"".equals(dto.getServerMessage())) {
-			//some error: will try to login first then
-			//Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();
-			
+		if (dto != null
+				&& StringUtils.hasText(dto.getUserId())
+				&& (dto.getServerMessage() == null || "".equals(dto
+						.getServerMessage()))) {
+			savePreferences(dto.getUserId());
+			finish();
+		} else if (dto.getServerMessage() != null
+				&& !"".equals(dto.getServerMessage())) {
+			// some error: will try to login first then
+			// Toast.makeText(getApplicationContext(), dto.getServerMessage(),
+			// Toast.LENGTH_LONG).show();
 			LoginDto loginDto = new LoginDto();
-				loginDto.setEmail(temporalRegisteredUserDto.getEmail());
-				loginDto.setNickname(temporalRegisteredUserDto.getNickName());
-				loginDto.setPassword(temporalRegisteredUserDto.getPassword());
+			loginDto.setEmail(temporalRegisteredUserDto.getEmail());
+			loginDto.setNickname(temporalRegisteredUserDto.getNickName());
+			loginDto.setPassword(temporalRegisteredUserDto.getPassword());
 			doLogin(loginDto);
-				
+
 		}
 	}
-	
+
 	private void doLogin(LoginDto dto) {
+
 		new ChatAroundLoginTask(this, null).execute(dto,
 				ChatUtils.LOGIN_SERVER_URL);
+
 	}
-	
+
 	public void finishTaskUpdateUserStatus(UserStatusUpdateResponseDto dto) {
-		if( dto != null && dto.getServerMessage()==null || !"".equals(dto.getServerMessage()) ){
-			//some error going on...
-			Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();
+		if (dto != null && dto.getServerMessage() == null
+				|| !"".equals(dto.getServerMessage())) {
+			// some error going on...
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.some_error_server), Toast.LENGTH_LONG)
+					.show();
 		}
 	}
+
 	public void finishTaskLoginUser(UserPublicDto dto) {
-		/*
-		if( dto != null && dto.getServerMessage()==null || !"".equals(dto.getServerMessage()) ){
-			//some error going on...
-			Toast.makeText(getApplicationContext(), dto.getServerMessage(), Toast.LENGTH_LONG).show();
+		if (dto != null
+				&& (dto.getServerMessage() == null || !"".equals(dto
+						.getServerMessage()))) {
+			// some error going on...
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.some_error_server), Toast.LENGTH_LONG)
+					.show();
+		} else {
+			// user ok
+			savePreferences(dto.getUserId());
+			finish();
 		}
-		*/
+
 	}
-	
+
+	private void savePreferences(String userId) {
+		final SharedPreferences settings = getSharedPreferences(
+				ChatUtils.PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString(ChatUtils.USER_ID, userId);
+		editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
+		editor.commit();
+	}
+
 	private boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -270,8 +308,8 @@ public class ChatAroundSettingActivity extends Activity {
 			return true;
 		}
 		return false;
-	}	
-	
+	}
+
 	private void registerToCloud() {
 		checkNotNull(ChatUtils.SERVER_URL, "SERVER_URL");
 		checkNotNull(ChatUtils.SENDER_ID, "SENDER_ID");
@@ -301,15 +339,40 @@ public class ChatAroundSettingActivity extends Activity {
 				dto.setDeviceId(regId);
 				dto.setAppId(PushUtils.APP_ID);
 				dto.setTime(Calendar.getInstance().getTime());
-				
-				//new ChatAroundTask(context, null).execute(dto,ChatUtils.SERVER_URL + ChatUtils.REGISTER_URL);
+
+				// new ChatAroundTask(context,
+				// null).execute(dto,ChatUtils.SERVER_URL +
+				// ChatUtils.REGISTER_URL);
 			}
 		}
 	}
+
 	private void checkNotNull(Object reference, String name) {
 		if (reference == null) {
 			throw new NullPointerException(getString(R.string.error_config,
 					name));
 		}
-	}	
+	}
+
+	private void doGoOfline(String userId) {
+		ChatAroundAsyncHtpp.post(
+				ChatAroundAsyncHtpp.ChatAroundHttpEnum.OFFLINE.getUrl()
+						+ userId, null, new JsonHttpResponseHandler() {
+					@Override
+					public void onSuccess(JSONObject arg0) {
+
+						super.onSuccess(arg0);
+					}
+
+					@Override
+					protected Object parseResponse(String arg0)
+							throws JSONException {
+
+						return super.parseResponse(arg0);
+					}
+
+				}
+
+		);
+	}
 }

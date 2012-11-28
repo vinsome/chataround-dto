@@ -80,8 +80,15 @@
 			<artifactId>guava</artifactId>
 			<version>13.0-rc1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.loopj.android.http</groupId>
+			<artifactId>android-async-http</artifactId>
+			<version>1.4.2</version>
+		</dependency>		
 	</dependencies>
 <!-- 
+mvn install:install-file -Dfile=android-async-http.jar -DgroupId=com.loopj.android.http -DartifactId=android-async-http -Dversion=1.4.2 -Dpackaging=jar
+
 mvn install:install-file -Dfile=EasyTracker.jar -DgroupId=com.google.android -DartifactId=easytracker -Dversion=1.0 -Dpackaging=jar
 
 mvn install:install-file -Dfile=libGoogleAnalytics.jar -DgroupId=com.google.android -DartifactId=google-analytics -Dversion=1.5.1 -Dpackaging=jar

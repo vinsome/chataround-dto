@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.Subscribe;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;

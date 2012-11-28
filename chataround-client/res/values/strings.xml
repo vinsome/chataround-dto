@@ -27,4 +27,9 @@
     <string name="radio_female">Female</string>
     <string name="radio_male">Male</string>
     <string name="progress_register_message">Registering user</string>
+    <string name="some_error_server">Something went wrong, try again later!</string>
+    <string name="leave_app_title">Exit</string>
+    <string name="leave_app_message">You´re about to leave ChatAround!</string>
+    <string name="leave_app_ok">OK</string>
+    <string name="leave_app_ko">Not now!</string>
 </resources>

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import org.springframework.util.StringUtils;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -176,13 +174,4 @@ public class ChatFragment extends ListFragment implements OnClickListener {
 		return false;
 	}
 	
-	private void onButtonBClicked() {
-		Fragment anotherFragment = Fragment.instantiate(getActivity(),
-				ChatAroundListFragment.class.getName());
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-		ft.replace(R.id.frameLayoutId, anotherFragment);
-		ft.addToBackStack(null);
-		ft.commit();
-	}	
-
 }

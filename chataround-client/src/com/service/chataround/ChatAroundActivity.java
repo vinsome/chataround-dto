@@ -3,11 +3,17 @@ package com.service.chataround;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -20,6 +26,8 @@ import android.view.MenuItem;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.common.eventbus.EventBus;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.service.chataround.async.ChatAroundAsyncHtpp;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.dto.chat.ChatMessageDto;
 import com.service.chataround.dto.chat.UserPublicDto;
@@ -29,6 +37,7 @@ import com.service.chataround.listener.MyLocationListener;
 import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.PushUtils;
 
+@SuppressLint("ParserError")
 public class ChatAroundActivity extends Activity {
 	public static String TAG = ChatAroundActivity.class.getName();
 
@@ -45,7 +54,7 @@ public class ChatAroundActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_around);
 		tracker = GoogleAnalyticsTracker.getInstance();
-		tracker.start("UA-36514546-1", 10, this);
+		tracker.startNewSession("UA-36514546-1", 10, this);
 	}
 
 	@Override
@@ -55,9 +64,9 @@ public class ChatAroundActivity extends Activity {
 
 		registerReceiver(mHandleMessageReceiver, new IntentFilter(
 				ChatUtils.DISPLAY_MESSAGE_ACTION));
-		
+
 		doNavigateToFragment();
-		
+
 		final SharedPreferences settings = getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
 
@@ -67,15 +76,18 @@ public class ChatAroundActivity extends Activity {
 		String userId = settings.getString(ChatUtils.USER_ID, "");
 		String email = settings.getString(ChatUtils.USER_EMAIL, "");
 		String passw = settings.getString(ChatUtils.USER_PASSW, "");
-
+		//by default user wants to be online
+		boolean userOnline = settings.getBoolean(
+				ChatUtils.USER_STAY_ONLINE, true);
+		
 		if ("".equals(nick) || "".equals(email) || "".equals(passw)) {
 			goToSettingActivity();
 		}
-		
+
 		String regId = GCMRegistrar.getRegistrationId(this);
-		
+
 		if (regId != null && !"".equals(regId) && userId != null
-				&& !"".equals(userId)) {
+				&& !"".equals(userId) && userOnline) {
 			LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			if (locationListener == null) {
 				locationListener = new MyLocationListener();
@@ -89,25 +101,25 @@ public class ChatAroundActivity extends Activity {
 			locationListener.start();
 		}
 	}
-	private void doValidateSettings(){
-		
-	}
+
 	private void doNavigateToFragment() {
 		Intent intent = getIntent();
-		//when reciving notification, comes here ...is the one that sends us messages!
-		String senderUserId = intent.getStringExtra(ChatUtils.NOTIFICATION_SENDER_USER_ID);
-		if(senderUserId==null || "".equals(senderUserId)){
-			
+		// when reciving notification, comes here ...is the one that sends us
+		// messages!
+		String senderUserId = intent
+				.getStringExtra(ChatUtils.NOTIFICATION_SENDER_USER_ID);
+		if (senderUserId == null || "".equals(senderUserId)) {
+
 			Fragment frg = Fragment.instantiate(this,
 					ChatAroundListFragment.class.getName());
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			ft.replace(R.id.frameLayoutId, frg);
 			ft.addToBackStack(null);
 			ft.commit();
-			
-		}else{
-			
-			//means we are talking to someone and we clicked the notification in mobile.
+
+		} else {
+			// means we are talking to someone and we clicked the notification
+			// in mobile.
 			setRecipientId(senderUserId);
 			Fragment anotherFragment = Fragment.instantiate(this,
 					ChatFragment.class.getName());
@@ -117,6 +129,7 @@ public class ChatAroundActivity extends Activity {
 			ft.commit();
 		}
 	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_chat_around, menu);
@@ -206,7 +219,7 @@ public class ChatAroundActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		tracker.stop();
+		tracker.stopSession();
 		super.onDestroy();
 	}
 
@@ -220,7 +233,6 @@ public class ChatAroundActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		final SharedPreferences settings = getSharedPreferences(
 				ChatUtils.PREFS_NAME, 0);
@@ -234,57 +246,71 @@ public class ChatAroundActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		if(getFragmentPresent()!=null && !"".equals(getFragmentPresent())) {
-			if(ChatFragment.class.getName().equals( getFragmentPresent()) ) {
+		if (getFragmentPresent() != null && !"".equals(getFragmentPresent())) {
+			if (ChatFragment.class.getName().equals(getFragmentPresent())) {
 				Fragment anotherFragment = Fragment.instantiate(this,
 						ChatAroundListFragment.class.getName());
-				FragmentTransaction ft = getFragmentManager().beginTransaction();
+				FragmentTransaction ft = getFragmentManager()
+						.beginTransaction();
 				ft.replace(R.id.frameLayoutId, anotherFragment);
 				ft.addToBackStack(null);
-				ft.commit();				
-			}else{
-				//where are in the list...probably we want to go out of app?
+				ft.commit();
+			} else {
+				// where are in the list...probably we want to go out of app?
+				new AlertDialog.Builder(this)
+						.setIcon(android.R.drawable.ic_dialog_alert)
+						.setTitle(getString(R.string.leave_app_title))
+						.setMessage(getString(R.string.leave_app_message))
+						.setPositiveButton(getString(R.string.leave_app_ok),
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										final SharedPreferences settings = getSharedPreferences(
+												ChatUtils.PREFS_NAME, 0);
+										String userId = settings.getString(
+												ChatUtils.USER_ID, "");
+										ChatAroundAsyncHtpp
+												.post(ChatAroundAsyncHtpp.ChatAroundHttpEnum.OFFLINE
+														.getUrl() + userId,
+														null,
+														new JsonHttpResponseHandler() {
+															@Override
+															public void onSuccess(
+																	JSONObject arg0) {
+
+																super.onSuccess(arg0);
+															}
+
+															@Override
+															protected Object parseResponse(
+																	String arg0)
+																	throws JSONException {
+
+																return super
+																		.parseResponse(arg0);
+															}
+
+														}
+
+												);
+
+										finish();
+									}
+								})
+						.setNegativeButton(getString(R.string.leave_app_ko),
+								null).show();
 			}
 		}
-		/*
-		 * new AlertDialog.Builder(this)
-		 * .setIcon(android.R.drawable.ic_dialog_alert) .setTitle("Deixar")
-		 * .setMessage( "Tem certeza de que quer deixar o aplicativo?")
-		 * .setPositiveButton("Confirmar", new DialogInterface.OnClickListener()
-		 * {
-		 * 
-		 * @Override public void onClick(DialogInterface dialog, int which) { //
-		 * Stop the activity
-		 * 
-		 * final String regId = GCMRegistrar
-		 * .getRegistrationId(getApplicationContext()); PushDto dto = new
-		 * PushDto(); SharedPreferences settings =
-		 * getSharedPreferences(PREFS_NAME, 0); nick =
-		 * settings.getString(USER_NICKNAME, ""); dto.setNick(nick);
-		 * dto.setOperation(Operation.UNREGISTER); dto.setRegId(regId);
-		 * dto.setMine(true); dto.setAppId("EVANGELIO_APP");
-		 * 
-		 * Map<String, String> params = new HashMap<String, String>( 0);
-		 * params.put("languageId", "BR"); dto.setParams(params);
-		 * 
-		 * new EvangelioTask(MessageActivity.this) .execute(dto, SERVER_URL +
-		 * "/mymUnRegisterMessage.do");
-		 * 
-		 * GCMRegistrar.setRegisteredOnServer( getApplicationContext(), false);
-		 * tracker.trackEvent("MessageActivity", "backPressed", "", 10);
-		 * finish();
-		 * 
-		 * }
-		 * 
-		 * }).setNegativeButton("Cancelar", null).show();
-		 */
 
 	}
 
 	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String senderUserId = intent.getExtras().getString(PushUtils.USER_ID_FROM_SENDER);
+			String senderUserId = intent.getExtras().getString(
+					PushUtils.USER_ID_FROM_SENDER);
 			ChatMessageDto dto = new ChatMessageDto();
 			dto.setSenderId(senderUserId);
 			eventBus.post(dto);
