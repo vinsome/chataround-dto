@@ -32,6 +32,7 @@ import com.service.chataround.dto.chat.ChatMessageInternalDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto;
 import com.service.chataround.dto.chat.ChatMessageResponseDto.MessageStatus;
 import com.service.chataround.dto.chat.LoginDto;
+import com.service.chataround.dto.chat.OfflineResponseDto;
 import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.chat.UserPingResponseDto;
 import com.service.chataround.dto.chat.UserPublicDto;
@@ -92,9 +93,12 @@ public class ChatController extends BaseController{
 	
 	@RequestMapping(value="/api/1.0/ofline/{userId}", method = RequestMethod.POST)
     @ResponseBody
-	public void offlineUser(@PathVariable Long userId) throws AppException{
+	public OfflineResponseDto offlineUser(@PathVariable Long userId) throws AppException{
 		counterManager.incrementCounter(CounterNames.OFFLINE_USER_REQUEST);
 		userLocationCache.offlineUser(userId);
+		OfflineResponseDto offlineResponseDto = new OfflineResponseDto();
+		offlineResponseDto.setUserOfflineStatus("Success");
+		return offlineResponseDto;
 	}
 	
 	@RequestMapping(value="/api/1.0/login", method = RequestMethod.POST)

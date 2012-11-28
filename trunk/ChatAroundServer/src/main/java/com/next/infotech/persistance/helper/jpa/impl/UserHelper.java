@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import com.next.core.db.page.PageInfo;
 import com.next.core.db.page.PageResult;
 import com.next.core.db.page.QueryParam;
-import com.next.core.db.page.QueryParamPageInfo;
 import com.next.core.exception.AppException;
 import com.next.ext.core.db.page.HibernateMapPageInfo;
+import com.next.ext.core.db.page.HibernateQueryParamPageInfo;
 import com.next.ext.core.persistance.helper.BasePersistanceHelper;
 import com.next.infotech.persistance.jpa.impl.User;
 
@@ -116,13 +116,15 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	 * @throws AppException
 	 */
 	public User getUserByEmailId(String email) throws AppException {
-		QueryParamPageInfo pageInfo = new QueryParamPageInfo();
+		HibernateQueryParamPageInfo pageInfo = new HibernateQueryParamPageInfo();
 		QueryParam emailParam = new QueryParam();
 		emailParam.setCaseSenstive(false);
 		emailParam.setField("email");
 		emailParam.setOperator(QueryParam.OPERATOR_EQUAL);
 		emailParam.setValue(email);
+		emailParam.setFieldType(QueryParam.FIELD_TYPE_STRING);
 		pageInfo.addCriteria(emailParam);
+		
 		PageResult<User> pageResult = searchUsers(pageInfo);
 		if ((pageResult == null) || (pageResult.getResultList() == null)
 				|| (pageResult.getResultList().size() <= 0)) {
@@ -135,11 +137,12 @@ public class UserHelper extends BasePersistanceHelper<User> {
 	}
 
 	public User getUserByNickname(String nickname) throws AppException {
-		QueryParamPageInfo pageInfo = new QueryParamPageInfo();
+		HibernateQueryParamPageInfo pageInfo = new HibernateQueryParamPageInfo();
 		QueryParam nicknameParam = new QueryParam();
 		nicknameParam.setCaseSenstive(false);
 		nicknameParam.setField("nickName");
 		nicknameParam.setOperator(QueryParam.OPERATOR_EQUAL);
+		nicknameParam.setFieldType(QueryParam.FIELD_TYPE_STRING);
 		nicknameParam.setValue(nickname);
 		pageInfo.addCriteria(nicknameParam);
 
