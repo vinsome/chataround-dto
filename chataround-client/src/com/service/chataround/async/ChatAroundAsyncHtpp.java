@@ -31,7 +31,9 @@ public class ChatAroundAsyncHtpp {
 	  }
 	  
 	 public enum ChatAroundHttpEnum {
-		 OFFLINE("OFFLINE",OFFLINE_SERVER_URL);
+		 OFFLINE("OFFLINE",OFFLINE_SERVER_URL),
+		 CHANGEMOOD("CHANGEMOOD",CHANGE_MOOD_SERVER_URL)
+		 ;
 		 
 		 private String name;
 		 private String url;

@@ -240,7 +240,10 @@ public class ChatAroundActivity extends Activity {
 		String regId = GCMRegistrar.getRegistrationId(this);
 		if (regId != null && !"".equals(regId) && userId != null
 				&& !"".equals(userId)) {
-			locationListener.setPaused(true);
+			
+			if(locationListener!=null)
+				locationListener.setPaused(true);
+			
 		}
 	}
 

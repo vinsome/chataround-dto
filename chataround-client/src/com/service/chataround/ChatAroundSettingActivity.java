@@ -23,7 +23,9 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.async.ChatAroundAsyncHtpp;
 import com.service.chataround.dto.chat.ChatAroundDto;
@@ -48,7 +50,7 @@ public class ChatAroundSettingActivity extends Activity {
 	private String regId;
 	private String currentMood;
 	private RegisterUserRequestDto temporalRegisteredUserDto;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -119,8 +121,8 @@ public class ChatAroundSettingActivity extends Activity {
 				editor.commit();
 				if (userId != null && !"".equals(userId)) {
 					doGoOfline(userId);
-				}else{
-					//listener will update status atutomatically
+				} else {
+					// listener will update status atutomatically
 				}
 			}
 		});
@@ -136,45 +138,58 @@ public class ChatAroundSettingActivity extends Activity {
 								.trim())
 						&& StringUtils.hasText(userPassw.getText().toString()
 								.trim())) {
-					regId = GCMRegistrar
-							.getRegistrationId(getApplicationContext());
+					if (isOnline()) {
+						regId = GCMRegistrar
+								.getRegistrationId(getApplicationContext());
 
-					String nickname = nickName.getText().toString().trim();
-					String mood = moodText.getText().toString().trim();
-					String email = emailText.getText().toString().trim();
-					String passw = userPassw.getText().toString().trim();
-					int sex = radioSex.getCheckedRadioButtonId();
-					// We need an Editor object to make preference changes.
-					// All objects are from android.context.Context
-					SharedPreferences.Editor editor = settings.edit();
-					boolean isRegistered = settings.getBoolean(
-							ChatUtils.USER_REGISTERED_ONLINE, false);
-					String userId = settings.getString(ChatUtils.USER_ID, "");
+						String nickname = nickName.getText().toString().trim();
+						String mood = moodText.getText().toString().trim();
+						String email = emailText.getText().toString().trim();
+						String passw = userPassw.getText().toString().trim();
+						int sex = radioSex.getCheckedRadioButtonId();
+						// We need an Editor object to make preference changes.
+						// All objects are from android.context.Context
+						SharedPreferences.Editor editor = settings.edit();
+						boolean isRegistered = settings.getBoolean(
+								ChatUtils.USER_REGISTERED_ONLINE, false);
+						String userId = settings.getString(ChatUtils.USER_ID,
+								"");
 
-					if (!isRegistered) {
-						editor.putString(ChatUtils.USER_NICKNAME, nickname);
-						editor.putString(ChatUtils.USER_MOOD, mood);
-						editor.putString(ChatUtils.USER_EMAIL, email);
-						editor.putString(ChatUtils.USER_PASSW, passw);
-						editor.putInt(ChatUtils.USER_SEX, sex);
-						editor.commit();
-						// settingsDialog.hide();
-						// finish();
-						registerToServer(regId, email, nickname, passw, mood,
-								sex);
-					} else if (isRegistered && !"".equals(userId)) {
-						// not registered, we only want user to change
-						// mood...and notifications
-						if (currentMood != null
-								&& !currentMood.equals(moodText.getText()
-										.toString().trim())) {
-							// mood changed, call service to change mood
-							changeMoodStatus(userId, moodText.getText()
-									.toString().trim());
+						if (!isRegistered) {
+							editor.putString(ChatUtils.USER_NICKNAME, nickname);
+							editor.putString(ChatUtils.USER_MOOD, mood);
+							editor.putString(ChatUtils.USER_EMAIL, email);
+							editor.putString(ChatUtils.USER_PASSW, passw);
+							editor.putInt(ChatUtils.USER_SEX, sex);
+							editor.commit();
+							// settingsDialog.hide();
+							// finish();
+							registerToServer(regId, email, nickname, passw,
+									mood, sex);
+						} else if (isRegistered && !"".equals(userId)) {
+							// not registered, we only want user to change
+							// mood...and notifications
+							if (currentMood != null
+									&& !currentMood.equals(moodText.getText()
+											.toString().trim())) {
+								// mood changed, call service to change mood
+								changeMoodStatus(userId, moodText.getText()
+										.toString().trim());
 
+							}else{
+								//no register or login or change mood, its a save so close it
+								finish();
+							}
+						}else{
+							//no register or login or change mood, its a save so close it
+							finish();
 						}
-					}
 
+					}
+				} else {
+					Toast.makeText(getApplicationContext(),
+							getString(R.string.app_offline), Toast.LENGTH_LONG)
+							.show();
 				}
 			}
 		});
@@ -230,12 +245,13 @@ public class ChatAroundSettingActivity extends Activity {
 				ChatUtils.REGISTER_SERVER_URL);
 	}
 
-	private void changeMoodStatus(String userId, String mood) {
+	private void changeMoodStatus(final String userId, final String mood) {
 		UserStatusUpdateDto dto = new UserStatusUpdateDto();
-		dto.setUserId(userId);
-		dto.setStatus(mood);
-		new ChatAroundMoodTask(this, null).execute(dto,
-				ChatUtils.CHANGE_MOOD_SERVER_URL);
+			dto.setUserId(userId);
+			dto.setStatus(mood);
+		
+		new ChatAroundMoodTask(this, null).execute(dto,ChatUtils.CHANGE_MOOD_SERVER_URL);
+		
 	}
 
 	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
@@ -267,12 +283,22 @@ public class ChatAroundSettingActivity extends Activity {
 	}
 
 	public void finishTaskUpdateUserStatus(UserStatusUpdateResponseDto dto) {
-		if (dto != null && dto.getServerMessage() == null
-				|| !"".equals(dto.getServerMessage())) {
+		if (dto != null && dto.getServerMessage() != null && !"".equals(dto.getServerMessage())) {
 			// some error going on...
 			Toast.makeText(getApplicationContext(),
 					getString(R.string.some_error_server), Toast.LENGTH_LONG)
 					.show();
+			
+		}else{
+			final SharedPreferences settings = getSharedPreferences(
+					ChatUtils.PREFS_NAME, 0);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putString(ChatUtils.USER_MOOD, moodText.getText().toString());
+			editor.commit();
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.status_updated_succesfully), Toast.LENGTH_LONG)
+					.show();		
+			finish();
 		}
 	}
 
@@ -369,6 +395,37 @@ public class ChatAroundSettingActivity extends Activity {
 							throws JSONException {
 
 						return super.parseResponse(arg0);
+					}
+
+				}
+
+		);
+	}
+
+	private void doChangeMood(final String userId, final String status) {
+		RequestParams params = new RequestParams();
+		params.put("userId", userId);
+		params.put("status", status);
+
+		ChatAroundAsyncHtpp.post(
+				ChatAroundAsyncHtpp.ChatAroundHttpEnum.CHANGEMOOD.getUrl(),
+				params, new JsonHttpResponseHandler() {
+
+					public void onSuccess(UserStatusUpdateResponseDto obj) {
+						final SharedPreferences settings = getSharedPreferences(
+								ChatUtils.PREFS_NAME, 0);
+						SharedPreferences.Editor editor = settings.edit();
+						editor.putString(ChatUtils.USER_MOOD, status);
+						editor.commit();
+					}
+
+					@Override
+					protected UserStatusUpdateResponseDto parseResponse(
+							String arg0) throws JSONException {
+						Gson gson = new Gson();
+						UserStatusUpdateResponseDto response = gson.fromJson(
+								arg0, UserStatusUpdateResponseDto.class);
+						return (UserStatusUpdateResponseDto) response;
 					}
 
 				}
