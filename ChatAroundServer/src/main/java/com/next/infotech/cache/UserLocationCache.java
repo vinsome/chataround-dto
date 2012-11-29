@@ -122,10 +122,11 @@ public class UserLocationCache {
 		previousUserSet.remove(user);
 	}
 
-	public void offlineUser(Long userId) throws AppException {
-		UserCacheDomain user = allLoggedInUsers.get(userId);
+	public void offlineUser(String userId) throws AppException {
+		UserCacheDomain user = allLoggedInUsers.remove(userId);
 		if (user == null) {
-			throw new AppException("No user found [id=" + userId + "]");
+			//throw new AppException("No user found [id=" + userId + "]");
+			return;
 		}
 		// Create Grid key
 		String previosuLocationGridKey = LocationCacheUtil.getGridKey(user.getLattitude(),

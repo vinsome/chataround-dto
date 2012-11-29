@@ -93,7 +93,7 @@ public class ChatController extends BaseController{
 	
 	@RequestMapping(value="/api/1.0/ofline/{userId}", method = RequestMethod.POST)
     @ResponseBody
-	public OfflineResponseDto offlineUser(@PathVariable Long userId) throws AppException{
+	public OfflineResponseDto offlineUser(@PathVariable String userId) throws AppException{
 		counterManager.incrementCounter(CounterNames.OFFLINE_USER_REQUEST);
 		userLocationCache.offlineUser(userId);
 		OfflineResponseDto offlineResponseDto = new OfflineResponseDto();
