@@ -262,7 +262,7 @@ public class ChatAroundSettingActivity extends Activity {
 			savePreferences(dto.getUserId());
 			finish();
 		} else if (dto.getServerMessage() != null
-				&& !"".equals(dto.getServerMessage())) {
+				&& !"".equals(dto.getServerMessage()) ) {
 			// some error: will try to login first then
 			// Toast.makeText(getApplicationContext(), dto.getServerMessage(),
 			// Toast.LENGTH_LONG).show();
@@ -303,12 +303,11 @@ public class ChatAroundSettingActivity extends Activity {
 	}
 
 	public void finishTaskLoginUser(UserPublicDto dto) {
-		if (dto != null
-				&& (dto.getServerMessage() == null || !"".equals(dto
-						.getServerMessage()))) {
+		if (dto != null && dto.getServerMessage() != null && !"".equals(dto
+						.getServerMessage())) {
 			// some error going on...
 			Toast.makeText(getApplicationContext(),
-					getString(R.string.some_error_server), Toast.LENGTH_LONG)
+					dto.getServerMessage(), Toast.LENGTH_LONG)
 					.show();
 		} else {
 			// user ok
