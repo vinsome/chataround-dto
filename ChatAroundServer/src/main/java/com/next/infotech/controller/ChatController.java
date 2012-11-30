@@ -127,8 +127,8 @@ public class ChatController extends BaseController{
 			oneGridRectangle = new GridRectangle();
 			oneGridRectangle.setTopLattitude(lattitude);
 			oneGridRectangle.setTopLongitude(longitude);
-			oneGridRectangle.setBottomLattitude(lattitude + 1.0);
-			oneGridRectangle.setBottomLongitude(longitude + 1.0);
+			oneGridRectangle.setBottomLattitude(lattitude + userLocationCache.getGridBoxSize());
+			oneGridRectangle.setBottomLongitude(longitude + userLocationCache.getGridBoxSize());
 			allRectangles.add(oneGridRectangle);
 		}
 		model.addAttribute("AllUsers", allUsers);
