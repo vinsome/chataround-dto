@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,7 +54,9 @@ public class ChatController extends BaseController{
     @ResponseBody
 	public UserPingResponseDto pingUserLocationAndGetUserListPost(@RequestBody UserPingRequestDto userPingRequest) throws AppException{
 		counterManager.incrementCounter(CounterNames.PING_REQUEST);
-		userLocationCache.updateUserLocation(userPingRequest.getUserId(), userPingRequest.getLattitude(), userPingRequest.getLongitude());
+		UserCacheDomain user = getUserByExternalId(userPingRequest.getUserId());
+		userLocationCache.updateUserLocation(user, userPingRequest.getLattitude(), userPingRequest.getLongitude());
+			
 		UserPingResponseDto userPingResponseDto = new UserPingResponseDto();
 		userPingResponseDto.setLattitude(userPingRequest.getLattitude());
 		userPingResponseDto.setLongitude(userPingRequest.getLongitude());
@@ -83,8 +84,8 @@ public class ChatController extends BaseController{
     @ResponseBody
 	public UserStatusUpdateResponseDto updateUserStatus(@RequestBody UserStatusUpdateDto userStatusUpdateDto) throws AppException{
 		counterManager.incrementCounter(CounterNames.UPDATE_USER_STATUS_REQUEST);
-		chatAroundServices.updateUserStatus(userStatusUpdateDto.getUserId(), userStatusUpdateDto.getStatus());
-		userLocationCache.updateUserStatus(userStatusUpdateDto.getUserId(),userStatusUpdateDto.getStatus());
+		UserCacheDomain user = chatAroundServices.updateUserStatus(userStatusUpdateDto.getUserId(), userStatusUpdateDto.getStatus());
+		userLocationCache.updateUserStatus(user,userStatusUpdateDto.getStatus());
 		UserStatusUpdateResponseDto userStatusUpdateResponseDto =  new UserStatusUpdateResponseDto();
 		userStatusUpdateResponseDto.setStatus(userStatusUpdateDto.getStatus());
 		userStatusUpdateResponseDto.setUserId(userStatusUpdateDto.getUserId());
@@ -95,7 +96,8 @@ public class ChatController extends BaseController{
     @ResponseBody
 	public OfflineResponseDto offlineUser(@PathVariable String userId) throws AppException{
 		counterManager.incrementCounter(CounterNames.OFFLINE_USER_REQUEST);
-		userLocationCache.offlineUser(userId);
+		UserCacheDomain user = getUserByExternalId(userId,false);
+		userLocationCache.offlineUser(user);
 		OfflineResponseDto offlineResponseDto = new OfflineResponseDto();
 		offlineResponseDto.setUserOfflineStatus("Success");
 		return offlineResponseDto;
@@ -198,7 +200,17 @@ public class ChatController extends BaseController{
 		}
 		return chatMessageResponseDto;
 	}
-	
+	private UserCacheDomain getUserByExternalId(String userId) throws AppException{
+		return getUserByExternalId(userId, true);
+	}
+	private UserCacheDomain getUserByExternalId(String userId,boolean getFromDbIfNotExists) throws AppException{
+		UserCacheDomain user = userLocationCache.getUserByExternalId(userId);
+		if(user == null && getFromDbIfNotExists){
+			user = chatAroundServices.getUserByExternalId(userId);
+			userLocationCache.setUserInCache(user);
+		}
+		return user;
+	}
 	
 	
 	public static class GridRectangle{

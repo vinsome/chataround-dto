@@ -10,10 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.next.core.exception.AppException;
 import com.next.infotech.persistance.domain.UserCacheDomain;
+import com.next.infotech.persistance.services.ChatAroundServices;
 import com.next.infotech.web.dto.UserCacheDto;
 import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.util.LocationCacheUtil;
@@ -29,6 +31,9 @@ public class UserLocationCache {
 			10000);
 	// Number of degrees in each increment (box) in the grid
 	static double GRID_BOX_SIZE_IN_DEGREE = LocationCacheUtil.GRID_BOX_SIZE_IN_DEGREE;
+	
+	@Autowired
+	private ChatAroundServices chatAroundServices;
 
 	public double getGridBoxSize() {
 		return GRID_BOX_SIZE_IN_DEGREE;
@@ -94,24 +99,23 @@ public class UserLocationCache {
 		cachedUSer.setLattitude(0.0);
 		cachedUSer.setLongitude(0.0);
 		allLoggedInUsers.put(cachedUSer.getUserId(), cachedUSer);
-		updateUserLocation(cachedUSer.getUserId(),
-				userCacheDomain.getLattitude(), userCacheDomain.getLongitude());
+		updateUserLocation(cachedUSer,userCacheDomain.getLattitude(), userCacheDomain.getLongitude());
 		return cachedUSer;
 	}
 
-	public void updateUserStatus(String userId, String statusMessage)
+	public void updateUserStatus(UserCacheDomain user, String statusMessage)
 			throws AppException {
-		UserCacheDomain user = allLoggedInUsers.get(userId);
 		if (user == null) {
-			throw new AppException("No user found [id=" + userId + "]");
+			logger.warn("Trying to update status of null user");
+			return ;
 		}
 		user.setStatusMessage(statusMessage);
 	}
 
-	public void onlineUser(Long userId) throws AppException {
-		UserCacheDomain user = allLoggedInUsers.get(userId);
+	public void onlineUser(UserCacheDomain user) throws AppException {
 		if (user == null) {
-			throw new AppException("No user found [id=" + userId + "]");
+			logger.warn("Trying to bring online a null user");
+			return ;
 		}
 		// Create Grid key
 		String previosuLocationGridKey = LocationCacheUtil.getGridKey(user.getLattitude(),
@@ -122,31 +126,36 @@ public class UserLocationCache {
 		previousUserSet.remove(user);
 	}
 
-	public void offlineUser(String userId) throws AppException {
-		UserCacheDomain user = allLoggedInUsers.remove(userId);
+	public void offlineUser(UserCacheDomain user) throws AppException {
 		if (user == null) {
 			//throw new AppException("No user found [id=" + userId + "]");
 			return;
 		}
-		// Create Grid key
-		String previosuLocationGridKey = LocationCacheUtil.getGridKey(user.getLattitude(),
-				user.getLongitude());
+		user = allLoggedInUsers.remove(user.getUserId());
+		if(user != null){
+			// Create Grid key
+			String previosuLocationGridKey = LocationCacheUtil.getGridKey(user.getLattitude(),
+					user.getLongitude());
 
-		Set<UserCacheDomain> previousUserSet = getUserSetByLocation(
-				previosuLocationGridKey, false);
-		previousUserSet.remove(user);
+			Set<UserCacheDomain> previousUserSet = getUserSetByLocation(
+					previosuLocationGridKey, false);
+			previousUserSet.remove(user);
+		}
 	}
 
 	public UserCacheDomain getUserByExternalId(String userId) {
 		return allLoggedInUsers.get(userId);
 	}
+	public void setUserInCache(UserCacheDomain user) {
+		allLoggedInUsers.put(user.getUserId(), user);
+	}
 
-	public void updateUserLocation(String userId, Double lattitude,
+	public void updateUserLocation(UserCacheDomain user, Double lattitude,
 			Double longitude) throws AppException {
-		UserCacheDomain user = allLoggedInUsers.get(userId);
 		String previosuLocationGridKey = "";
 		if (user == null) {
-			throw new AppException("No user found [id=" + userId + "]");
+			logger.warn("Trying to update location of null user");
+			return ;
 		} else {
 			previosuLocationGridKey = LocationCacheUtil.getGridKey(user.getLattitude(),
 					user.getLongitude());
