@@ -356,7 +356,7 @@ public class ChatAroundSettingActivity extends Activity {
 			// Device is already registered on GCM, check server.
 			if (GCMRegistrar.isRegisteredOnServer(this)) {
 				// Skips registration.
-				// No need to display anything cause it«s background thingy
+				// No need to display anything cause its background thingy
 				// mDisplay.append(getString(R.string.already_registered) +
 				// "\n");
 			} else {

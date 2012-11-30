@@ -109,7 +109,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		//mines are already in it!
 		if(!dto.isMine()){
 			//since its not mine, need to put here the senders cause my database looks for user_id from
-			//which I«m talking to.
+			//which Im talking to.
 			dto.setRecipientId(senderId);	
 			DatabaseUtils.addMessageToDb(context,dto);
 			ChatUtils.displayMessage(context, message, senderId);
