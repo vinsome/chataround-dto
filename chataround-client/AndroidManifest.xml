@@ -5,7 +5,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="16" />
 
     <!-- GCM connects to Google Services. -->
     <uses-permission android:name="android.permission.INTERNET" />
