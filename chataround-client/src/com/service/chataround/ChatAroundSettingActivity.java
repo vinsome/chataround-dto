@@ -2,8 +2,8 @@ package com.service.chataround;
 
 import java.util.Calendar;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
 import android.app.Activity;
@@ -116,11 +116,15 @@ public class ChatAroundSettingActivity extends Activity {
 
 			public void onClick(View v) {
 				Switch sound = (Switch) v;
-				SharedPreferences.Editor editor = settings.edit();
-				editor.putBoolean(ChatUtils.USER_STAY_ONLINE, sound.isChecked());
-				editor.commit();
 				if (userId != null && !"".equals(userId)) {
-					doGoOfline(userId);
+					if(!sound.isChecked()) {
+						final SharedPreferences settings = getSharedPreferences(
+								ChatUtils.PREFS_NAME, 0);
+						SharedPreferences.Editor editor = settings.edit();
+						editor.putBoolean(ChatUtils.USER_STAY_ONLINE, sound.isChecked());
+						editor.commit();						
+						doGoOfline(userId);
+					}
 				} else {
 					// listener will update status atutomatically
 				}
@@ -383,18 +387,20 @@ public class ChatAroundSettingActivity extends Activity {
 		ChatAroundAsyncHtpp.post(
 				ChatAroundAsyncHtpp.ChatAroundHttpEnum.OFFLINE.getUrl()
 						+ userId, null, new JsonHttpResponseHandler() {
-					@Override
-					public void onSuccess(JSONObject arg0) {
 
-						super.onSuccess(arg0);
-					}
+							@Override
+							public void onSuccess(JSONArray arg0) {
+								
+								super.onSuccess(arg0);
+							}
 
-					@Override
-					protected Object parseResponse(String arg0)
-							throws JSONException {
-
-						return super.parseResponse(arg0);
-					}
+							@Override
+							protected Object parseResponse(String arg0)
+									throws JSONException {
+								
+								return super.parseResponse(arg0);
+							}
+						
 
 				}
 
