@@ -3,7 +3,12 @@
     android:id="@+id/frameLayoutId"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/google_loading_icon"
     >
-
+<ImageView
+        android:id="@+id/chat_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/google_loading_icon" 
+        android:contentDescription="@string/loading_list"
+        />
 </FrameLayout>

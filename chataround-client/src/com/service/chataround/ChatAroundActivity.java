@@ -22,6 +22,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gcm.GCMRegistrar;
@@ -100,8 +103,28 @@ public class ChatAroundActivity extends Activity {
 			locationListener.setEventBus(eventBus);
 			locationListener.start();
 		}
+		
+		final ImageView imageArray = (ImageView) findViewById(R.id.chat_background);
+		imageArray.setAdjustViewBounds(true);
+		doRotation();
 	}
-
+	private void doRotation(){
+        final int rotationRight = 360;
+        final int rotationLeft = -20;
+        final RotateAnimation rAnim;
+        int degree;
+            degree = rotationRight;
+        
+        final ImageView image = (ImageView) findViewById(R.id.chat_background);
+        rAnim = new RotateAnimation(0f, degree, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        rAnim.setStartOffset(0);
+        rAnim.setDuration(2000);
+        rAnim.setRepeatMode(Animation.INFINITE);
+        rAnim.setRepeatCount(Animation.INFINITE);
+        rAnim.setFillAfter(true);
+        rAnim.setFillEnabled(true);
+        image.startAnimation(rAnim);
+    }
 	private void doNavigateToFragment() {
 		Intent intent = getIntent();
 		// when reciving notification, comes here ...is the one that sends us
