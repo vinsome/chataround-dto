@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.CollectionUtils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -23,8 +24,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gcm.GCMRegistrar;
@@ -51,6 +54,7 @@ public class ChatAroundActivity extends Activity {
 	private String fragmentPresent;
 	private GoogleAnalyticsTracker tracker;
 	private List<UserPublicDto> cacheList = new ArrayList<UserPublicDto>(0);
+	private ImageView compassImage;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -104,27 +108,37 @@ public class ChatAroundActivity extends Activity {
 			locationListener.start();
 		}
 		
-		final ImageView imageArray = (ImageView) findViewById(R.id.chat_background);
-		imageArray.setAdjustViewBounds(true);
-		doRotation();
+		//final ImageView imageArray = (ImageView) findViewById(R.id.chat_background);
+		//imageArray.setAdjustViewBounds(true);
+		if(CollectionUtils.isEmpty(cacheList));
+			doStartAnimations();
 	}
-	private void doRotation(){
+	
+	private void doRotation() {
         final int rotationRight = 360;
-        final int rotationLeft = -20;
         final RotateAnimation rAnim;
         int degree;
             degree = rotationRight;
-        
-        final ImageView image = (ImageView) findViewById(R.id.chat_background);
+        compassImage = (ImageView) findViewById(R.id.chat_background);
         rAnim = new RotateAnimation(0f, degree, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
-        rAnim.setStartOffset(0);
-        rAnim.setDuration(2000);
-        rAnim.setRepeatMode(Animation.INFINITE);
-        rAnim.setRepeatCount(Animation.INFINITE);
-        rAnim.setFillAfter(true);
-        rAnim.setFillEnabled(true);
-        image.startAnimation(rAnim);
+	        rAnim.setStartOffset(0);
+	        rAnim.setDuration(2000);
+	        rAnim.setRepeatMode(Animation.INFINITE);
+	        rAnim.setRepeatCount(Animation.INFINITE);
+	        rAnim.setFillAfter(true);
+	        rAnim.setFillEnabled(true);
+	     compassImage.startAnimation(rAnim);
     }
+	
+	private void doStartAnimations() {
+		
+		TextView findingUserTextView = (TextView) findViewById(R.id.finding_users_label); 
+		Animation myFadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.blinking_finding_users);
+		findingUserTextView.startAnimation(myFadeInAnimation);
+
+		doRotation();
+		
+	}
 	private void doNavigateToFragment() {
 		Intent intent = getIntent();
 		// when reciving notification, comes here ...is the one that sends us

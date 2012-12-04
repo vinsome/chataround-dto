@@ -4,11 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
+<TextView
+	     android:id="@+id/finding_users_label"
+	     android:layout_width="wrap_content"
+	     android:layout_height="wrap_content"
+	     android:text="@string/finding_users_label"
+	     android:textStyle="bold"
+	     android:paddingLeft="@dimen/global_padding_left"
+	     android:paddingTop="@dimen/global_padding_top"
+	     android:textSize="@dimen/global_text_size"
+	     />     
 <ImageView
         android:id="@+id/chat_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/google_loading_icon" 
+        android:src="@drawable/compass" 
         android:contentDescription="@string/loading_list"
         />
 </FrameLayout>

@@ -36,4 +36,6 @@
     <string name="leave_app_ko">Not now!</string>
     <string name="app_offline">Uhmm..Seems you don´t have internet connection..Try it later!</string>
     <string name="status_updated_succesfully">Your mood it´s been updated!</string>
+    <string name="finding_users_label">Finding users around you</string>
+    
 </resources>

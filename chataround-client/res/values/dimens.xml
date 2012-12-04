@@ -3,6 +3,7 @@
     <dimen name="global_padding_left">10dp</dimen>
     <dimen name="global_padding_right">10dp</dimen>
     <dimen name="global_padding_top">10dp</dimen>
+    <dimen name="global_text_size">25dp</dimen>
     
     <!-- Instructions Dialog -->
     <dimen name="main_instructions_scroll_padding_top">20dp</dimen>
