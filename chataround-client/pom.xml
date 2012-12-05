@@ -6,7 +6,7 @@
   <packaging>apk</packaging>
 <properties>
 		<!-- sdk.path>/usr/local/android-sdk-macosx</sdk.path -->
-		<sdk.path>/Users/lfernandezm/android-sdks</sdk.path>
+		<!-- sdk.path>/Users/lfernandezm/android-sdks</sdk.path -->
 		<android.run.debug>false</android.run.debug>
 	</properties>
 	<dependencies>
@@ -284,6 +284,21 @@ mvn install:install-file -Dfile=spring-android-rest-template-1.0.0.M4.jar -Dgrou
 								<debug>false</debug>
 							</sign>
 						</configuration>
+						<executions>
+							<execution>
+							    <id>alignApk</id>
+							    <phase>package</phase>
+							    <goals>
+							      <goal>zipalign</goal>
+							    </goals>
+							    <configuration>
+							    	<zipalign>
+								    	<verbose>true</verbose>
+	  									<skip>false</skip>
+							    	</zipalign>
+							    </configuration>
+							  </execution>							
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
