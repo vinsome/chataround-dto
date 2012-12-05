@@ -99,7 +99,7 @@ public class MyLocationListener implements LocationListener {
 				this.running = true;
 				Log.d(TAG, "using gps");
 				this.locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 1000, 0, this); // //1
+						LocationManager.GPS_PROVIDER, 5*1000, 10, this); // //1
 																			// *
 																			// 60
 																			// *
