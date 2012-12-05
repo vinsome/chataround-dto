@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.CollectionUtils;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -44,7 +43,6 @@ import com.service.chataround.listener.MyLocationListener;
 import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.PushUtils;
 
-@SuppressLint("ParserError")
 public class ChatAroundActivity extends Activity {
 	public static String TAG = ChatAroundActivity.class.getName();
 
@@ -58,13 +56,14 @@ public class ChatAroundActivity extends Activity {
 	private ImageView compassImage;
 	private TextView findingUserTextView;
 	private boolean animationStarted=true;
-	
+	private LocationManager locationManager;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_around);
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.startNewSession("UA-36514546-1", 10, this);
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 	}
 
 	@Override
@@ -98,17 +97,18 @@ public class ChatAroundActivity extends Activity {
 
 		if (regId != null && !"".equals(regId) && userId != null
 				&& !"".equals(userId) && userOnline) {
-			LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			
 			if (locationListener == null) {
 				locationListener = new MyLocationListener();
 				locationListener.setLocationManager(locationManager);
 				locationListener.setCtx(this);
 				locationListener.setEventBus(eventBus);
-				locationListener.start();
+				locationListener.setRegisteredOnline(registeredOnline);
+				locationListener.setUserId(userId);
+				locationListener.setPaused(false);
+				
+				locationListener.doStart();
 			}
-			locationListener.setRegisteredOnline(registeredOnline);
-			locationListener.setUserId(userId);
-			locationListener.setPaused(false);
 
 		}
 		

@@ -46,8 +46,8 @@ public class UserListViewAdapter extends ArrayAdapter<UserPublicDto> {
 			
 			userNickname.setText(o.getNickName());
 			userMood.setText(o.getStatusMessage());
-			float distance = ChatUtils.distanceFromUser(act.getLocationListener().getCurrentLatitude().doubleValue() 
-					, act.getLocationListener().getCurrentLongitude().doubleValue(), o.getLattitude(),o.getLongitude());
+			float distance = ChatUtils.distanceFromUser(act.getLocationListener().getCurrentBestLocation().getLongitude() 
+					, act.getLocationListener().getCurrentBestLocation().getLatitude(), o.getLattitude(),o.getLongitude());
 			distanceFromMe.setText(distance +" km");
 			
 		}
