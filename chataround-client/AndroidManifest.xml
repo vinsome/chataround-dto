@@ -41,6 +41,7 @@
             android:name=".ChatAroundActivity"
             android:label="@string/title_chat_around"
             android:noHistory="false"
+            android:screenOrientation="portrait"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,9 +51,12 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ChatAroundActivity" />
+                android:value="ChatAroundActivity" 
+                />
         </activity>
-        <activity android:name=".ChatAroundSettingActivity" />
+        <activity android:name=".ChatAroundSettingActivity" 
+            	  android:screenOrientation="portrait"
+            />
 
         <!--
           BroadcastReceiver that will receive intents from GCM

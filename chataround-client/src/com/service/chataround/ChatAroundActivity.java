@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
@@ -55,7 +56,9 @@ public class ChatAroundActivity extends Activity {
 	private GoogleAnalyticsTracker tracker;
 	private List<UserPublicDto> cacheList = new ArrayList<UserPublicDto>(0);
 	private ImageView compassImage;
-
+	private TextView findingUserTextView;
+	private boolean animationStarted=true;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,12 +103,13 @@ public class ChatAroundActivity extends Activity {
 				locationListener = new MyLocationListener();
 				locationListener.setLocationManager(locationManager);
 				locationListener.setCtx(this);
+				locationListener.setEventBus(eventBus);
+				locationListener.start();
 			}
 			locationListener.setRegisteredOnline(registeredOnline);
 			locationListener.setUserId(userId);
 			locationListener.setPaused(false);
-			locationListener.setEventBus(eventBus);
-			locationListener.start();
+
 		}
 		
 		//final ImageView imageArray = (ImageView) findViewById(R.id.chat_background);
@@ -120,6 +124,9 @@ public class ChatAroundActivity extends Activity {
         int degree;
             degree = rotationRight;
         compassImage = (ImageView) findViewById(R.id.chat_background);
+        if(compassImage.getVisibility()==View.GONE)
+        	compassImage.setVisibility(View.VISIBLE);
+        
         rAnim = new RotateAnimation(0f, degree, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
 	        rAnim.setStartOffset(0);
 	        rAnim.setDuration(2000);
@@ -130,13 +137,25 @@ public class ChatAroundActivity extends Activity {
 	     compassImage.startAnimation(rAnim);
     }
 	
-	private void doStartAnimations() {
+	public void doStartAnimations() {
+		findingUserTextView = (TextView) findViewById(R.id.finding_users_label);
+		if(findingUserTextView.getVisibility()==View.GONE)
+			findingUserTextView.setVisibility(View.VISIBLE);
 		
-		TextView findingUserTextView = (TextView) findViewById(R.id.finding_users_label); 
 		Animation myFadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.blinking_finding_users);
+		
 		findingUserTextView.startAnimation(myFadeInAnimation);
 
 		doRotation();
+		
+	}
+	
+	public void doStopAnimation() {
+		if(isAnimationStarted())setAnimationStarted(false);
+		findingUserTextView.clearAnimation();
+		compassImage.clearAnimation();
+		findingUserTextView.setVisibility(View.GONE);
+		compassImage.setVisibility(View.GONE);
 		
 	}
 	private void doNavigateToFragment() {
@@ -282,6 +301,7 @@ public class ChatAroundActivity extends Activity {
 				locationListener.setPaused(true);
 			
 		}
+		//unregisterReceiver(mHandleMessageReceiver);
 	}
 
 	@Override
@@ -365,6 +385,14 @@ public class ChatAroundActivity extends Activity {
 
 	public void setNickNameRecipientId(String nickNameRecipientId) {
 		this.nickNameRecipientId = nickNameRecipientId;
+	}
+
+	public boolean isAnimationStarted() {
+		return animationStarted;
+	}
+
+	public void setAnimationStarted(boolean animationStarted) {
+		this.animationStarted = animationStarted;
 	}
 
 }

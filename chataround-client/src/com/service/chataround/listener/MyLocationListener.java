@@ -3,11 +3,9 @@ package com.service.chataround.listener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,10 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.common.eventbus.EventBus;
-import com.service.chataround.ChatAroundActivity;
-import com.service.chataround.R;
 import com.service.chataround.event.LocationChangeEvent;
-import com.service.chataround.util.ChatUtils;
 import com.service.chataround.util.LocationCacheUtil;
 
 public class MyLocationListener implements LocationListener {
@@ -48,15 +43,15 @@ public class MyLocationListener implements LocationListener {
 		this.userId = userId;
 		this.registeredOnline = registeredOnline;
 	}
-
+	@Override
 	public void onProviderDisabled(String provider) {
 		Log.d(TAG, "Location provider '" + provider + "' disabled.");
 	}
-
+	@Override
 	public void onProviderEnabled(String provider) {
 		Log.d(TAG, "Location provider " + provider + " has been enabled");
 	}
-
+	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		Log.d(TAG, "The status of the provider " + provider + " has changed");
 		if (status == 0) {
@@ -67,7 +62,7 @@ public class MyLocationListener implements LocationListener {
 			Log.d(TAG, provider + " is AVAILABLE");
 		}
 	}
-
+	@Override
 	public void onLocationChanged(Location location) {
 		BigDecimal latitude = new BigDecimal(location.getLatitude()).setScale(
 				2, RoundingMode.HALF_UP);
@@ -98,13 +93,13 @@ public class MyLocationListener implements LocationListener {
 	}
 
 	public void start() {
-		if(!paused){
+		//if(!paused){
 		if (!this.running) {
 			if (this.locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
 				this.running = true;
 				Log.d(TAG, "using gps");
 				this.locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 100000, 10, this); // //1
+						LocationManager.GPS_PROVIDER, 1000, 0, this); // //1
 																			// *
 																			// 60
 																			// *
@@ -125,7 +120,7 @@ public class MyLocationListener implements LocationListener {
 				this.running = true;
 				Log.d(TAG, "using network");
 				this.locationManager.requestLocationUpdates(
-						LocationManager.NETWORK_PROVIDER, 100000, 10, this);// 1
+						LocationManager.NETWORK_PROVIDER, 1000, 0, this);// 1
 																			// *
 																			// 60
 																			// *
@@ -140,7 +135,7 @@ public class MyLocationListener implements LocationListener {
 			}
 		}
 		}
-	}
+	//}
 
 	public void doStart() {
 		start();

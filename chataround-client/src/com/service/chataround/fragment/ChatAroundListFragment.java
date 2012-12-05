@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.common.eventbus.Subscribe;
+import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
 import com.service.chataround.adapter.UserListViewAdapter;
@@ -146,6 +147,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 	}
 
 	public void finishTaskPingUser(UserPingResponseDto result) {
+		ChatAroundActivity act = (ChatAroundActivity) getActivity();
 		if (result != null && !CollectionUtils.isEmpty(result.getUserList())) {
 			Log.i("ChatAroundListFragment", "size of list="
 					+ result.getUserList().size());
@@ -153,8 +155,12 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 			adapter = new UserListViewAdapter(getActivity(),
 					R.layout.row_userlist, cacheList);
 			setListAdapter(adapter);
-			ChatAroundActivity act = (ChatAroundActivity) getActivity();
 			act.setCacheList(cacheList);
+			act.doStopAnimation();
+		}else{
+			//check if animation is running cause we dont have result list.
+			act.setCacheList(null);
+			if(!act.isAnimationStarted())act.doStartAnimations();
 		}
 	}
 }
