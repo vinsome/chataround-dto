@@ -12,11 +12,10 @@ import android.util.Log;
 
 import com.google.common.eventbus.EventBus;
 import com.service.chataround.event.LocationChangeEvent;
-import com.service.chataround.util.LocationCacheUtil;
 
 public class MyLocationListener implements LocationListener {
 	private EventBus eventBus;
-	private static final int TWO_MINUTES = 1000 * 60 * 1;
+	private static final int QUARTER_MINUTE = 1000 * 15 * 1;
 	public static int PERMISSION_DENIED = 1;
 	public static int POSITION_UNAVAILABLE = 2;
 	public static int TIMEOUT = 3;
@@ -97,7 +96,7 @@ public class MyLocationListener implements LocationListener {
 		      Log.d(TAG, location.toString());
 		      this.onLocationChanged(location); //
 		    }
-		    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, TWO_MINUTES, 0, this);
+		    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, QUARTER_MINUTE, 0, this);
 		}
 		if (this.locationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null) {
 			Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); //<5>
@@ -105,12 +104,13 @@ public class MyLocationListener implements LocationListener {
 		      Log.d(TAG, location.toString());
 		      this.onLocationChanged(location); //
 		    }
-		    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TWO_MINUTES, 0, this);
+		    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, QUARTER_MINUTE, 0, this);
 		}
 		
 		
 	}
 	
+	@Deprecated
 	public void startt() {
 		//if(!paused){
 		if (!this.running) {
@@ -118,7 +118,7 @@ public class MyLocationListener implements LocationListener {
 				this.running = true;
 				Log.d(TAG, "using gps");
 				this.locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, TWO_MINUTES, 0, this); // //1
+						LocationManager.GPS_PROVIDER, QUARTER_MINUTE, 0, this); // //1
 																			// *
 																			// 60
 																			// *
@@ -139,7 +139,7 @@ public class MyLocationListener implements LocationListener {
 				this.running = true;
 				Log.d(TAG, "using network");
 				this.locationManager.requestLocationUpdates(
-						LocationManager.NETWORK_PROVIDER, TWO_MINUTES, 0, this);// 1
+						LocationManager.NETWORK_PROVIDER, QUARTER_MINUTE, 0, this);// 1
 																			// *
 																			// 60
 																			// *
@@ -168,8 +168,8 @@ public class MyLocationListener implements LocationListener {
 
 	    // Check whether the new location fix is newer or older
 	    long timeDelta = location.getTime() - currentBestLocation.getTime();
-	    boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-	    boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+	    boolean isSignificantlyNewer = timeDelta > QUARTER_MINUTE;
+	    boolean isSignificantlyOlder = timeDelta < -QUARTER_MINUTE;
 	    boolean isNewer = timeDelta > 0;
 
 	    // If it's been more than two minutes since the current location, use the new location

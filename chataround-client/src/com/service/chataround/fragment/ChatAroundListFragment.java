@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -19,14 +18,12 @@ import android.widget.ListView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.common.eventbus.Subscribe;
-import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.ChatAroundActivity;
 import com.service.chataround.R;
 import com.service.chataround.adapter.UserListViewAdapter;
 import com.service.chataround.dto.chat.UserPingRequestDto;
 import com.service.chataround.dto.chat.UserPingResponseDto;
 import com.service.chataround.dto.chat.UserPublicDto;
-import com.service.chataround.dto.register.RegisterUserRequestDto;
 import com.service.chataround.event.LocationChangeEvent;
 import com.service.chataround.task.ChatAroundPingLocationTask;
 import com.service.chataround.util.Callback;
@@ -134,18 +131,6 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 				ChatUtils.PING_LOCATION_AND_GET_USERS_SERVER_URL);
 	}
 
-	public void finishTaskRegisterUser(RegisterUserRequestDto dto) {
-		if (dto != null && StringUtils.hasText(dto.getUserId())) {
-			final SharedPreferences settings = getActivity()
-					.getSharedPreferences(ChatUtils.PREFS_NAME, 0);
-			String userId = dto.getUserId();
-			SharedPreferences.Editor editor = settings.edit();
-			editor.putString(ChatUtils.USER_ID, userId);
-			editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
-			editor.commit();
-		}
-	}
-
 	public void finishTaskPingUser(UserPingResponseDto result) {
 		ChatAroundActivity act = (ChatAroundActivity) getActivity();
 		if (result != null && !CollectionUtils.isEmpty(result.getUserList())) {
@@ -159,7 +144,7 @@ public class ChatAroundListFragment extends ListFragment implements Callback {
 			act.doStopAnimation();
 		}else{
 			//check if animation is running cause we dont have result list.
-			act.setCacheList(null);
+			act.setCacheList(new ArrayList<UserPublicDto>(0));
 			if(!act.isAnimationStarted())act.doStartAnimations();
 		}
 	}

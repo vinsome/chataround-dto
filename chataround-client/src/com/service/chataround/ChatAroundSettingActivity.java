@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -23,17 +22,17 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
-import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.next.infotech.persistance.domain.UserPublicDomain.Gender;
 import com.service.chataround.async.ChatAroundAsyncHtpp;
+import com.service.chataround.dto.PreferencesDto;
 import com.service.chataround.dto.chat.ChatAroundDto;
 import com.service.chataround.dto.chat.LoginDto;
 import com.service.chataround.dto.chat.UserPublicDto;
 import com.service.chataround.dto.chat.UserStatusUpdateDto;
 import com.service.chataround.dto.chat.UserStatusUpdateResponseDto;
 import com.service.chataround.dto.register.RegisterUserRequestDto;
+import com.service.chataround.generic.ChatAroundPreferences;
 import com.service.chataround.task.ChatAroundLoginTask;
 import com.service.chataround.task.ChatAroundMoodTask;
 import com.service.chataround.task.ChatAroundRegisterUserTask;
@@ -64,66 +63,77 @@ public class ChatAroundSettingActivity extends Activity {
 		if (isOnline()) {
 			registerToCloud();
 		}
-		final SharedPreferences settings = getSharedPreferences(
-				ChatUtils.PREFS_NAME, 0);
+		//final SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
+		final ChatAroundPreferences chatPrefs = new ChatAroundPreferences(this);
+		
 		nickName = (EditText) findViewById(R.id.nicknameTextView);
 		emailText = (EditText) findViewById(R.id.emailTextView);
 		moodText = (EditText) findViewById(R.id.moodTextView);
 		userPassw = (EditText) findViewById(R.id.passwordTextView);
 		radioSex = (RadioGroup) findViewById(R.id.radioSexId);
 
-		final String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
-		final String mood = settings.getString(ChatUtils.USER_MOOD, "");
-		final String email = settings.getString(ChatUtils.USER_EMAIL, "");
-		final String passw = settings.getString(ChatUtils.USER_PASSW, "");
-		final String userId = settings.getString(ChatUtils.USER_ID, "");
-		final int selectedId = settings.getInt(ChatUtils.USER_SEX,
-				R.id.radioMaleId);
-		boolean isRegistered = settings.getBoolean(
-				ChatUtils.USER_REGISTERED_ONLINE, false);
+		final PreferencesDto dto = chatPrefs.getPreferences();
+		
+		//final String nick = settings.getString(ChatUtils.USER_NICKNAME, "");
+		//final String mood = settings.getString(ChatUtils.USER_MOOD, "");
+		//final String email = settings.getString(ChatUtils.USER_EMAIL, "");
+		//final String passw = settings.getString(ChatUtils.USER_PASSW, "");
+		//final String userId = settings.getString(ChatUtils.USER_ID, "");
+		//final int selectedId = settings.getInt(ChatUtils.USER_SEX,R.id.radioMaleId);
+		//boolean isRegistered = settings.getBoolean(ChatUtils.USER_REGISTERED_ONLINE, false);
 		// dont modify mandatory fields
-		if (isRegistered) {
+
+		if (dto.isUserRegisteredOnline()) {
 			nickName.setEnabled(false);
 			emailText.setEnabled(false);
 			userPassw.setEnabled(false);
 		}
 
-		nickName.setText(nick);
-		moodText.setText(mood);
-		currentMood = mood;
-		emailText.setText(email);
-		userPassw.setText(passw);
-		radioSex.check(selectedId);
+		nickName.setText(dto.getNickname());
+		moodText.setText(dto.getMood());
+		currentMood = dto.getMood();
+		emailText.setText(dto.getEmailUser());
+		userPassw.setText(dto.getUserPssw());
+		radioSex.check(dto.getUserSex());
 
 		Switch switchButton = (Switch) findViewById(R.id.switchNotifId);
-		Boolean isNotifications = settings.getBoolean(
-				ChatUtils.USER_NOTIFICATIONS, true);
-		switchButton.setChecked(isNotifications);
+		
+		//Boolean isNotifications = settings.getBoolean(ChatUtils.USER_NOTIFICATIONS, true);
+		
+		switchButton.setChecked(dto.isUserNotifications());
 		switchButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				Switch notif = (Switch) v;
-				SharedPreferences.Editor editor = settings.edit();
-				editor.putBoolean(ChatUtils.USER_NOTIFICATIONS,
-						notif.isChecked());
-				editor.commit();
+				//SharedPreferences.Editor editor = settings.edit();
+				dto.setUserNotifications(notif.isChecked());
+				
+				chatPrefs.saveNotification(dto);
+				//editor.putBoolean(ChatUtils.USER_NOTIFICATIONS,notif.isChecked());
+				
+				//editor.commit();
 			}
 		});
 		Switch switchButtonSound = (Switch) findViewById(R.id.switchNotifSoundId);
-		Boolean isSound = settings.getBoolean(ChatUtils.USER_STAY_ONLINE, true);
-		switchButtonSound.setChecked(isSound);
+		//Boolean isSound = settings.getBoolean(ChatUtils.USER_STAY_ONLINE, true);
+		
+		switchButtonSound.setChecked(dto.isStayOnline());
 		switchButtonSound.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				Switch sound = (Switch) v;
-				if (userId != null && !"".equals(userId)) {
+				if (dto.getUserId() != null && !"".equals(dto.getUserId())) {
 					if(!sound.isChecked()) {
-						final SharedPreferences settings = getSharedPreferences(
-								ChatUtils.PREFS_NAME, 0);
-						SharedPreferences.Editor editor = settings.edit();
-						editor.putBoolean(ChatUtils.USER_STAY_ONLINE, sound.isChecked());
-						editor.commit();						
-						doGoOfline(userId);
+						dto.setStayOnline(sound.isChecked());
+						
+						chatPrefs.saveStayOnline(dto);
+						
+						//final SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
+						//SharedPreferences.Editor editor = settings.edit();
+						//editor.putBoolean(ChatUtils.USER_STAY_ONLINE, sound.isChecked());
+						//editor.commit();						
+						
+						doGoOfline(dto.getUserId());
 					}
 				} else {
 					// listener will update status atutomatically
@@ -136,8 +146,6 @@ public class ChatAroundSettingActivity extends Activity {
 
 			public void onClick(View v) {
 				if (StringUtils.hasText(nickName.getText().toString().trim())
-						&& StringUtils.hasText(moodText.getText().toString()
-								.trim())
 						&& StringUtils.hasText(emailText.getText().toString()
 								.trim())
 						&& StringUtils.hasText(userPassw.getText().toString()
@@ -153,31 +161,44 @@ public class ChatAroundSettingActivity extends Activity {
 						int sex = radioSex.getCheckedRadioButtonId();
 						// We need an Editor object to make preference changes.
 						// All objects are from android.context.Context
-						SharedPreferences.Editor editor = settings.edit();
-						boolean isRegistered = settings.getBoolean(
-								ChatUtils.USER_REGISTERED_ONLINE, false);
-						String userId = settings.getString(ChatUtils.USER_ID,
-								"");
+						//SharedPreferences.Editor editor = settings.edit();
+						//boolean isRegistered = settings.getBoolean(ChatUtils.USER_REGISTERED_ONLINE, false);
+						//String userId = settings.getString(ChatUtils.USER_ID,"");
 
-						if (!isRegistered) {
-							editor.putString(ChatUtils.USER_NICKNAME, nickname);
-							editor.putString(ChatUtils.USER_MOOD, mood);
-							editor.putString(ChatUtils.USER_EMAIL, email);
-							editor.putString(ChatUtils.USER_PASSW, passw);
-							editor.putInt(ChatUtils.USER_SEX, sex);
-							editor.commit();
+						if (!dto.isUserRegisteredOnline()) {
+							//editor.putString(ChatUtils.USER_NICKNAME, nickname);
+							//editor.putString(ChatUtils.USER_MOOD, mood);
+							//editor.putString(ChatUtils.USER_EMAIL, email);
+							//editor.putString(ChatUtils.USER_PASSW, passw);
+							//editor.putInt(ChatUtils.USER_SEX, sex);
+							//editor.commit();
+							
+							dto.setNickname(nickname);
+							dto.setMood(mood);
+							dto.setEmailUser(email);
+							dto.setUserPssw(passw);
+							dto.setUserSex(sex);
+							
+							
+							//this values are set in the click events
+							//dto.setUserNotifications(userNotifications);
+							//dto.setStayOnline(stayOnline)
+							
+							
+							chatPrefs.savePreferences(dto);
 							// settingsDialog.hide();
 							// finish();
-							registerToServer(regId, email, nickname, passw,
-									mood, sex);
-						} else if (isRegistered && !"".equals(userId)) {
+							
+							registerToServer(regId, dto.getEmailUser(), dto.getNickname(), dto.getUserPssw(),dto.getMood(), dto.getUserSex());
+							
+						} else if (dto.isUserRegisteredOnline() && !"".equals(dto.getUserId())) {
 							// not registered, we only want user to change
 							// mood...and notifications
 							if (currentMood != null
 									&& !currentMood.equals(moodText.getText()
 											.toString().trim())) {
 								// mood changed, call service to change mood
-								changeMoodStatus(userId, moodText.getText()
+								changeMoodStatus(dto.getMood(), moodText.getText()
 										.toString().trim());
 
 							}else{
@@ -294,14 +315,19 @@ public class ChatAroundSettingActivity extends Activity {
 					.show();
 			
 		}else{
-			final SharedPreferences settings = getSharedPreferences(
-					ChatUtils.PREFS_NAME, 0);
-			SharedPreferences.Editor editor = settings.edit();
-			editor.putString(ChatUtils.USER_MOOD, moodText.getText().toString());
-			editor.commit();
-			Toast.makeText(getApplicationContext(),
-					getString(R.string.status_updated_succesfully), Toast.LENGTH_LONG)
+			final ChatAroundPreferences prefs = new ChatAroundPreferences(this);
+			final PreferencesDto prefdto = prefs.getPreferences();
+				prefdto.setMood(moodText.getText().toString());
+				prefs.savePreferences(prefdto);
+			
+			//final SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
+			//SharedPreferences.Editor editor = settings.edit();
+			//editor.putString(ChatUtils.USER_MOOD, moodText.getText().toString());
+			//editor.commit();
+			
+			Toast.makeText(getApplicationContext(),getString(R.string.status_updated_succesfully), Toast.LENGTH_LONG)
 					.show();		
+			
 			finish();
 		}
 	}
@@ -322,12 +348,21 @@ public class ChatAroundSettingActivity extends Activity {
 	}
 
 	private void savePreferences(String userId) {
-		final SharedPreferences settings = getSharedPreferences(
-				ChatUtils.PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(ChatUtils.USER_ID, userId);
-		editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
-		editor.commit();
+		ChatAroundPreferences prefs = new ChatAroundPreferences(this);
+		PreferencesDto dto = prefs.getPreferences();
+		
+		//final SharedPreferences settings = getSharedPreferences(ChatUtils.PREFS_NAME, 0);
+		//SharedPreferences.Editor editor = settings.edit();
+		
+		dto.setUserId(userId);
+		dto.setUserRegisteredOnline(true);
+		
+		prefs.savePreferences(dto);
+		
+		//editor.putString(ChatUtils.USER_ID, userId);
+		//editor.putBoolean(ChatUtils.USER_REGISTERED_ONLINE, true);
+		//editor.commit();
+		
 	}
 
 	private boolean isOnline() {
@@ -384,6 +419,7 @@ public class ChatAroundSettingActivity extends Activity {
 	}
 
 	private void doGoOfline(String userId) {
+		if(userId!=null && !"".equals(userId)){
 		ChatAroundAsyncHtpp.post(
 				ChatAroundAsyncHtpp.ChatAroundHttpEnum.OFFLINE.getUrl()
 						+ userId, null, new JsonHttpResponseHandler() {
@@ -405,8 +441,10 @@ public class ChatAroundSettingActivity extends Activity {
 				}
 
 		);
+		}
 	}
 
+	/*
 	private void doChangeMood(final String userId, final String status) {
 		RequestParams params = new RequestParams();
 		params.put("userId", userId);
@@ -437,4 +475,5 @@ public class ChatAroundSettingActivity extends Activity {
 
 		);
 	}
+	*/
 }
